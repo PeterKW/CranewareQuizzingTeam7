@@ -1,3 +1,37 @@
+<template>
+  <div id="app">
+    <Index/>
+  </div>
+</template>
+
+<script>
+import Vue from 'vue'
+
+import { BootstrapVue } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+Vue.use(BootstrapVue)
+
+import Index from './components/Index.vue'
+
+export default {
+  name: 'App',
+  components: {
+    Index
+  }
+}
+</script>
+
+<style>
+html,
+body {
+  height: 100%;
+}
+
+body {
+  position: fixed;
+}
+
 #gradient {
   width: 100%;
   height: 800px;
@@ -19,15 +53,6 @@
   padding-top: 10%;
 }
 
-html,
-body {
-  height: 100%;
-}
-
-body {
-  position: fixed;
-}
-
 .container {
   height: 100%;
   display: flex;
@@ -42,3 +67,4 @@ input {
 .text-responsive {
   font-size: calc(100% + 4vw + 4vh);
 }
+</style>
