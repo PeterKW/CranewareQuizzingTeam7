@@ -7,6 +7,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   background-size: 100% auto;
+  backdrop-filter: blur(4px);
 }
 
 .display-1 {
