@@ -1,38 +1,34 @@
 <template>
-  <div class="container-fluid">
-    <h1 class="display-1 col-md-12 text-responsive">Cranehoot</h1>
-
-    <div class="d-flex justify-content-center" style="height: 100px">
-      <!-- Input and buttons need to be replaced with vue components -->
-      <form class="main-form col-10 col-sm-8 col-md-6 col-lg-4 col-xl-2">
-        <div class="form-group">
-          <input
-            type="text"
-            class="form-control form-control-lg"
-            placeholder="USERNAME"
-            maxlength="10"
-          />
-        </div>
-        <div class="form-group">
-          <input
-            type="text"
-            class="form-control form-control-lg"
-            placeholder="GAME PIN"
-            maxlength="8"
-          />
-        </div>
-        <button type="button" class="btn btn-primary btn-block">
-          Singleplayer
-        </button>
-        <button type="button" class="btn btn-primary btn-block">
-          Join Lobby
-        </button>
-        <button type="button" class="btn btn-primary btn-block">
-          Create Lobby
-        </button>
-      </form>
-    </div>
-  </div>
+    <b-container fluid>
+      <h1 class="display-1 col-md-12 text-responsive">Cranehoot</h1>
+      <b-row class="d-flex justify-content-center" style="height: 100px">
+        <b-form cols="10" sm="8" md="6" lg="4" xl="2" class="main-form">
+          <b-form-group>
+            <b-form-input size="lg"
+              type="text"
+              placeholder="USERNAME"
+              maxlength="10"
+            />
+          </b-form-group>
+          <b-form-group>
+            <b-form-input size="lg"
+              type="text"
+              placeholder="GAME PIN"
+              maxlength="8"
+            />
+          </b-form-group>
+          <b-button variant="primary" class="btn-block">
+            Single Player
+          </b-button>
+          <b-button variant="primary" class="btn-block">
+            Join Lobby
+          </b-button>
+          <b-button variant="primary" class="btn-block">
+            Create Lobby
+          </b-button>
+        </b-form>
+      </b-row>
+    </b-container>
 </template>
 
 <script>
@@ -43,5 +39,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.display-1 {
+  text-align: center;
+  color: azure;
+}
+.main-form {
+  width: 20vw;
+  padding-top: 10%;
+}
 </style>

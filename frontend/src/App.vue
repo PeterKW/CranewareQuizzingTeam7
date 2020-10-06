@@ -1,8 +1,6 @@
 <template>
-  <div id="app">
-    <div id="gradient" :style="gradient">
-      <Index/>
-    </div>
+  <div id="app" :style="gradient">
+    <Index/>
   </div>
 </template>
 
@@ -82,36 +80,7 @@ export default {
 </script>
 
 <style>
-html,
-#gradient {
-  height: 100%;
-  position: fixed;
-  width: 100%;
-  height: 800px;
-  padding: 0px;
-  margin: 0px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-size: 100% auto;
-}
-
-.display-1 {
-  text-align: center;
-  color: azure;
-}
-
-.main-form {
-  width: 20vw;
-  padding-top: 10%;
-}
-
-.container {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+html, body, #app { height: 100% !important }
 
 input {
   text-align: center;
