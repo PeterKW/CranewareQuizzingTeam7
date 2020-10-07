@@ -1,31 +1,20 @@
 <template>
   <b-container fluid>
-    <h1 class="display-1 col-md-12 text-responsive">{{q.text}}</h1>
-
-      <div class="d-flex justify-content-center">
-        <b-row class="d-flex justify-content-center">
-
-          <b-button variant="outline-secondary" class="quiz_buttons">
-                {{answer.A}}
-          </b-button>
-            <div class="divider"/>
-          <b-button variant="outline-secondary" class="quiz_buttons">
-                {{answer.B}}
-          </b-button>
-        </b-row>
-      </div>
-      <div class="d-flex justify-content-center">
-        <b-row class="d-flex justify-content-center">
-          <b-button variant="outline-secondary" class="quiz_buttons">
-                {{answer.C}}
-          </b-button>
-            <div class="divider"/>
-          <b-button variant="outline-secondary" class="quiz_buttons">
-                {{answer.D}}
-          </b-button>
-
-        </b-row>
-      </div>
+     <b-row class="h-100 align-items-center">
+        <b-col cols="10" class="mx-auto text-center p4">
+          <b-row class="text-center">
+            <h1 class="display-1 text-responsive w-100">{{q.text}}</h1>
+          </b-row>
+          <b-row style="margin-bottom:10px">
+            <b-col><b-button class="quizButtons">{{answer.A}}</b-button></b-col>
+            <b-col><b-button class="quizButtons">{{answer.B}}</b-button></b-col>
+          </b-row>
+          <b-row>
+            <b-col><b-button class="quizButtons">{{answer.C}}</b-button></b-col>
+            <b-col><b-button class="quizButtons">{{answer.D}}</b-button></b-col>
+          </b-row>
+      </b-col>      
+    </b-row>
   </b-container>
 </template>
 
@@ -53,23 +42,15 @@ h1 {
   color: white
 }
 
-.divider{
-    width:10px;
-    height:auto;
-    display:inline-block;
+.quizButtons{
+  width:100%;
+  height:100%;
+  padding: 3vh 5vw;
+  font-size: 250%;
+  background: -webkit-linear-gradient(#4b6cb7 0%, #182848 100%);
 }
 
 @media (max-width: 768px) {
-
-}
-
-.quiz_buttons{
-  background: -webkit-linear-gradient(#4b6cb7 0%, #182848 100%);
-  padding: 3vh 5vw;
-  font-size: 250%;
-  position:relative;
-  top:300px;
-  margin-bottom:10px
 
 }
 
