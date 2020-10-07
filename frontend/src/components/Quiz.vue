@@ -59,11 +59,14 @@ h1 {
     display:inline-block;
 }
 
+@media (max-width: 768px) {
+
+}
 
 .quiz_buttons{
   background: -webkit-linear-gradient(#4b6cb7 0%, #182848 100%);
-  padding: 75px 200px;
-  font-size: 32px;
+  padding: 3vh 5vw;
+  font-size: 250%;
   position:relative;
   top:300px;
   margin-bottom:10px
