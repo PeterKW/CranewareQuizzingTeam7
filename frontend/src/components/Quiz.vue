@@ -3,7 +3,7 @@
      <b-row class="h-100 align-items-center">
         <b-col cols="10" class="mx-auto text-center p4 cont">
           <b-row class="text-center">
-            <h1 class="display-1 text-responsive w-100">{{q.text}}</h1>
+            <h2 class="question w-100">{{q.text}}</h2>
           </b-row>
           <b-row style="margin-bottom:10px">
             <b-col style="margin-right:10px;"><b-button class="fancy-btn btn--alpha"><span>{{answer.A}}</span></b-button></b-col>
@@ -27,7 +27,7 @@ export default {
     var choices = ["Choice1", "Choice2", "Choice3", "Choice4"];
 
     return {
-      q: {text: 'Question'},
+      q: {text: 'What is the blah blah blah?'},
       answer: {A: choices[0], B: choices[1], C: choices[2], D: choices[3]}
     }
   }
@@ -162,11 +162,11 @@ body {
   border-radius:20px;
 }
 
-h1 {
+.question {
   text-align: center;
   top:150px;
   color: #000;
-  padding-bottom:50px;
+  padding:50px;
 }
 
 .quizButtons{
