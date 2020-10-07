@@ -1,7 +1,7 @@
 <template>
   <div id="app" :style="gradient">
     <GradientContainer>
-      <Index/>
+      <router-view></router-view>
     </GradientContainer>
   </div>
 </template>
@@ -14,13 +14,13 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 
-import Index from './components/Index.vue'
+//import Index from './components/Index.vue'
 import GradientContainer from './components/GradientContainer.vue'
 
 export default {
   name: 'App',
   components: {
-    Index,
+    //Index,
     GradientContainer
   }
 }
