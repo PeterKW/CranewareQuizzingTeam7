@@ -44,12 +44,20 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+h1 {
+  text-align: center;
+  top:30vh;
+  font-family: "Courier New", Courier, monospace;
+  color: white
+}
+
 .display-1 {
   text-align: center;
   color: azure;
 }
 .main-form {
   width: 20vw;
-  padding-top: 10%;
+  padding-top: 45vh;
 }
 </style>
