@@ -57,8 +57,4 @@ html, body, #app, .container-fluid{ height: 100% !important }
 input {
   text-align: center;
 }
-
-.text-responsive {
-  font-size: calc(100% + 4vw + 4vh);
-}
 </style>

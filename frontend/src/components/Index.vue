@@ -1,12 +1,14 @@
 <template>
     <b-container fluid>
       <b-row class="h-100 align-items-center">
-          <b-col xl="5" lg="6" md="8" sm="10" class="mx-auto text-center p4">
-              <h1 class="display-1 text-responsive">Cranehoot</h1>
+          <b-col xl="5" lg="6" md="8" sm="10" class="mx-auto text-center p4 cont">
+               <b-row class="text-center">
+                  <h1 class="text-responsive w-100">Cranehoot</h1>
+              </b-row>
               <div class="px-5">
                 <b-form class="justify-content-center">
                     <b-form-group>
-                        <b-label class="sr-only">Username</b-label>
+                        <label class="sr-only">Username</label>
                         <b-form-input size="lg"
                           class="align-items-center"
                           type="text"
@@ -15,7 +17,7 @@
                         />
                     </b-form-group>
                     <b-form-group>
-                        <b-label class="sr-only">Game Pin</b-label>
+                        <label class="sr-only">Game Pin</label>
                         <b-form-input size="lg"
                           type="text"
                           placeholder="GAME PIN"
@@ -23,16 +25,19 @@
                         />
                     </b-form-group>
                     <div class="btn-group d-flex" role="group">
-                    <b-button @click="join('single')" variant="primary" class="button_base b09_electric">
-                      Single Player
-                    </b-button>
-                    <b-button variant="primary" class="button_base b09_electric">
-                      Join Lobby
-                    </b-button>
-                    <b-button variant="primary" class="button_base b09_electric" >
-                      Create Lobby
-                    </b-button>
-                  </div>
+                      <b-button @click="join('single')" variant="primary" class="button_base b09_electric">
+                        Start
+                      </b-button>
+                    </div>
+                    <p class="m-0">-or-</p>
+                    <div class="btn-group d-flex" role="group">
+                      <b-button variant="primary" class="button_base b09_electric">
+                        Search for Lobby
+                      </b-button>
+                      <b-button variant="primary" class="button_base b09_electric" >
+                        Create Lobby
+                      </b-button>
+                    </div>
                 </b-form>
             </div>
           </b-col>
@@ -102,17 +107,21 @@ export default {
 
 h1 {
   text-align: center;
-  top:30vh;
-  font-family: "Courier New", Courier, monospace;
-  color: white
+  font-size:550%;
+  font-family: 'Source Sans Pro', sans-serif;
+  color: #000;
+  padding-bottom: 30px;
 }
 
-.display-1 {
-  text-align: center;
-  color: azure;
-}
 .main-form {
   width: 20vw;
   padding-top: 45vh;
+}
+
+.cont {
+  background:#fff;
+  padding:100px;
+  padding-top:0;
+  border-radius:20px;
 }
 </style>
