@@ -17,7 +17,7 @@
               maxlength="8"
             />
           </b-form-group>
-          <b-button @click="singlePlayer" variant="primary" class="btn-block">
+          <b-button @click="join('single')" variant="primary" class="btn-block">
             Single Player
           </b-button>
           <b-button variant="primary" class="btn-block">
@@ -35,8 +35,8 @@
 export default {
   name: 'Index',
   methods: {
-    singlePlayer() {
-      this.$emit('join', "single");
+    join(type) {
+      this.$emit('join', type);
     }
   }
 }

@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <GradientContainer>
-      <div v-if="index">
+      <div v-show="currentView == 'index'">
         <Index
-          v-on:join="joinGame"
+          v-on:join="join"
         />
       </div>
 
-      <div v-if="quiz">
+      <div v-show="currentView == 'quiz'">
         <Quiz/>
       </div>
     </GradientContainer>
@@ -31,8 +31,7 @@ export default {
   name: 'App',
   data: function() {
     return {
-      index: true,
-      quiz: false
+      currentView: "index"
     }
   },
   components: {
@@ -41,11 +40,10 @@ export default {
     GradientContainer
   },
   methods: {
-    joinGame(type) {
+    join(type) {
       switch(type) {
         case "single":
-          this.quiz = true;
-          this.index = false;
+          this.currentView = "quiz"
           break;
       }
     }
