@@ -2,7 +2,9 @@
   <div id="app">
     <GradientContainer>
       <div v-if="index">
-        <Index/>
+        <Index
+          v-on:join="joinGame"
+        />
       </div>
 
       <div v-if="quiz">
@@ -37,6 +39,16 @@ export default {
     Index,
     Quiz,
     GradientContainer
+  },
+  methods: {
+    joinGame(type) {
+      switch(type) {
+        case "single":
+          this.quiz = true;
+          this.index = false;
+          break;
+      }
+    }
   }
 }
 </script>
