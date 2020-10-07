@@ -8,7 +8,7 @@
           <b-button variant="outline-secondary" class="quiz_buttons">
                 {{answer.A}}
           </b-button>
-          <div class="divider"/>
+            <div class="divider"/>
           <b-button variant="outline-secondary" class="quiz_buttons">
                 {{answer.B}}
           </b-button>
@@ -19,7 +19,7 @@
           <b-button variant="outline-secondary" class="quiz_buttons">
                 {{answer.C}}
           </b-button>
-          <div class="divider"/>
+            <div class="divider"/>
           <b-button variant="outline-secondary" class="quiz_buttons">
                 {{answer.D}}
           </b-button>
@@ -60,16 +60,14 @@ h1 {
 }
 
 
-
 .quiz_buttons{
   background: -webkit-linear-gradient(#4b6cb7 0%, #182848 100%);
-  padding: 100px 300px;
+  padding: 75px 200px;
   font-size: 32px;
   position:relative;
-  top:500px;
+  top:300px;
   margin-bottom:10px
 
 }
-
 
 </style>
