@@ -27,7 +27,7 @@ export default {
     var choices = ["Choice1", "Choice2", "Choice3", "Choice4"];
 
     return {
-      q: {text: 'What is the blah blah blah?'},
+      q: {text: ' The name of an evergreen tree or bush that grows in Australia?'},
       answer: {A: choices[0], B: choices[1], C: choices[2], D: choices[3]}
     }
   }
@@ -163,6 +163,7 @@ body {
 }
 
 .question {
+  font-family: 'Source Sans Pro', sans-serif;
   text-align: center;
   top:150px;
   color: #000;
