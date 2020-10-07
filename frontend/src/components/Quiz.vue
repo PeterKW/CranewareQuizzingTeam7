@@ -1,7 +1,6 @@
 <template>
   <b-container fluid>
     <h1 class="display-1 col-md-12 text-responsive">{{q.text}}</h1>
-    <h1 class="display-1 col-md-12 text-responsive">TEST</h1>
 
       <div class="d-flex justify-content-center">
         <b-row class="d-flex justify-content-center">
@@ -26,10 +25,9 @@
 
 <script>
 
-console.log("hello");
 export default {
   name: 'Quiz',
-  questions() {
+  data() {
 
     var choices = ["Choice1", "Choice2", "Choice3", "Choice4"];
 
