@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <GradientContainer>
-      <div v-show="currentView == 'index'">
+      <span class="h-100" v-show="currentView == 'index'">
         <Index
           v-on:join="join"
         />
-      </div>
+      </span>
 
-      <div v-show="currentView == 'quiz'">
+      <div class="h-100" v-show="currentView == 'quiz'">
         <Quiz/>
       </div>
     </GradientContainer>
@@ -52,7 +52,7 @@ export default {
 </script>
 
 <style>
-html, body, #app { height: 100% !important }
+html, body, #app, .container-fluid{ height: 100% !important }
 
 input {
   text-align: center;
