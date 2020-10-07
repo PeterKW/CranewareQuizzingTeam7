@@ -1,34 +1,41 @@
 <template>
     <b-container fluid>
-      <h1 class="display-1 col-md-12 text-responsive">Cranehoot</h1>
-      <b-row class="d-flex justify-content-center" style="height: 100px">
-        <b-form cols="10" sm="8" md="6" lg="4" xl="2" class="main-form">
-          <b-form-group>
-            <b-form-input size="lg"
-              type="text"
-              placeholder="USERNAME"
-              maxlength="10"
-            />
-          </b-form-group>
-          <b-form-group>
-            <b-form-input size="lg"
-              type="text"
-              placeholder="GAME PIN"
-              maxlength="8"
-            />
-          </b-form-group>
-          <div class="btn-group d-flex" role="group">
-          <b-button @click="join('single')" variant="primary" class="button_base b09_electric">
-            Single Player
-          </b-button>
-          <b-button variant="primary" class="button_base b09_electric">
-            Join Lobby
-          </b-button>
-          <b-button variant="primary" class="button_base b09_electric" >
-            Create Lobby
-          </b-button>
-        </div>
-        </b-form>
+      <b-row class="h-100 align-items-center">
+          <b-col xl="5" lg="6" md="8" sm="10" class="mx-auto text-center p4">
+              <h1 class="display-1 text-responsive">Cranehoot</h1>
+              <div class="px-5">
+                <b-form class="justify-content-center">
+                    <b-form-group>
+                        <b-label class="sr-only">Username</b-label>
+                        <b-form-input size="lg"
+                          class="align-items-center"
+                          type="text"
+                          placeholder="USERNAME"
+                          maxlength="10"
+                        />
+                    </b-form-group>
+                    <b-form-group>
+                        <b-label class="sr-only">Game Pin</b-label>
+                        <b-form-input size="lg"
+                          type="text"
+                          placeholder="GAME PIN"
+                          maxlength="8"
+                        />
+                    </b-form-group>
+                    <div class="btn-group d-flex" role="group">
+                    <b-button @click="join('single')" variant="primary" class="button_base b09_electric">
+                      Single Player
+                    </b-button>
+                    <b-button variant="primary" class="button_base b09_electric">
+                      Join Lobby
+                    </b-button>
+                    <b-button variant="primary" class="button_base b09_electric" >
+                      Create Lobby
+                    </b-button>
+                  </div>
+                </b-form>
+            </div>
+          </b-col>
       </b-row>
     </b-container>
 </template>
