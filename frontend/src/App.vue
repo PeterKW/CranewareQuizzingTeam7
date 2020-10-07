@@ -1,7 +1,13 @@
 <template>
-  <div id="app" :style="gradient">
+  <div id="app">
     <GradientContainer>
-      <router-view></router-view>
+      <div v-if="index">
+        <Index/>
+      </div>
+
+      <div v-if="quiz">
+        <Quiz/>
+      </div>
     </GradientContainer>
   </div>
 </template>
@@ -14,13 +20,22 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 
-//import Index from './components/Index.vue'
+import Index from './components/Index.vue'
+import Quiz from './components/Quiz.vue'
+
 import GradientContainer from './components/GradientContainer.vue'
 
 export default {
   name: 'App',
+  data: function() {
+    return {
+      index: true,
+      quiz: false
+    }
+  },
   components: {
-    //Index,
+    Index,
+    Quiz,
     GradientContainer
   }
 }
