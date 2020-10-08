@@ -10,7 +10,8 @@
       </div>
 
       <div class="h-100" v-if="currentView == 'quiz'">
-        <Quiz v-on:done="onQuizFinish"/>
+        <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
+        <Quiz v-on:done="onQuizFinish" :players="players"/>
       </div>
 
       <div class="h-100" v-if="currentView == 'leaderboard'">

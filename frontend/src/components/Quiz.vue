@@ -24,9 +24,9 @@ export default {
     QuizQuestion,
     QuizScore
   },
+  props: ["players"],
   data() {
     return {
-      totalScore: 0,
       timePerQ: 10,
       timer: 10,
       timerInstance: null,
@@ -37,7 +37,7 @@ export default {
       verdict: "",
       questionScore: 0,
 
-
+      // TODO: This will be recieved from the websocket per question later on
       quiz: [
         {
           "question":"How many teeth does an adult human have?",
@@ -102,11 +102,12 @@ export default {
     onAnswerQuestion(answer) {
       this.answered = true
 
+      // TODO: This will go server side in the future
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
 
         this.questionScore = this.timer * 100;
-        this.score += this.questionScore;
+        this.players[0].score += this.questionScore;
       }
       else {
         this.verdict = "Incorrect!"
@@ -115,6 +116,8 @@ export default {
     }
   },
   mounted() {
+    // TODO: Populate quiz questions from DB
+
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
         this.nextQuestion()
