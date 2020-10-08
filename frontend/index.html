@@ -12,6 +12,53 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
     <script src="scripts.js"></script>
 
+    <!--Pusher Event Handler-->
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <script>
+      // Logs all network communication information to console
+      Pusher.logToConsole = true;
+
+      // Instantiates a Pusher connection.
+      const pusher = new Pusher('072127b07acd646fc5ec',
+      {
+        cluster: 'eu',
+        encrypted: 'true',
+        authEndpoint: 'http://localhost:3000/pusher/auth'
+      });
+
+      // Subscribes to the lobby channel
+      const evntReader = pusher.subscribe('lobby');
+
+      // Is the function called whenever the my-event event occurs
+      evntReader.bind('my-event', function(data){
+        alert('An event was triggered with message: ' + data.message);
+      });
+
+      // Will send an event to create a server connection, that is either multiplayer or singleplayer
+      // isMultiplayer - bool - determines if the game is multiplayer or not
+      function createLobby(isMultiplayer)
+      {
+      	if(isMultiplayer)
+      	{
+      		// Sends multiplayer event to server
+      		pusher.trigger('lobby', 'create lobby',
+      			{
+      				'message': 'create multiplayer lobby',
+      			});
+      	}
+      	else
+      	{
+      		// Sends singleplayer event to server
+      		pusher.trigger('lobby', 'create lobby',
+      			{
+      				'message': 'create singleplayer lobby',
+      			});
+      	}
+      }
+
+
+    </script>
+
     <!--Vue JS -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
@@ -57,13 +104,13 @@
               maxlength="8"
             />
           </div>
-          <button type="button" class="btn btn-primary btn-block">
+          <button type="button" class="btn btn-primary btn-block" onclick="createLobby(false)">
             Singleplayer
           </button>
           <button type="button" class="btn btn-primary btn-block">
             Join Lobby
           </button>
-          <button type="button" class="btn btn-primary btn-block">
+          <button type="button" class="btn btn-primary btn-block" onclick="createLobby(true)">
             Create Lobby
           </button>
         </form>
