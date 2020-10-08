@@ -14,30 +14,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Daniel</td>
-              <td>53</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Andrew</td>
-              <td>27</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Dancho</td>
-              <td>24</td>
-            </tr>
-            <tr>
-              <th scope="row">4</th>
-              <td>Archie</td>
-              <td>21</td>
-            </tr>
-            <tr>
-              <th scope="row">5</th>
-              <td>Finn</td>
-              <td>5</td>
+            <tr v-for="player in players" :key="player.id">
+              <th scope="row">{{ player.id }}</th>
+              <td>{{player.username}}</td>
+              <td>{{player.score}}</td>
             </tr>
           </tbody>
         </table>
@@ -56,7 +36,8 @@
 
 <script>
 export default {
-  name: "Index",
+  name: "Leaderboard",
+  props: ["players"]
 };
 </script>
 
