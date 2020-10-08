@@ -14,30 +14,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Daniel</td>
-              <td>53</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Andrew</td>
-              <td>27</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Dancho</td>
-              <td>24</td>
-            </tr>
-            <tr>
-              <th scope="row">4</th>
-              <td>Archie</td>
-              <td>21</td>
-            </tr>
-            <tr>
-              <th scope="row">5</th>
-              <td>Finn</td>
-              <td>5</td>
+            <tr v-for="player in players" :key="player.id">
+              <th scope="row">{{ player.id }}</th>
+              <td>{{player.username}}</td>
+              <td>{{player.score}}</td>
             </tr>
           </tbody>
         </table>
@@ -45,6 +25,7 @@
     </b-row>
     <b-row align-h="center">
       <b-button
+        @click="onExitLeaderboard()"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
       >
@@ -57,6 +38,14 @@
 <script>
 export default {
   name: "Leaderboard",
+
+  props: ["players"],
+  methods : {
+    onExitLeaderboard() {
+      this.$emit("onExitLeaderboard");
+    }
+  }
+
 };
 </script>
 
@@ -82,7 +71,7 @@ export default {
 }
 
 .table {
-  color: white;
+  color: #000;
 }
 
 @media (min-width: 241px) and (max-width: 500px) {

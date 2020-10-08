@@ -2,9 +2,11 @@
   <div id="app">
     <GradientContainer>
       <transition name="fade" mode="out-in">
-        <Index class="h-100" v-on:join='join' v-if="currentView == 'index'"> </Index>
-        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'"></Quiz>
-        <Leaderboard class="h-100" v-if="currentView == 'leaderboard'"></Leaderboard>
+        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-if="currentView == 'index'"> </Index>
+        <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
+         <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players"></Quiz>
+        <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="players"></Leaderboard>
       </transition>
     </GradientContainer>
   </div>
@@ -18,9 +20,13 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
+// Views
 import Index from "./components/Index.vue";
+import Lobby from "./components/Lobby.vue";
 import Quiz from "./components/Quiz.vue";
 import Leaderboard from "./components/Leaderboard.vue";
+
+// Components
 import GradientContainer from "./components/GradientContainer.vue";
 
 export default {
@@ -28,24 +34,64 @@ export default {
   data: function() {
     return {
       currentView: "index",
+
+      // Vars for passing into Lobby
+      players: [],
+      gamePin: ""
     };
   },
   components: {
     Index,
+    Lobby,
     Quiz,
     Leaderboard,
     GradientContainer
   },
   methods: {
-    join(type) {
-      switch (type) {
-        case "single":
-          this.currentView = "quiz";
-          break;
-      }
+    // eslint-disable-next-line no-unused-vars
+    onJoinLobby(username, gamePin) {
+      // TODO: Validate username and game pin and display lobby view
     },
+    // eslint-disable-next-line no-unused-vars
+    onFindLobby(username) {
+      // TODO: Find lobby view shown here
+    },
+    onCreateLobby(username) {
+      // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
+
+      // For now: we create and assign our own (players will be handled by lobby in the future)
+      this.players = [
+        {
+          "id" : 1,
+          "username" : username,
+          "score" : 0
+        }
+      ]
+      this.gamePin = "ABCDEF"
+      this.currentView = "lobby";
+    },
+    // eslint-disable-next-line no-unused-vars
+    onLobbyStart(code) {
+      // TODO: Tell websocket to start and wait for response
+
+      // For now: just start
+      this.currentView = "quiz"
+    },
+    // eslint-disable-next-line no-unused-vars
+    onLobbyExit(code){
+      this.currentView = "index"
+
+      // TODO: Tell websocket lobby has been quit
+
+      this.players = []
+    },
+
     onQuizFinish() {
       this.currentView = "leaderboard"
+    },
+
+    onExitLeaderboard() {
+      this.currentView = "index"
     }
   },
 };
@@ -64,9 +110,9 @@ input {
 }
 
 .players {
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.2); /* Black w/opacity/see-through */
-  color: white;
+  background-color: #fff; /* Fallback color */
+  color: #000;
+  border-radius:10px;
   font-weight: bold;
   text-align: center;
   border: 2px solid #f1f1f1;
