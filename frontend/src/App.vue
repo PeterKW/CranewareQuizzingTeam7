@@ -2,59 +2,75 @@
   <div id="app">
     <GradientContainer>
       <span class="h-100" v-show="currentView == 'index'">
-        <Index
-          v-on:join="join"
-        />
+        <Index v-on:join="join" />
       </span>
 
       <div class="h-100" v-show="currentView == 'quiz'">
-        <Quiz/>
+        <Quiz />
       </div>
     </GradientContainer>
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from "vue";
 
-import { BootstrapVue } from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-Vue.use(BootstrapVue)
+import { BootstrapVue } from "bootstrap-vue";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+Vue.use(BootstrapVue);
 
-import Index from './components/Index.vue'
-import Quiz from './components/Quiz.vue'
+import Index from "./components/Index.vue";
+import Quiz from "./components/Quiz.vue";
 
-import GradientContainer from './components/GradientContainer.vue'
+import GradientContainer from "./components/GradientContainer.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   data: function() {
     return {
-      currentView: "index"
-    }
+      currentView: "index",
+    };
   },
   components: {
     Index,
     Quiz,
-    GradientContainer
+    GradientContainer,
   },
   methods: {
     join(type) {
-      switch(type) {
+      switch (type) {
         case "single":
-          this.currentView = "quiz"
+          this.currentView = "quiz";
           break;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
-html, body, #app, .container-fluid{ height: 100% !important }
+html,
+body,
+#app,
+.container-fluid {
+  height: 100% !important;
+}
 
 input {
   text-align: center;
+}
+
+.players {
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.2); /* Black w/opacity/see-through */
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #f1f1f1;
+  position: absolute;
+  width: 100%;
+  padding: 20px;
+  top: 20%;
 }
 </style>
