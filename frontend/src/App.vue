@@ -1,15 +1,10 @@
 <template>
   <div id="app">
     <GradientContainer>
-      <span class="h-100" v-show="currentView == 'index'">
-        <Index
-          v-on:join="join"
-        > </index>
-      </span>
-      <transition name="fade">
+      <transition name="fade" mode="out-in">
+        <Index class="h-100" v-on:join='join' v-if="currentView == 'index'"> </Index>
         <Quiz class="h-100" v-if="currentView == 'quiz'"></Quiz>
-        </transition>
-
+      </transition>
     </GradientContainer>
   </div>
 </template>
@@ -54,14 +49,14 @@ export default {
 <style>
 html, body, #app, .container-fluid{ height: 100% !important }
 
+input {
+  text-align: center;
+}
+
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+  transition: opacity 1s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-}
-
-input {
-  text-align: center;
 }
 </style>
