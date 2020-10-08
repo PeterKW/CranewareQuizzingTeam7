@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <GradientContainer>
-      <span class="h-100" v-show="currentView == 'index'">
+      <span class="h-100" v-if="currentView == 'index'">
         <Index v-on:join="join" />
       </span>
 
-      <div class="h-100" v-show="currentView == 'quiz'">
+      <div class="h-100" v-if="currentView == 'quiz'">
         <Quiz v-on:done="onQuizFinish"/>
       </div>
 
-      <div class="h-100" v-show="currentView == 'leaderboard'">
+      <div class="h-100" v-if="currentView == 'leaderboard'">
         <Leaderboard/>
       </div>
     </GradientContainer>
