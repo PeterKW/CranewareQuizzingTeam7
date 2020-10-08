@@ -31,6 +31,7 @@ export default {
     return {
       timePerQ: 10,
       timer: 10,
+      timerInstance: null,
       currQuestion: 0,
       quiz: [
         {
@@ -78,15 +79,19 @@ export default {
   },
   methods: {
     nextQuestion(){
-      if(this.currQuestion++ > this.quiz.length) {
-        // Quiz is over
+      if(this.currQuestion + 1 > this.quiz.length - 1) {
+        this.endQuiz()
       }
+    },
+    endQuiz() {
+      clearInterval(this.timerInstance);
+      this.$emit('done');
     }
   },
   mounted() {
-    window.setInterval(() => {
+    this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
-        this.nextQuestion();
+        this.nextQuestion()
         this.timer = this.timePerQ;
       }
     }, 1000)
