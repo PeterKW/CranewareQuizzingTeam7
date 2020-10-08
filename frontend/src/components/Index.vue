@@ -64,6 +64,9 @@ export default {
       this.$emit('onFindLobby', this.username)
     },
     onCreateLobby() {
+      // TODO: Make a proper error message
+      if(!this.username){ alert("Enter a username"); return;}
+
       this.$emit('onCreateLobby', this.username);
     }
   }
