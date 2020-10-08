@@ -82,6 +82,9 @@ export default {
       if(this.currQuestion + 1 > this.quiz.length - 1) {
         this.endQuiz()
       }
+      else {
+        this.currQuestion++
+      }
     },
     endQuiz() {
       clearInterval(this.timerInstance);
