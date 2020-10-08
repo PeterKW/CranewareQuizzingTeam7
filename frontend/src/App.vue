@@ -1,17 +1,11 @@
 <template>
   <div id="app">
     <GradientContainer>
-      <span class="h-100" v-if="currentView == 'index'">
-        <Index v-on:join="join" />
-      </span>
-
-      <div class="h-100" v-if="currentView == 'quiz'">
-        <Quiz v-on:done="onQuizFinish"/>
-      </div>
-
-      <div class="h-100" v-if="currentView == 'leaderboard'">
-        <Leaderboard/>
-      </div>
+      <transition name="fade" mode="out-in">
+        <Index class="h-100" v-on:join='join' v-if="currentView == 'index'"> </Index>
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'"></Quiz>
+        <Leaderboard class="h-100" v-if="currentView == 'leaderboard'"></Leaderboard>
+      </transition>
     </GradientContainer>
   </div>
 </template>
@@ -27,7 +21,6 @@ Vue.use(BootstrapVue);
 import Index from "./components/Index.vue";
 import Quiz from "./components/Quiz.vue";
 import Leaderboard from "./components/Leaderboard.vue";
-
 import GradientContainer from "./components/GradientContainer.vue";
 
 export default {
@@ -81,5 +74,12 @@ input {
   width: 100%;
   padding: 20px;
   top: 20%;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
