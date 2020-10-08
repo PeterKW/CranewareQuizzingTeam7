@@ -34,7 +34,6 @@
 
 <script>
 export default {
-  name: "Index",
   name: "Lobby",
   props: ["players", "gamePin"],
   methods: {
