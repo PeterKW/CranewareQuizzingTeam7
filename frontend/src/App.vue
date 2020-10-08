@@ -2,11 +2,11 @@
   <div id="app">
     <GradientContainer>
       <span class="h-100" v-if="currentView == 'index'">
-        <Index v-on:join="join" />
+        <Index v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby"/>
       </span>
 
       <div class="h-100" v-if="currentView == 'lobby'">
-        <Lobby v-on:start="onLobbyStart" v-on:exit="onLobbyExit" :players="players" :gamePin="gamePin"/>
+        <Lobby v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin"/>
       </div>
 
       <div class="h-100" v-if="currentView == 'quiz'">
@@ -53,30 +53,25 @@ export default {
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
-    join(type, username, gamePin) {
-      switch (type) {
-        case "single":
-          this.currentView = "quiz";
-          break;
-
-        case "find":
-          break;
-
-        case "create":
-          // TODO: Tell websocket we want a new lobby and make this the host and get a json array back
-
-          // For now: we create and assign our own
-          this.players = [
-            {
-              "id" : 1,
-              "name" : username,
-              "score" : 0
-            }
-          ]
-
-          this.currentView = "lobby";
-          break;
-      }
+    onJoinLobby(username, gamePin) {
+      // TODO: Validate username and game pin and display lobby view
+    },
+    // eslint-disable-next-line no-unused-vars
+    onFindLobby(username) {
+      // TODO: Find lobby view shown here
+    },
+    onCreateLobby(username) {
+      // TODO: Tell websocket we want a new lobby
+      // For now: we create and assign our own
+      this.players = [
+        {
+          "id" : 1,
+          "name" : username,
+          "score" : 0
+        }
+      ]
+      this.gamePin = "ABCDEF"
+      this.currentView = "lobby";
     },
 
     // eslint-disable-next-line no-unused-vars

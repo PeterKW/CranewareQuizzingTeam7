@@ -27,16 +27,16 @@
                         />
                     </b-form-group>
                     <div class="btn-group d-flex" role="group">
-                      <b-button @click="join('single')" variant="primary" class="button_base b09_electric">
+                      <b-button @click="onJoinLobby" variant="primary" class="button_base b09_electric">
                         Join
                       </b-button>
                     </div>
                     <p class="m-0">-or-</p>
                     <div class="btn-group d-flex" role="group">
-                      <b-button @click="join('find')" variant="primary" class="button_base b09_electric">
+                      <b-button @click="onFindLobby" variant="primary" class="button_base b09_electric">
                         Find Lobby
                       </b-button>
-                      <b-button @click="join('create')" variant="primary" class="button_base b09_electric" >
+                      <b-button @click="onCreateLobby" variant="primary" class="button_base b09_electric" >
                         Create Lobby
                       </b-button>
                     </div>
@@ -57,8 +57,14 @@ export default {
     }
   },
   methods: {
-    join(type) {
-      this.$emit('join', type, this.username, this.gamePin);
+    onJoinLobby() {
+      this.$emit('onJoinLobby', this.username, this.gamePin)
+    },
+    onFindLobby() {
+      this.$emit('onFindLobby', this.username)
+    },
+    onCreateLobby() {
+      this.$emit('onCreateLobby', this.username);
     }
   }
 }

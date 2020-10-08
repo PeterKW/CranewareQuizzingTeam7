@@ -11,7 +11,7 @@
     </b-row>
     <b-row align-h="center">
       <b-button
-        @click="start()"
+        @click="onLobbyStart"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
         style="bottom:80px"
@@ -21,7 +21,7 @@
     </b-row>
     <b-row align-h="center">
       <b-button
-        @click="exit()"
+        @click="onLobbyExit"
         variant="danger"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
         style="bottom:40px"
@@ -37,17 +37,16 @@ export default {
   name: "Lobby",
   props: ["players", "gamePin"],
   methods: {
-    start(){
-      this.$emit('start', this.props.gamePin);
+    onLobbyStart(){
+      this.$emit('onLobbyStart', this.gamePin);
     },
-    exit(){
-      this.$emit('exit', this.props.gamePin);
+    onLobbyExit(){
+      this.$emit('onLobbyExit', this.gamePin);
     }
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .display-1 {
   text-align: center;
