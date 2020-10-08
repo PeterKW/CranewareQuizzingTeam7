@@ -26,15 +26,15 @@
                     </b-form-group>
                     <div class="btn-group d-flex" role="group">
                       <b-button @click="join('single')" variant="primary" class="button_base b09_electric">
-                        Start
+                        Join
                       </b-button>
                     </div>
                     <p class="m-0">-or-</p>
                     <div class="btn-group d-flex" role="group">
-                      <b-button variant="primary" class="button_base b09_electric">
-                        Search for Lobby
+                      <b-button @click="join('find')" variant="primary" class="button_base b09_electric">
+                        Find Lobby
                       </b-button>
-                      <b-button variant="primary" class="button_base b09_electric" >
+                      <b-button @click="join('create')" variant="primary" class="button_base b09_electric" >
                         Create Lobby
                       </b-button>
                     </div>

@@ -5,6 +5,10 @@
         <Index v-on:join="join" />
       </span>
 
+      <div class="h-100" v-if="currentView == 'lobby'">
+        <Lobby/>
+      </div>
+
       <div class="h-100" v-if="currentView == 'quiz'">
         <Quiz v-on:done="onQuizFinish"/>
       </div>
@@ -25,6 +29,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
 import Index from "./components/Index.vue";
+import Lobby from "./components/Lobby.vue";
 import Quiz from "./components/Quiz.vue";
 import Leaderboard from "./components/Leaderboard.vue";
 
@@ -39,6 +44,7 @@ export default {
   },
   components: {
     Index,
+    Lobby,
     Quiz,
     Leaderboard,
     GradientContainer
@@ -48,6 +54,13 @@ export default {
       switch (type) {
         case "single":
           this.currentView = "quiz";
+          break;
+
+        case "find":
+          break;
+
+        case "create":
+          this.currentView = "lobby";
           break;
       }
     },
