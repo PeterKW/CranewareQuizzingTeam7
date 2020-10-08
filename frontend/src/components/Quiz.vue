@@ -81,6 +81,11 @@ export default {
     endQuiz() {
       clearInterval(this.timerInstance);
       this.$emit('done');
+    },
+    onAnswer(answer) {
+      if(this.quiz[this.currQuestion]["answer"] == answer){
+        alert()
+      }
     }
   },
   mounted() {

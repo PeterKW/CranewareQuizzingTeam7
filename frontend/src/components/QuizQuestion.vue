@@ -4,12 +4,12 @@
       <h2 class="question w-100">{{question}}</h2>
     </b-row>
     <b-row style="margin-bottom:10px">
-      <b-col style="margin-right:10px;"><b-button class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
-      <b-col><b-button class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button @click="onAnswer('A')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
+      <b-col><b-button @click="onAnswer('B')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col style="margin-right:10px;"><b-button class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
-      <b-col><b-button class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button @click="onAnswer('C')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
+      <b-col><b-button @click="onAnswer('D')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
     </b-row>
   </div>
 </template>
@@ -19,7 +19,12 @@ export default {
   name: 'QuizQuestion',
   props: [
       "question","a","b","c","d"
-  ]
+  ],
+  methods: {
+    onAnswer(answer) {
+      answer==""
+    }
+  }
 }
 </script>
 
