@@ -1,12 +1,16 @@
 <template>
   <div id="app">
     <GradientContainer>
-      <span class="h-100" v-show="currentView == 'index'">
+      <span class="h-100" v-if="currentView == 'index'">
         <Index v-on:join="join" />
       </span>
 
-      <div class="h-100" v-show="currentView == 'quiz'">
-        <Quiz />
+      <div class="h-100" v-if="currentView == 'quiz'">
+        <Quiz v-on:done="onQuizFinish"/>
+      </div>
+
+      <div class="h-100" v-if="currentView == 'leaderboard'">
+        <Leaderboard/>
       </div>
     </GradientContainer>
   </div>
@@ -22,6 +26,7 @@ Vue.use(BootstrapVue);
 
 import Index from "./components/Index.vue";
 import Quiz from "./components/Quiz.vue";
+import Leaderboard from "./components/Leaderboard.vue";
 
 import GradientContainer from "./components/GradientContainer.vue";
 
@@ -35,7 +40,8 @@ export default {
   components: {
     Index,
     Quiz,
-    GradientContainer,
+    Leaderboard,
+    GradientContainer
   },
   methods: {
     join(type) {
@@ -45,6 +51,9 @@ export default {
           break;
       }
     },
+    onQuizFinish() {
+      this.currentView = "leaderboard"
+    }
   },
 };
 </script>
