@@ -22,7 +22,7 @@ export default {
   ],
   methods: {
     onAnswer(answer) {
-      answer==""
+      this.$emit('answer', answer);
     }
   }
 }

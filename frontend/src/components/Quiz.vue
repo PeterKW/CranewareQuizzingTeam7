@@ -5,7 +5,10 @@
           <b-row class="w-100" style="margin-bottom: 5px;">
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
-          <QuizQuestion :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
+          
+          <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
+
+          <QuizScore v-if="answered" :verdict="verdict" :score="questionScore"/>
       </b-col>      
     </b-row>
   </b-container>
@@ -13,18 +16,28 @@
 
 <script>
 import QuizQuestion from "./QuizQuestion.vue";
+import QuizScore from "./QuizScore.vue";
 
 export default {
   name: 'Quiz',
   components: {
-    QuizQuestion
+    QuizQuestion,
+    QuizScore
   },
   data() {
     return {
+      totalScore: 0,
       timePerQ: 10,
       timer: 10,
       timerInstance: null,
       currQuestion: 0,
+      answered: false,
+
+      //QuizScore
+      verdict: "",
+      questionScore: 0,
+
+
       quiz: [
         {
           "question":"How many teeth does an adult human have?",
@@ -71,6 +84,8 @@ export default {
   },
   methods: {
     nextQuestion(){
+      this.answered = false
+
       if(this.currQuestion + 1 > this.quiz.length - 1) {
         this.endQuiz()
       }
@@ -78,13 +93,24 @@ export default {
         this.currQuestion++
       }
     },
+
     endQuiz() {
       clearInterval(this.timerInstance);
       this.$emit('done');
     },
-    onAnswer(answer) {
+
+    onAnswerQuestion(answer) {
+      this.answered = true
+
       if(this.quiz[this.currQuestion]["answer"] == answer){
-        alert()
+        this.verdict = "Correct!"
+
+        this.questionScore = this.timer * 100;
+        this.score += this.questionScore;
+      }
+      else {
+        this.verdict = "Incorrect!"
+        this.questionScore = 0;
       }
     }
   },
