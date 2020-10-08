@@ -29,6 +29,7 @@ export default {
   name: 'Quiz',
   data() {
     return {
+      timePerQ: 10,
       timer: 10,
       currQuestion: 0,
       quiz: [
@@ -75,10 +76,18 @@ export default {
       ]
     }
   },
+  methods: {
+    nextQuestion(){
+      if(this.currQuestion++ > this.quiz.length) {
+        // Quiz is over
+      }
+    }
+  },
   mounted() {
     window.setInterval(() => {
       if(this.timer-- == 0) {
-        alert("times up")
+        this.nextQuestion();
+        this.timer = this.timePerQ;
       }
     }, 1000)
   }
@@ -155,6 +164,13 @@ body {
   height:100%;
   padding: 3vh 5vw;
   font-size: 250%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  display: block;
+  line-height: 1em; /* a */
+  min-height: 3em; /* a x number of line to show (ex : 2 line)  */
   
   & + & {
     margin-top: 1rem;
@@ -236,6 +252,7 @@ body {
   font-size:220%;
   min-width: 10vh;
 }
+
 
 @media (max-width: 768px) {
 
