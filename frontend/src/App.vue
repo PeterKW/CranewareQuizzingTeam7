@@ -4,12 +4,12 @@
       <span class="h-100" v-show="currentView == 'index'">
         <Index
           v-on:join="join"
-        />
+        > </index>
       </span>
+      <transition name="fade">
+        <Quiz class="h-100" v-if="currentView == 'quiz'"></Quiz>
+        </transition>
 
-      <div class="h-100" v-show="currentView == 'quiz'">
-        <Quiz/>
-      </div>
     </GradientContainer>
   </div>
 </template>
@@ -53,6 +53,13 @@ export default {
 
 <style>
 html, body, #app, .container-fluid{ height: 100% !important }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 
 input {
   text-align: center;
