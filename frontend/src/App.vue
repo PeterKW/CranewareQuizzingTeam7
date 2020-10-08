@@ -29,11 +29,13 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
+// Views
 import Index from "./components/Index.vue";
 import Lobby from "./components/Lobby.vue";
 import Quiz from "./components/Quiz.vue";
 import Leaderboard from "./components/Leaderboard.vue";
 
+// Components
 import GradientContainer from "./components/GradientContainer.vue";
 
 export default {
@@ -41,6 +43,8 @@ export default {
   data: function() {
     return {
       currentView: "index",
+
+      // Vars for passing into Lobby
       players: [],
       gamePin: ""
     };
@@ -62,25 +66,25 @@ export default {
       // TODO: Find lobby view shown here
     },
     onCreateLobby(username) {
-      // TODO: Tell websocket we want a new lobby
-      // For now: we create and assign our own
+      // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
+
+      // For now: we create and assign our own (players will be handled by lobby in the future)
       this.players = [
         {
           "id" : 1,
-          "name" : username,
+          "username" : username,
           "score" : 0
         }
       ]
       this.gamePin = "ABCDEF"
       this.currentView = "lobby";
     },
-
     // eslint-disable-next-line no-unused-vars
     onLobbyStart(code) {
-      // TODO: Tell websocket to start and wait for response w code
+      // TODO: Tell websocket to start and wait for response
 
       // For now: just start
-      this.players = []
+      this.currentView = "quiz"
     },
     // eslint-disable-next-line no-unused-vars
     onLobbyExit(code){
