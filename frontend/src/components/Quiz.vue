@@ -1,18 +1,23 @@
 <template>
   <b-container fluid>
      <b-row class="h-100 align-items-center">
-        <b-col cols="10" class="mx-auto text-center p4 cont">
+        <b-col cols="10" class="mx-auto text-center p4">
+          <b-row class="w-100" style="margin-bottom: 5px;">
+            <p class="timer ml-auto">{{timer}}</p>
+          </b-row>
+          <div class="cont">
           <b-row class="text-center">
-            <h2 class="question w-100">{{q.text}}</h2>
+            <h2 class="question w-100">{{quiz[currQuestion].question}}</h2>
           </b-row>
           <b-row style="margin-bottom:10px">
-            <b-col style="margin-right:10px;"><b-button class="fancy-btn btn--alpha"><span>{{answer.A}}</span></b-button></b-col>
-            <b-col><b-button class="fancy-btn btn--beta"><span>{{answer.B}}</span></b-button></b-col>
+            <b-col style="margin-right:10px;"><b-button class="fancy-btn btn--alpha"><span>{{quiz[currQuestion].A}}</span></b-button></b-col>
+            <b-col><b-button class="fancy-btn btn--beta"><span>{{quiz[currQuestion].B}}</span></b-button></b-col>
           </b-row>
           <b-row>
-            <b-col style="margin-right:10px;"><b-button class="fancy-btn btn--gamma"><span>{{answer.C}}</span></b-button></b-col>
-            <b-col><b-button class="fancy-btn btn--delta"><span>{{answer.D}}</span></b-button></b-col>
+            <b-col style="margin-right:10px;"><b-button class="fancy-btn btn--gamma"><span>{{quiz[currQuestion].C}}</span></b-button></b-col>
+            <b-col><b-button class="fancy-btn btn--delta"><span>{{quiz[currQuestion].D}}</span></b-button></b-col>
           </b-row>
+          </div>
       </b-col>      
     </b-row>
   </b-container>
@@ -23,19 +28,65 @@
 export default {
   name: 'Quiz',
   data() {
-
-    var choices = ["Choice1", "Choice2", "Choice3", "Choice4"];
-
     return {
-      q: {text: ' The name of an evergreen tree or bush that grows in Australia?'},
-      answer: {A: choices[0], B: choices[1], C: choices[2], D: choices[3]}
+      timer: 10,
+      currQuestion: 0,
+      quiz: [
+        {
+          "question":"How many teeth does an adult human have?",
+          "answer": "A",
+          "A": "32",
+          "B": "30",
+          "C": "25",
+          "D": "20"
+        },
+        {
+          "question":"What is the largest bird of prey in the world?",
+          "answer": "B",
+          "A": "Golden Eagle",
+          "B": "Andean Condor",
+          "C": "Sparrow Hawk",
+          "D": "Peregrine Falcon"
+        },
+        {
+          "question":"In which sport would you use a shuttlecock?",
+          "answer": "C",
+          "A": "Hockey",
+          "B": "Tennis",
+          "C": "Badminton",
+          "D": "Football"
+        },
+        {
+          "question":"What is the biggest state in America?",
+          "answer": "B",
+          "A": "North Carolina",
+          "B": "Alaska",
+          "C": "Colarado",
+          "D": "Washington"
+        },
+        {
+          "question":"What is a group of lions called?",
+          "answer": "A",
+          "A": "Pride",
+          "B": "Gaggle",
+          "C": "Murder",
+          "D": "Herd"
+        },
+      ]
     }
+  },
+  mounted() {
+    window.setInterval(() => {
+      if(this.timer-- == 0) {
+        alert("times up")
+      }
+    }, 1000)
   }
 }
 </script>
 
 <style lang="scss" scoped>
-//lol
+//Taken and modified from: https://codepen.io/CiTA/pen/YBQjVQ
 $time: 330ms;
 
 $btns: (
@@ -159,7 +210,7 @@ body {
   background:#fff;
   padding:100px;
   padding-top:0;
-  border-radius:20px;
+  border-radius:10px;
 }
 
 .question {
@@ -176,6 +227,14 @@ body {
   padding: 3vh 5vw;
   font-size: 250%;
   background: -webkit-linear-gradient(#4b6cb7 0%, #182848 100%);
+}
+
+.timer {
+  background-color: #fff;
+  border-radius:10px;
+  padding:10px;
+  font-size:220%;
+  min-width: 10vh;
 }
 
 @media (max-width: 768px) {
