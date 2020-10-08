@@ -38,12 +38,14 @@
 <script>
 export default {
   name: "Leaderboard",
+
   props: ["players"],
   methods : {
     onExitLeaderboard() {
       this.$emit("onExitLeaderboard");
     }
   }
+
 };
 </script>
 

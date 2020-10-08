@@ -1,22 +1,13 @@
 <template>
   <div id="app">
     <GradientContainer>
-      <span class="h-100" v-if="currentView == 'index'">
-        <Index v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby"/>
-      </span>
-
-      <div class="h-100" v-if="currentView == 'lobby'">
-        <Lobby v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin"/>
-      </div>
-
-      <div class="h-100" v-if="currentView == 'quiz'">
-        <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
-        <Quiz v-on:done="onQuizFinish" :players="players"/>
-      </div>
-
-      <div class="h-100" v-if="currentView == 'leaderboard'">
-        <Leaderboard v-on:onExitLeaderboard="onExitLeaderboard" :players="players"/>
-      </div>
+      <transition name="fade" mode="out-in">
+        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-if="currentView == 'index'"> </Index>
+        <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
+         <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players"></Quiz>
+        <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="players"></Leaderboard>
+      </transition>
     </GradientContainer>
   </div>
 </template>
@@ -129,5 +120,12 @@ input {
   width: 100%;
   padding: 20px;
   top: 20%;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
