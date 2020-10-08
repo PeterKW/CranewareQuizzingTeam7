@@ -62,9 +62,9 @@ export default {
 }
 
 .players {
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/opacity/see-through */
-  color: white;
+  background-color: #fff; /* Fallback color */
+  color: #000;
+  border-radius:10px;
   font-weight: bold;
   text-align: center;
   border: 2px solid #f1f1f1;
