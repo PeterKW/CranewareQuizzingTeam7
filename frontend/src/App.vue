@@ -3,7 +3,7 @@
     <GradientContainer>
       <transition name="fade" mode="out-in">
         <Index class="h-100" v-on:join='join' v-if="currentView == 'index'"> </Index>
-        <Quiz class="h-100" v-if="currentView == 'quiz'"></Quiz>
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'"></Quiz>
         <Leaderboard class="h-100" v-if="currentView == 'leaderboard'"></Leaderboard>
       </transition>
     </GradientContainer>
@@ -21,7 +21,6 @@ Vue.use(BootstrapVue);
 import Index from "./components/Index.vue";
 import Quiz from "./components/Quiz.vue";
 import Leaderboard from "./components/Leaderboard.vue";
-
 import GradientContainer from "./components/GradientContainer.vue";
 
 export default {
