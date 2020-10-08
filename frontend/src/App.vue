@@ -6,7 +6,7 @@
       </span>
 
       <div class="h-100" v-if="currentView == 'lobby'">
-        <Lobby/>
+        <Lobby v-on:start="onLobbyStart" v-on:exit="onLobbyExit" :players="players" :gamePin="gamePin"/>
       </div>
 
       <div class="h-100" v-if="currentView == 'quiz'">
@@ -14,7 +14,7 @@
       </div>
 
       <div class="h-100" v-if="currentView == 'leaderboard'">
-        <Leaderboard/>
+        <Leaderboard :players="players"/>
       </div>
     </GradientContainer>
   </div>
@@ -40,6 +40,8 @@ export default {
   data: function() {
     return {
       currentView: "index",
+      players: [],
+      gamePin: ""
     };
   },
   components: {
@@ -50,7 +52,8 @@ export default {
     GradientContainer
   },
   methods: {
-    join(type) {
+    // eslint-disable-next-line no-unused-vars
+    join(type, username, gamePin) {
       switch (type) {
         case "single":
           this.currentView = "quiz";
@@ -60,10 +63,38 @@ export default {
           break;
 
         case "create":
+          // TODO: Tell websocket we want a new lobby and make this the host and get a json array back
+
+          // For now: we create and assign our own
+          this.players = [
+            {
+              "id" : 1,
+              "name" : username,
+              "score" : 0
+            }
+          ]
+
           this.currentView = "lobby";
           break;
       }
     },
+
+    // eslint-disable-next-line no-unused-vars
+    onLobbyStart(code) {
+      // TODO: Tell websocket to start and wait for response w code
+
+      // For now: just start
+      this.players = []
+    },
+    // eslint-disable-next-line no-unused-vars
+    onLobbyExit(code){
+      this.currentView = "index"
+
+      // TODO: Tell websocket lobby has been quit
+
+      this.players = []
+    },
+
     onQuizFinish() {
       this.currentView = "leaderboard"
     }

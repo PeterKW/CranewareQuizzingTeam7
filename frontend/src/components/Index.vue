@@ -10,6 +10,7 @@
                     <b-form-group>
                         <label class="sr-only">Username</label>
                         <b-form-input size="lg"
+                          v-model="username"
                           class="align-items-center"
                           type="text"
                           placeholder="USERNAME"
@@ -19,6 +20,7 @@
                     <b-form-group>
                         <label class="sr-only">Game Pin</label>
                         <b-form-input size="lg"
+                          v-model="gamePin"
                           type="text"
                           placeholder="GAME PIN"
                           maxlength="8"
@@ -48,9 +50,15 @@
 <script>
 export default {
   name: 'Index',
+  data: function() {
+    return {
+      username: "",
+      gamePin: ""
+    }
+  },
   methods: {
     join(type) {
-      this.$emit('join', type);
+      this.$emit('join', type, this.username, this.gamePin);
     }
   }
 }

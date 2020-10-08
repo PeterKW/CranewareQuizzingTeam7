@@ -14,8 +14,19 @@
         @click="start()"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
+        style="bottom:80px"
       >
         Start Game
+      </b-button>
+    </b-row>
+    <b-row align-h="center">
+      <b-button
+        @click="exit()"
+        variant="danger"
+        class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
+        style="bottom:40px"
+      >
+        Exit Lobby
       </b-button>
     </b-row>
   </b-container>
@@ -26,6 +37,14 @@ export default {
   name: "Index",
   name: "Lobby",
   props: ["players", "gamePin"],
+  methods: {
+    start(){
+      this.$emit('start', this.props.gamePin);
+    },
+    exit(){
+      this.$emit('exit', this.props.gamePin);
+    }
+  }
 };
 </script>
 
@@ -60,6 +79,5 @@ export default {
 .button-style {
   width: 100%;
   position: absolute;
-  bottom: 40px;
 }
 </style>
