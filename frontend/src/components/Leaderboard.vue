@@ -69,7 +69,7 @@ export default {
 }
 
 .table {
-  color: white;
+  color: #000;
 }
 
 @media (min-width: 241px) and (max-width: 500px) {
