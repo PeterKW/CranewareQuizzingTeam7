@@ -15,7 +15,7 @@
       </div>
 
       <div class="h-100" v-if="currentView == 'leaderboard'">
-        <Leaderboard :players="players"/>
+        <Leaderboard v-on:onExitLeaderboard="onExitLeaderboard" :players="players"/>
       </div>
     </GradientContainer>
   </div>
@@ -97,6 +97,10 @@ export default {
 
     onQuizFinish() {
       this.currentView = "leaderboard"
+    },
+
+    onExitLeaderboard() {
+      this.currentView = "index"
     }
   },
 };

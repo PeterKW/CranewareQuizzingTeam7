@@ -7,6 +7,7 @@
       <div class="players col-10 col-sm-8 col-md-6 col-lg-4 col-xl-4">
         <h2>Players</h2>
         <h4 v-for="player in players" :key="player.id">{{player.name}}</h4>
+        <h4 v-for="player in players" :key="player.id">{{player.username}}</h4>
       </div>
     </b-row>
     <b-row align-h="center">

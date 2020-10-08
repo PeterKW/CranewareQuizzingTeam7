@@ -25,6 +25,7 @@
     </b-row>
     <b-row align-h="center">
       <b-button
+        @click="onExitLeaderboard()"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
       >
@@ -37,7 +38,12 @@
 <script>
 export default {
   name: "Leaderboard",
-  props: ["players"]
+  props: ["players"],
+  methods : {
+    onExitLeaderboard() {
+      this.$emit("onExitLeaderboard");
+    }
+  }
 };
 </script>
 
