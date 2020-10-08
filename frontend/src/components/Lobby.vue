@@ -1,20 +1,17 @@
 <template>
   <b-container fluid>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <h2 class="display-1 col-md-12 text-responsive">Lobby - {Lobby Code}</h2>
+    <h2 class="display-1 col-md-12 text-responsive">Lobby - {{gamePin}}</h2>
 
     <b-row align-v="center" align-h="center">
       <div class="players col-10 col-sm-8 col-md-6 col-lg-4 col-xl-4">
         <h2>Players</h2>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
+        <h4 v-for="player in players" :key="player.id">{{player.name}}</h4>
       </div>
     </b-row>
     <b-row align-h="center">
       <b-button
+        @click="start()"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
       >
@@ -27,6 +24,8 @@
 <script>
 export default {
   name: "Index",
+  name: "Lobby",
+  props: ["players", "gamePin"],
 };
 </script>
 
