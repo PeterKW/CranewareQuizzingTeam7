@@ -1,24 +1,32 @@
 <template>
   <b-container fluid>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <h2 class="display-1 col-md-12 text-responsive">Lobby - {Lobby Code}</h2>
+    <h2 class="display-1 col-md-12 text-responsive">Lobby - {{gamePin}}</h2>
 
     <b-row align-v="center" align-h="center">
       <div class="players col-10 col-sm-8 col-md-6 col-lg-4 col-xl-4">
         <h2>Players</h2>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
-        <h4>{Players}</h4>
+        <h4 v-for="player in players" :key="player.id">{{player.username}}</h4>
       </div>
     </b-row>
     <b-row align-h="center">
       <b-button
+        @click="onLobbyStart"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
+        style="bottom:80px"
       >
         Start Game
+      </b-button>
+    </b-row>
+    <b-row align-h="center">
+      <b-button
+        @click="onLobbyExit"
+        variant="danger"
+        class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
+        style="bottom:40px"
+      >
+        Exit Lobby
       </b-button>
     </b-row>
   </b-container>
@@ -26,11 +34,19 @@
 
 <script>
 export default {
-  name: "Index",
+  name: "Lobby",
+  props: ["players", "gamePin"],
+  methods: {
+    onLobbyStart(){
+      this.$emit('onLobbyStart', this.gamePin);
+    },
+    onLobbyExit(){
+      this.$emit('onLobbyExit', this.gamePin);
+    }
+  }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .display-1 {
   text-align: center;
@@ -46,9 +62,9 @@ export default {
 }
 
 .players {
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/opacity/see-through */
-  color: white;
+  background-color: #fff; /* Fallback color */
+  color: #000;
+  border-radius:10px;
   font-weight: bold;
   text-align: center;
   border: 2px solid #f1f1f1;
@@ -61,6 +77,5 @@ export default {
 .button-style {
   width: 100%;
   position: absolute;
-  bottom: 40px;
 }
 </style>

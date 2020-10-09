@@ -10,6 +10,7 @@
                     <b-form-group>
                         <label class="sr-only">Username</label>
                         <b-form-input size="lg"
+                          v-model="username"
                           class="align-items-center"
                           type="text"
                           placeholder="USERNAME"
@@ -19,20 +20,21 @@
                     <b-form-group>
                         <label class="sr-only">Game Pin</label>
                         <b-form-input size="lg"
+                          v-model="gamePin"
                           type="text"
                           placeholder="GAME PIN"
                           maxlength="8"
                         />
                     </b-form-group>
                     <div class="btn-group d-flex" role="group">
-                      <b-button @click="join('single')" variant="primary" class="button_base b09_electric" onclick="createLobby(false)">
-                        Start
+                      <b-button @click="onJoinLobby" variant="primary" class="button_base b09_electric">
+                        Join
                       </b-button>
                     </div>
                     <p class="m-0">-or-</p>
                     <div class="btn-group d-flex" role="group">
-                      <b-button variant="primary" class="button_base b09_electric">
-                        Search for Lobby
+                      <b-button @click="onFindLobby" variant="primary" class="button_base b09_electric">
+                        Find Lobby
                       </b-button>
                       <b-button variant="primary" class="button_base b09_electric" onclick="createLobby(true)">
                         Create Lobby
@@ -51,9 +53,24 @@
 <script>
 export default {
   name: 'Index',
+  data: function() {
+    return {
+      username: "",
+      gamePin: ""
+    }
+  },
   methods: {
-    join(type) {
-      this.$emit('join', type);
+    onJoinLobby() {
+      this.$emit('onJoinLobby', this.username, this.gamePin)
+    },
+    onFindLobby() {
+      this.$emit('onFindLobby', this.username)
+    },
+    onCreateLobby() {
+      // TODO: Make a proper error message
+      if(!this.username){ alert("Enter a username"); return;}
+
+      this.$emit('onCreateLobby', this.username);
     }
   }
 }

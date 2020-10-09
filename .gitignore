@@ -1,4 +1,5 @@
+
+backend/.eslintrc.json
 .DS_Store
 node_modules/
 public/
-backend/.eslintrc.json
