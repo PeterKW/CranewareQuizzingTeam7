@@ -1,12 +1,12 @@
 <template>
   <div class="w-100" style="margin-top: 15px;">
     <b-row style="margin-bottom:10px">
-      <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled=false><span>Double Points</span></b-button></b-col>
-      <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled=false><span>50/50</span></b-button></b-col>
+      <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='doubleUsed'><span>Double Points</span></b-button></b-col>
+      <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='fiftyUsed'><span>50/50</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled=true><span>Template</span></b-button></b-col>
-      <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta" :disabled=true><span>Template</span></b-button></b-col>
+      <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled='disable'><span>Template</span></b-button></b-col>
+      <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta" :disabled='disable'><span>Template</span></b-button></b-col>
     </b-row>
   </div>
 </template>
@@ -14,10 +14,26 @@
 <script>
 export default {
   name: 'PowerBar',
-  doubleUsed: false,
+
+  data: function() {
+    return {
+      doubleUsed: false,
+      fiftyUsed: false,
+      disable: true,
+    };
+  },
 
   methods: {
     onPower(power) {
+
+      switch (power) {
+        case 'doublep':
+          
+          break;
+        default:
+
+      }
+
       this.$emit('power', power);
     }
   }

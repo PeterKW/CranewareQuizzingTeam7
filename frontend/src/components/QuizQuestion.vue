@@ -4,12 +4,12 @@
       <h2 class="question w-100">{{question}}</h2>
     </b-row>
     <b-row style="margin-bottom:10px">
-      <b-col style="margin-right:10px;"><b-button @click="onAnswer('A')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
-      <b-col><b-button @click="onAnswer('B')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button v-if=!disableA @click="onAnswer('A')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
+      <b-col><b-button v-if=!disableB @click="onAnswer('B')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col style="margin-right:10px;"><b-button @click="onAnswer('C')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
-      <b-col><b-button @click="onAnswer('D')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button v-if=!disableC @click="onAnswer('C')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
+      <b-col><b-button v-if=!disableD @click="onAnswer('D')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
     </b-row>
   </div>
 </template>
@@ -17,12 +17,95 @@
 <script>
 export default {
   name: 'QuizQuestion',
+
+  data: function() {
+    return {
+      disableA: false,
+      disableB: false,
+      disableC: false,
+      disableD: false,
+
+    };
+  },
+
   props: [
       "question","a","b","c","d"
   ],
   methods: {
+
+    resetButtons() {
+      this.disableA = false;
+      this.disableB = false;
+      this.disableC = false;
+      this.disableD = false;
+    },
+
     onAnswer(answer) {
       this.$emit('answer', answer);
+      this.resetButtons();
+    },
+
+    disableButtons(answer) {
+
+      console.log("correct answer");
+      console.log(answer);
+
+      var index = this.letterToNum(answer);
+
+      var answerArray = ['A', 'B', 'C', 'D'];
+      answerArray.splice(index, 1);
+
+      console.log("after answer has been removed");
+      console.log(answerArray);
+
+      var firstSplice = Math.floor((Math.random() * 3));
+      console.log("first splice index");
+      console.log(firstSplice);
+      this.disableButton(answerArray[firstSplice]);
+      answerArray.splice(firstSplice, 1);
+
+      console.log(answerArray);
+
+      var secondSplice = Math.floor((Math.random() * 2));
+      console.log("second splice index");
+      console.log(secondSplice);
+      this.disableButton(answerArray[secondSplice]);
+
+
+      console.log("array after splicing");
+      console.log(answerArray);
+    },
+
+    letterToNum(letter) {
+      switch (letter) {
+        case 'A':
+          return 0
+        case 'B':
+          return 1
+        case 'C':
+          return 2
+        case 'D':
+          return 3
+      }
+    },
+
+    disableButton(letter) {
+      console.log("Letter to be disabled");
+      console.log(letter);
+      switch (letter) {
+        case 'A':
+          this.disableA = true
+          break;
+        case 'B':
+          this.disableB = true
+          break;
+        case 'C':
+          this.disableC = true
+          break;
+        case 'D':
+          this.disableD = true
+          break;
+      }
     }
   }
 }

@@ -131,14 +131,14 @@ export default {
         case 'doublep':
           this.doublePoints = true
           break;
+        case '50/50':
+        
+          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"])
+          break;
+
         default:
-
       }
-
     }
-
-
-
   },
   mounted() {
     // TODO: Populate quiz questions from DB
@@ -167,7 +167,6 @@ export default {
   border-radius:10px;
 }
 
-//HERE
 .timer {
   background-color: #fff;
   border-radius:10px;
