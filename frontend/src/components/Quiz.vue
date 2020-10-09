@@ -85,7 +85,11 @@ export default {
   },
   methods: {
     nextQuestion(){
+      if(this.answered == false){
+        this.scoreStreak = 0;
+      }
       this.answered = false
+      
 
       if(this.currQuestion + 1 > this.quiz.length - 1) {
         this.endQuiz()
