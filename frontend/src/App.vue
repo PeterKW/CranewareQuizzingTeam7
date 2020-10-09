@@ -20,6 +20,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
+// eslint-disable-next-line no-unused-vars
 import Pusher from "pusher-js";
 
 // Views
