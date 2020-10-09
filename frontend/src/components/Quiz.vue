@@ -110,7 +110,7 @@ export default {
         this.scoreStreak = this.scoreStreak + 1;
         this.questionScore = this.timer * 100;
         if(this.scoreStreak > 1){
-          this.questionScore = this.questionScore * this.scoreStreak;
+          this.questionScore = this.questionScore + (100 * this.scoreStreak);
         }
         this.players[0].score += this.questionScore;
         
