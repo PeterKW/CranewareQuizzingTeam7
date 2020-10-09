@@ -37,7 +37,10 @@ export default {
 
       // Vars for passing into Lobby
       players: [],
-      gamePin: ""
+      gamePin: "",
+
+      pusher: null,
+      eventReader: null
     };
   },
   components: {
