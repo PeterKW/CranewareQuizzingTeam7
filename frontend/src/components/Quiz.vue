@@ -5,11 +5,10 @@
           <b-row class="w-100" style="margin-bottom: 5px;">
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
-          
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
-
           <QuizScore v-if="answered" :verdict="verdict" :score="questionScore"/>
-      </b-col>      
+          <PowerBar  class= "powers" v-if="!answered" v-on:power="onPower"/>
+      </b-col>
     </b-row>
   </b-container>
 </template>
@@ -17,12 +16,14 @@
 <script>
 import QuizQuestion from "./QuizQuestion.vue";
 import QuizScore from "./QuizScore.vue";
+import PowerBar from "./PowerBar.vue";
 
 export default {
   name: 'Quiz',
   components: {
     QuizQuestion,
-    QuizScore
+    QuizScore,
+    PowerBar
   },
   props: ["players"],
   data() {
@@ -32,6 +33,7 @@ export default {
       timerInstance: null,
       currQuestion: 0,
       answered: false,
+      doublePoints: false,
 
       //QuizScore
       verdict: "",
@@ -96,7 +98,7 @@ export default {
 
     endQuiz() {
       clearInterval(this.timerInstance);
-      this.$emit('done');
+      //TODO uncomment this this.$emit('done');
     },
 
     onAnswerQuestion(answer) {
@@ -106,7 +108,7 @@ export default {
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
 
-        this.questionScore = this.timer * 100;
+        this.questionScore = this.timer * 100 ;
         this.players[0].score += this.questionScore;
       }
       else {
@@ -114,6 +116,9 @@ export default {
         this.questionScore = 0;
       }
     }
+
+
+
   },
   mounted() {
     // TODO: Populate quiz questions from DB
@@ -142,11 +147,20 @@ export default {
   border-radius:10px;
 }
 
+//HERE
 .timer {
   background-color: #fff;
   border-radius:10px;
   padding:10px;
   font-size:220%;
+  min-width: 10vh;
+  margin-bottom:0;
+}
+
+.powers {
+  background-color: #fff;
+  border-radius:10px;
+  padding:5px;
   min-width: 10vh;
   margin-bottom:0;
 }

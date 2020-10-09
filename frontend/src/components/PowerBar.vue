@@ -1,28 +1,23 @@
 <template>
-  <div class="cont">
-    <b-row class="text-center">
-      <h2 class="question w-100">{{question}}</h2>
-    </b-row>
+  <div class="w-100" style="margin-top: 15px;">
     <b-row style="margin-bottom:10px">
-      <b-col style="margin-right:10px;"><b-button @click="onAnswer('A')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
-      <b-col><b-button @click="onAnswer('B')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
+      <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha"><span>Double Points</span></b-button></b-col>
+      <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta"><span>50/50</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col style="margin-right:10px;"><b-button @click="onAnswer('C')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
-      <b-col><b-button @click="onAnswer('D')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
+      <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma"><span>Template</span></b-button></b-col>
+      <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta"><span>Template</span></b-button></b-col>
     </b-row>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'QuizQuestion',
-  props: [
-      "question","a","b","c","d"
-  ],
+  name: 'PowerBar',
+
   methods: {
-    onAnswer(answer) {
-      this.$emit('answer', answer);
+    onPower(power) {
+      this.$emit('power', power);
     }
   }
 }
@@ -61,13 +56,13 @@ $btns: (
 
 .fancy-btn {
   font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 900;
+  font-weight: 700;
   padding: 1.25rem 2rem;
   font-size: 1rem;
   border-radius: 3.5rem / 100%;
   position: relative;
-  min-width: 15rem;
-  max-width: 90vw;
+  min-width: 5rem;
+  max-width: 12vw;
   overflow: hidden;
   border: 0;
   cursor: pointer;
@@ -77,8 +72,8 @@ $btns: (
 
   width:100%;
   height:100%;
-  padding: 3vh 5vw;
-  font-size: 250%;
+  padding: 1vh 2vw;
+  font-size: 125%;
 
   overflow: hidden;
   text-overflow: ellipsis;
