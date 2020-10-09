@@ -125,18 +125,18 @@ export default {
       }
     },
 
+    //Function is responsible for Handling the power abilities
     onPower(power) {
 
       switch (power) {
         case 'doublep':
           this.doublePoints = true
           break;
+
         case '50/50':
-        
+          //call the first childs (which is the QuizQuestion.vue file) disableButtons method
           this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"])
           break;
-
-        default:
       }
     }
   },

@@ -24,7 +24,6 @@ export default {
       disableB: false,
       disableC: false,
       disableD: false,
-
     };
   },
 
@@ -33,6 +32,7 @@ export default {
   ],
   methods: {
 
+    //unhide all the buttons, used only for 50/50 power
     resetButtons() {
       this.disableA = false;
       this.disableB = false;
@@ -42,56 +42,57 @@ export default {
 
     onAnswer(answer) {
       this.$emit('answer', answer);
-      this.resetButtons();
+      this.resetButtons(); //make sure all buttons visisble
     },
 
+    /**
+    * Take in a answer (A, B, C or D) and hide two other random buttons. I.e if
+    * The answer passed in is A then two of B, C or D will be disabled at random
+    * Commented out statements are for debugging purposes
+    */
     disableButtons(answer) {
 
-      console.log("correct answer");
-      console.log(answer);
+      //console.log("correct answer");
+      //console.log(answer);
 
+      //remove real answer from array of letters to remove
       var index = this.letterToNum(answer);
-
       var answerArray = ['A', 'B', 'C', 'D'];
       answerArray.splice(index, 1);
 
-      console.log("after answer has been removed");
-      console.log(answerArray);
+      //console.log("after answer has been removed");
+      //console.log(answerArray);
+
+      //remove and turn off two buttons
 
       var firstSplice = Math.floor((Math.random() * 3));
-      console.log("first splice index");
-      console.log(firstSplice);
+      //console.log("first splice index");
+      //console.log(firstSplice);
       this.disableButton(answerArray[firstSplice]);
       answerArray.splice(firstSplice, 1);
 
-      console.log(answerArray);
+      //console.log(answerArray);
 
       var secondSplice = Math.floor((Math.random() * 2));
-      console.log("second splice index");
-      console.log(secondSplice);
+      //console.log("second splice index");
+      //console.log(secondSplice);
       this.disableButton(answerArray[secondSplice]);
 
 
-      console.log("array after splicing");
-      console.log(answerArray);
+      //console.log("array after splicing");
+      //console.log(answerArray);
     },
 
+    //Converts letter into ASCII and take it away from 65, 65 is the code for
+    //a capital A, so A returns 0, B: 1 etc
     letterToNum(letter) {
-      switch (letter) {
-        case 'A':
-          return 0
-        case 'B':
-          return 1
-        case 'C':
-          return 2
-        case 'D':
-          return 3
-      }
+      return 65 - letter.charCodeAt(0);
     },
 
+    //hides the specified answer
     disableButton(letter) {
-      console.log("Letter to be disabled");
-      console.log(letter);
+      //console.log("Letter to be disabled");
+      //console.log(letter);
       switch (letter) {
         case 'A':
           this.disableA = true

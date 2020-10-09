@@ -1,34 +1,40 @@
 <template>
   <div class="w-100" style="margin-top: 15px;">
     <b-row style="margin-bottom:10px">
-      <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='doubleUsed'><span>Double Points</span></b-button></b-col>
-      <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='fiftyUsed'><span>50/50</span></b-button></b-col>
+      <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
+      <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled='disable'><span>Template</span></b-button></b-col>
+      <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Template</span></b-button></b-col>
       <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta" :disabled='disable'><span>Template</span></b-button></b-col>
     </b-row>
   </div>
 </template>
 
 <script>
+
+var used = [false, false, true]
 export default {
   name: 'PowerBar',
-
-  data: function() {
+  data: function () {
     return {
-      doubleUsed: false,
-      fiftyUsed: false,
-      disable: true,
-    };
-  },
+      doubleUsed : used[0],
+      fiftyUsed : used[1],
+      disable : used[2],
+    }
+},
 
   methods: {
     onPower(power) {
 
       switch (power) {
         case 'doublep':
-          
+          this.doubleUsed = true
+          used[0] = true
+          break;
+        case '50/50':
+          this.fiftyUsed = true
+          used[1] = true
           break;
         default:
 
