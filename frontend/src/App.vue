@@ -21,6 +21,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
 import Pusher from "pusher";
+Vue.use(Pusher)
 
 // Views
 import Index from "./components/Index.vue";
