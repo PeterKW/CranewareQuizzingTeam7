@@ -8,18 +8,56 @@ var con = mysql.createConnection({
   database: db.database
 });
 
+// Function call example
+//
+// getAllQuestions( function(res) {
+//     console.log(res.length); // Print the results
+// });
+
 function getAllQuestions (callback) {
     con.connect(function(err) { // Connect to the database
         if (err) throw err;
         console.log("Connected!");
         
         con.query("select * from questions", function(err, localResult) { // Send query
-            if (err && err.length != 0) throw err;
+            if (err) throw err;
             callback(localResult); // Pass back info
         });
     });
 }
 
-getAllQuestions(function(res) {
-    console.log(res); // Print the results
-})
+function getQuestionFromId (id, callback) {
+    con.connect(function(err) { // Connect to the database
+        if (err) throw err;
+        console.log("Connected!");
+        
+        con.query("SELECT * FROM questions WHERE Question_Id = ?", [id], function(err, localResult) { // Send query
+            if (err) throw err;
+            callback(localResult); // Pass back info
+        });
+    });
+}
+
+function getQuestionFromCategory (category, callback) {
+    con.connect(function(err) { // Connect to the database
+        if (err) throw err;
+        console.log("Connected!");
+        
+        con.query("SELECT * FROM questions WHERE Category = ?", [category], function(err, localResult) { // Send query
+            if (err) throw err;
+            callback(localResult); // Pass back info
+        });
+    });
+}
+
+function getCategories(callback) {
+    con.connect(function(err) { // Connect to the database
+        if (err) throw err;
+        console.log("Connected!");
+        
+        con.query("SELECT * FROM categories", function(err, localResult) { // Send query
+            if (err) throw err;
+            callback(localResult); // Pass back info
+        });
+    });
+}
