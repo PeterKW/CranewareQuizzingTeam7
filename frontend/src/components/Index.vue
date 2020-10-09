@@ -36,7 +36,7 @@
                       <b-button @click="onFindLobby" variant="primary" class="button_base b09_electric">
                         Find Lobby
                       </b-button>
-                      <b-button @click="onCreateLobby" variant="primary" class="button_base b09_electric" >
+                      <b-button @click="onCreateLobby" variant="primary" class="button_base b09_electric">
                         Create Lobby
                       </b-button>
                     </div>
@@ -46,6 +46,9 @@
       </b-row>
     </b-container>
 </template>
+
+<!--Pusher Event Handler-->
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
 <script>
 export default {

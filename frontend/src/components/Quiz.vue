@@ -6,7 +6,7 @@
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
-          <QuizScore v-if="answered" :verdict="verdict" :score="questionScore"/>
+          <QuizScore v-if="answered" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak"/>
           <PowerBar  class= "powers" v-if="!answered" v-on:power="onPower"/>
       </b-col>
     </b-row>
@@ -38,6 +38,7 @@ export default {
       //QuizScore
       verdict: "",
       questionScore: 0,
+      scoreStreak: 0,
 
       // TODO: This will be recieved from the websocket per question later on
       quiz: [
@@ -86,7 +87,11 @@ export default {
   },
   methods: {
     nextQuestion(){
+      if(this.answered == false){
+        this.scoreStreak = 0;
+      }
       this.answered = false
+
 
       if(this.currQuestion + 1 > this.quiz.length - 1) {
         this.endQuiz()
@@ -104,24 +109,46 @@ export default {
     onAnswerQuestion(answer) {
       this.answered = true
 
+      /*
+      // Send answer to Pusher
+      eventReader.trigger('client-choose answer',
+      {
+        'message': answer,
+      });*/
+
+
       // TODO: This will go server side in the future
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
 
         if (this.doublePoints) {
-          this.questionScore = this.timer * 100 * 2 ;
-          this.players[0].score += this.questionScore;
+
           this.doublePoints = false
+          this.scoreStreak = this.scoreStreak + 1;
+          this.questionScore = this.timer * 100;
+
+          if(this.scoreStreak > 1){
+            this.questionScore = (this.questionScore + (100 * this.scoreStreak)) * 2;
+          }
+
+          this.players[0].score += this.questionScore;
 
         } else {
-          this.questionScore = this.timer * 100 ;
-          this.players[0].score += this.questionScore;
+          this.scoreStreak = this.scoreStreak + 1;
+          this.questionScore = this.timer * 100;
+
+          if(this.scoreStreak > 1){
+            this.questionScore = this.questionScore + (100 * this.scoreStreak);
+          }
+
+          this.players[0].score += this.questionScore;;
         }
       }
       else {
         this.verdict = "Incorrect!"
         this.questionScore = 0;
         this.doublePoints = false
+        this.scoreStreak = 0;
       }
     },
 
