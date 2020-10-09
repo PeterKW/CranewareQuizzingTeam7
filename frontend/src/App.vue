@@ -20,6 +20,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
+import Pusher from "pusher";
+
 // Views
 import Index from "./components/Index.vue";
 import Lobby from "./components/Lobby.vue";
