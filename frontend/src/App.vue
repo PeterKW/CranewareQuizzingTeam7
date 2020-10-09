@@ -20,8 +20,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
-import Pusher from "pusher";
-Vue.use(Pusher)
+import Pusher from "pusher-js";
 
 // Views
 import Index from "./components/Index.vue";
@@ -65,6 +64,7 @@ export default {
     onCreateLobby(username) {
       // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
       // Logs all network communication information to console
+      
       /*
       Pusher.logToConsole = true;
 
