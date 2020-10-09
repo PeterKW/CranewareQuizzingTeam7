@@ -108,13 +108,33 @@ export default {
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
 
-        this.questionScore = this.timer * 100 ;
-        this.players[0].score += this.questionScore;
+        if (this.doublePoints) {
+          this.questionScore = this.timer * 100 * 2 ;
+          this.players[0].score += this.questionScore;
+          this.doublePoints = false
+
+        } else {
+          this.questionScore = this.timer * 100 ;
+          this.players[0].score += this.questionScore;
+        }
       }
       else {
         this.verdict = "Incorrect!"
         this.questionScore = 0;
+        this.doublePoints = false
       }
+    },
+
+    onPower(power) {
+
+      switch (power) {
+        case 'doublep':
+          this.doublePoints = true
+          break;
+        default:
+
+      }
+
     }
 
 

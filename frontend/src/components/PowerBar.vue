@@ -1,12 +1,12 @@
 <template>
   <div class="w-100" style="margin-top: 15px;">
     <b-row style="margin-bottom:10px">
-      <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha"><span>Double Points</span></b-button></b-col>
-      <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta"><span>50/50</span></b-button></b-col>
+      <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled=false><span>Double Points</span></b-button></b-col>
+      <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled=false><span>50/50</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma"><span>Template</span></b-button></b-col>
-      <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta"><span>Template</span></b-button></b-col>
+      <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled=true><span>Template</span></b-button></b-col>
+      <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta" :disabled=true><span>Template</span></b-button></b-col>
     </b-row>
   </div>
 </template>
@@ -14,6 +14,7 @@
 <script>
 export default {
   name: 'PowerBar',
+  doubleUsed: false,
 
   methods: {
     onPower(power) {
@@ -130,21 +131,5 @@ $btns: (
       color: map-get($bcolors, tend);
     }
   }
-}
-
-.question {
-  font-family: 'Source Sans Pro', sans-serif;
-  text-align: center;
-  top:150px;
-  color: #000;
-  padding:50px;
-}
-
-.quizButtons{
-  width:100%;
-  height:100%;
-  padding: 3vh 5vw;
-  font-size: 250%;
-  background: -webkit-linear-gradient(#4b6cb7 0%, #182848 100%);
 }
 </style>
