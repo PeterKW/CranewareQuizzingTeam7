@@ -103,6 +103,14 @@ export default {
     onAnswerQuestion(answer) {
       this.answered = true
 
+      /*
+      // Send answer to Pusher
+      eventReader.trigger('client-choose answer',
+      {
+        'message': answer,
+      });*/
+
+      
       // TODO: This will go server side in the future
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
