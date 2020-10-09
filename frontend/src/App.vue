@@ -20,6 +20,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
+import Pusher from "pusher";
+Vue.use(Pusher)
+
 // Views
 import Index from "./components/Index.vue";
 import Lobby from "./components/Lobby.vue";
@@ -37,7 +40,10 @@ export default {
 
       // Vars for passing into Lobby
       players: [],
-      gamePin: ""
+      gamePin: "",
+
+      pusher: null,
+      eventReader: null
     };
   },
   components: {
@@ -58,7 +64,25 @@ export default {
     },
     onCreateLobby(username) {
       // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
+      // Logs all network communication information to console
+      /*
+      Pusher.logToConsole = true;
 
+
+      // Instantiates a Pusher connection.
+      this.pusher = new Pusher('072127b07acd646fc5ec',
+        {
+          cluster: 'eu',
+          useTLS: true,
+          authEndpoint: 'http://localhost:5000/pusher/auth'
+        }
+      );
+
+      // Subscribes to the private lobby channel
+      this.eventReader = this.pusher.subscribe('private-lobby');
+      */
+
+      
       // For now: we create and assign our own (players will be handled by lobby in the future)
       this.players = [
         {
