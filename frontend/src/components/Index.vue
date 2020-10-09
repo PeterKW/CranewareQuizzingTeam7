@@ -36,7 +36,7 @@
                       <b-button @click="onFindLobby" variant="primary" class="button_base b09_electric">
                         Find Lobby
                       </b-button>
-                      <b-button @click="onCreateLobby" variant="primary" class="button_base b09_electric" >
+                      <b-button variant="primary" class="button_base b09_electric" onclick="createLobby(true)">
                         Create Lobby
                       </b-button>
                     </div>
@@ -46,6 +46,9 @@
       </b-row>
     </b-container>
 </template>
+
+<!--Pusher Event Handler-->
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
 <script>
 export default {
@@ -70,6 +73,56 @@ export default {
       this.$emit('onCreateLobby', this.username);
     }
   }
+}
+
+// Logs all network communication information to console
+Pusher.logToConsole = true;
+
+// Instantiates a Pusher connection.
+const pusher = new Pusher('072127b07acd646fc5ec',
+{
+  cluster: 'eu',
+  useTLS: true,
+  authEndpoint: 'http://localhost:5000/pusher/auth'
+});
+
+// Subscribes to the private lobby channel
+const evntReader = pusher.subscribe('private-lobby');
+
+// Is the function called whenever the my-event event occurs
+evntReader.bind('my-event', function(data){
+  alert('An event was triggered with message: ' + data.message);
+});
+
+// Will send an event to create a server connection, that is either multiplayer or singleplayer
+// isMultiplayer - bool - determines if the game is multiplayer or not
+function createLobby(isMultiplayer)
+{
+  if(isMultiplayer)
+  {
+    // Sends multiplayer event to server
+    evntReader.trigger('client-create lobby',
+      {
+        'message': 'create multiplayer lobby',
+      });
+  }
+  else
+  {
+    // Sends singleplayer event to server
+    evntReader.trigger('client-create lobby',
+      {
+        'message': 'create singleplayer lobby',
+      });
+  }
+}
+
+// Sends data about the chosen answer.
+function selectAnswer(choice)
+{
+  evntReader.trigger('client-choose answer',
+    {
+      'message': choice,
+    });
 }
 </script>
 
