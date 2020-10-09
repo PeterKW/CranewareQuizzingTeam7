@@ -8,7 +8,7 @@
           
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
 
-          <QuizScore v-if="answered" :verdict="verdict" :score="questionScore"/>
+          <QuizScore v-if="answered" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak"/>
       </b-col>      
     </b-row>
   </b-container>
@@ -36,6 +36,7 @@ export default {
       //QuizScore
       verdict: "",
       questionScore: 0,
+      scoreStreak: 0,
 
       // TODO: This will be recieved from the websocket per question later on
       quiz: [
@@ -106,12 +107,18 @@ export default {
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
 
+        this.scoreStreak = this.scoreStreak + 1;
         this.questionScore = this.timer * 100;
+        if(this.scoreStreak > 1){
+          this.questionScore = this.questionScore + (100 * this.scoreStreak);
+        }
         this.players[0].score += this.questionScore;
+        
       }
       else {
         this.verdict = "Incorrect!"
         this.questionScore = 0;
+        this.scoreStreak = 0;
       }
     }
   },
