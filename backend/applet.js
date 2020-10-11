@@ -51,10 +51,23 @@ webapp.post('/hook', (req, res) =>
 	res.sendStatus(200);
 });
 
-// Triggers an event
-pusher.trigger('private-lobby', 'my-event', {
-	'message': 'hello world',
-});
+// Triggers an event with a message to all clients subscribed to the specified channel.
+function sendMsgEvent(channel, event, message)
+{
+	pusher.trigger(channel, event, {
+		'message': message,
+	});
+}
+
+// Triggers event with a json object of data to all clients subscribes to channel
+function sendJSONEvent(channel, event, json)
+{
+	pusher.trigger(channel, event, { json });
+}
+
+// TODO: Replace the following with more meaningful function.
+// Temporary event msg
+sendMsgEvent('private')
 
 // Listening to port 5000
 webapp.listen(5000);

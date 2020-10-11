@@ -86,7 +86,7 @@
         // Subscribes to the private lobby channel
         this.eventReader = this.pusher.subscribe('private-lobby');
 
-        // 
+        this.eventReader.bind('')
 
         // For now: we create and assign our own (players will be handled by lobby in the future)
         /*this.players = [
