@@ -13,144 +13,152 @@
 </template>
 
 <script>
-import Vue from "vue";
+  import Vue from "vue";
 
-import { BootstrapVue } from "bootstrap-vue";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-Vue.use(BootstrapVue);
+  import { BootstrapVue } from "bootstrap-vue";
+  import "bootstrap/dist/css/bootstrap.css";
+  import "bootstrap-vue/dist/bootstrap-vue.css";
+  Vue.use(BootstrapVue);
 
-// eslint-disable-next-line no-unused-vars
-import Pusher from "pusher-js";
+  // eslint-disable-next-line no-unused-vars
 
-// Views
-import Index from "./components/Index.vue";
-import Lobby from "./components/Lobby.vue";
-import Quiz from "./components/Quiz.vue";
-import Leaderboard from "./components/Leaderboard.vue";
+  // Pusher included for event system
+  import Pusher from "pusher-js";
 
-// Components
-import GradientContainer from "./components/GradientContainer.vue";
+  // Views
+  import Index from "./components/Index.vue";
+  import Lobby from "./components/Lobby.vue";
+  import Quiz from "./components/Quiz.vue";
+  import Leaderboard from "./components/Leaderboard.vue";
 
-export default {
-  name: "App",
-  data: function() {
-    return {
-      currentView: "index",
+  // Components
+  import GradientContainer from "./components/GradientContainer.vue";
 
-      // Vars for passing into Lobby
-      players: [],
-      gamePin: "",
+  export default
+  {
+    name: "App",
+    data: function()
+    {
+      return{
+        currentView: "index",
 
-      pusher: null,
-      eventReader: null
-    };
-  },
-  components: {
-    Index,
-    Lobby,
-    Quiz,
-    Leaderboard,
-    GradientContainer
-  },
-  methods: {
-    // eslint-disable-next-line no-unused-vars
-    onJoinLobby(username, gamePin) {
-      // TODO: Validate username and game pin and display lobby view
-    },
-    // eslint-disable-next-line no-unused-vars
-    onFindLobby(username) {
-      // TODO: Find lobby view shown here
-    },
-    onCreateLobby(username) {
-      // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
-      // Logs all network communication information to console
+        // Vars for passing into Lobby
+        players: [],
+        gamePin: "",
 
-      /*
-      Pusher.logToConsole = true;
-
-
-      // Instantiates a Pusher connection.
-      this.pusher = new Pusher('072127b07acd646fc5ec',
+        // Instantiates a Pusher connection.
+        pusher: new Pusher('072127b07acd646fc5ec',
         {
           cluster: 'eu',
           useTLS: true,
           authEndpoint: 'http://localhost:5000/pusher/auth'
-        }
-      );
-
-      // Subscribes to the private lobby channel
-      this.eventReader = this.pusher.subscribe('private-lobby');
-      */
-
-
-      // For now: we create and assign our own (players will be handled by lobby in the future)
-      this.players = [
-        {
-          "id" : 1,
-          "username" : username,
-          "score" : 0
-        }
-      ]
-      this.gamePin = "ABCDEF"
-      this.currentView = "lobby";
+        }),
+        eventReader: null
+      };
     },
-    // eslint-disable-next-line no-unused-vars
-    onLobbyStart(code) {
-      // TODO: Tell websocket to start and wait for response
-
-      // For now: just start
-      this.currentView = "quiz"
+    components:
+    {
+      Index,
+      Lobby,
+      Quiz,
+      Leaderboard,
+      GradientContainer
     },
-    // eslint-disable-next-line no-unused-vars
-    onLobbyExit(code){
-      this.currentView = "index"
+    methods:
+    {
+      // eslint-disable-next-line no-unused-vars
+      onJoinLobby(username, gamePin)
+      {
+        // TODO: Validate username and game pin and display lobby view
+      },
+      // eslint-disable-next-line no-unused-vars
+      onFindLobby(username)
+      {
+        // TODO: Find lobby view shown here
+      },
+      onCreateLobby(username)
+      {
+        // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
 
-      // TODO: Tell websocket lobby has been quit
+        // Logs all network communication information to console
+        Pusher.logToConsole = true
 
-      this.players = []
+        // Subscribes to the private lobby channel
+        this.eventReader = this.pusher.subscribe('private-lobby');
+
+        // 
+
+        // For now: we create and assign our own (players will be handled by lobby in the future)
+        /*this.players = [
+          {
+            "id" : 1,
+            "username" : username,
+            "score" : 0
+          }
+        ]
+        this.gamePin = "ABCDEF"
+        this.currentView = "lobby";*/
+      },
+      // eslint-disable-next-line no-unused-vars
+      onLobbyStart(code)
+      {
+        // TODO: Tell websocket to start and wait for response
+
+        // For now: just start
+        this.currentView = "quiz"
+      },
+      // eslint-disable-next-line no-unused-vars
+      onLobbyExit(code)
+      {
+        this.currentView = "index"
+
+        // TODO: Tell websocket lobby has been quit
+
+        this.players = []
+      },
+
+      onQuizFinish()
+      {
+        this.currentView = "leaderboard"
+      },
+
+      onExitLeaderboard()
+      {
+        this.currentView = "index"
+      }
     },
-
-    onQuizFinish() {
-      this.currentView = "leaderboard"
-    },
-
-    onExitLeaderboard() {
-      this.currentView = "index"
-    }
-  },
-};
+  };
 </script>
 
 <style>
-html,
-body,
-#app,
-.container-fluid {
-  height: 100% !important;
-}
+  html,
+  body,
+  #app,
+  .container-fluid {
+    height: 100% !important;
+  }
 
-input {
-  text-align: center;
-}
+  input {
+    text-align: center;
+  }
 
-.players {
-  background-color: #fff; /* Fallback color */
-  color: #000;
-  border-radius:10px;
-  font-weight: bold;
-  text-align: center;
-  border: 2px solid #f1f1f1;
-  position: absolute;
-  width: 100%;
-  padding: 20px;
-  top: 20%;
-}
+  .players {
+    background-color: #fff; /* Fallback color */
+    color: #000;
+    border-radius:10px;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #f1f1f1;
+    position: absolute;
+    width: 100%;
+    padding: 20px;
+    top: 20%;
+  }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 1s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 1s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
 </style>

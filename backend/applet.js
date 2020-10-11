@@ -58,3 +58,5 @@ pusher.trigger('private-lobby', 'my-event', {
 
 // Listening to port 5000
 webapp.listen(5000);
+
+console.log('Application started.');
