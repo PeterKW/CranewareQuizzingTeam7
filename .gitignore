@@ -1,5 +1,3 @@
 
-backend/.eslintrc.json
-.DS_Store
-node_modules/
-public/
+db.json
+18.134.93.210.url
