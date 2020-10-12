@@ -22,8 +22,8 @@ export default {
   name: 'Quiz',
   components: {
     QuizQuestion,
+    PowerBar,
     QuizScore,
-    PowerBar
   },
   props: ["players"],
   data() {
@@ -94,14 +94,17 @@ export default {
 
 
       if(this.currQuestion + 1 > this.quiz.length - 1) {
-        this.endQuiz()
+        this.endQuiz();
       }
       else {
+        this.$children[0].resetButtons();
         this.currQuestion++
       }
     },
 
     endQuiz() {
+      //reset all the powers
+      this.$children[1].resetButtons();
       clearInterval(this.timerInstance);
       this.$emit('done');
     },
@@ -122,9 +125,10 @@ export default {
         this.verdict = "Correct!"
 
         if (this.doublePoints) {
-          console.log("HERE");
           this.questionScore = this.timer * 100 * 2;
           this.doublePoints = false
+        } else {
+          this.questionScore = this.timer * 100
         }
 
         this.scoreStreak = this.scoreStreak + 1;
@@ -148,13 +152,12 @@ export default {
 
       switch (power) {
         case 'doublep':
-        console.log("HERE");
           this.doublePoints = true
           break;
 
         case '50/50':
           //call the first childs (which is the QuizQuestion.vue file) disableButtons method
-          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"])
+          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
           break;
       }
     }

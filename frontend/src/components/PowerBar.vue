@@ -43,8 +43,15 @@ export default {
       }
 
       this.$emit('power', power);
+    },
+
+    resetButtons() {
+      used[0] = false;
+      used[1] = false;
+      this.doubleUsed  = used[0];
+      this.fiftyUsed = used[1];
     }
-  }
+  },
 }
 </script>
 

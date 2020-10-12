@@ -107,7 +107,7 @@ export default {
           this.disableD = true
           break;
       }
-    }
+    },
   }
 }
 </script>
