@@ -103,7 +103,7 @@ export default {
 
     endQuiz() {
       clearInterval(this.timerInstance);
-      //TODO uncomment this this.$emit('done');
+      this.$emit('done');
     },
 
     onAnswerQuestion(answer) {
@@ -122,27 +122,18 @@ export default {
         this.verdict = "Correct!"
 
         if (this.doublePoints) {
-
+          console.log("HERE");
+          this.questionScore = this.timer * 100 * 2;
           this.doublePoints = false
-          this.scoreStreak = this.scoreStreak + 1;
-          this.questionScore = this.timer * 100;
-
-          if(this.scoreStreak > 1){
-            this.questionScore = (this.questionScore + (100 * this.scoreStreak)) * 2;
-          }
-
-          this.players[0].score += this.questionScore;
-
-        } else {
-          this.scoreStreak = this.scoreStreak + 1;
-          this.questionScore = this.timer * 100;
-
-          if(this.scoreStreak > 1){
-            this.questionScore = this.questionScore + (100 * this.scoreStreak);
-          }
-
-          this.players[0].score += this.questionScore;
         }
+
+        this.scoreStreak = this.scoreStreak + 1;
+
+        if(this.scoreStreak > 1){
+          this.questionScore = this.questionScore + (100 * this.scoreStreak);
+        }
+
+        this.players[0].score += this.questionScore;
       }
       else {
         this.verdict = "Incorrect!"
@@ -157,6 +148,7 @@ export default {
 
       switch (power) {
         case 'doublep':
+        console.log("HERE");
           this.doublePoints = true
           break;
 
