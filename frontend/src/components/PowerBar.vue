@@ -1,5 +1,6 @@
 <template>
-  <div class="w-100" style="margin-top: 15px;">
+  <div class="w-50 p-2" style="margin-top: 15px; max-width: 35%">
+    <div class="row justify-content-center align-self-center">
     <b-row style="margin-bottom:10px">
       <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
       <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
@@ -8,6 +9,7 @@
       <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Template</span></b-button></b-col>
       <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta" :disabled='disable'><span>Template</span></b-button></b-col>
     </b-row>
+  </div>
   </div>
 </template>
 

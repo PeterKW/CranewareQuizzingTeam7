@@ -141,7 +141,7 @@ export default {
             this.questionScore = this.questionScore + (100 * this.scoreStreak);
           }
 
-          this.players[0].score += this.questionScore;;
+          this.players[0].score += this.questionScore;
         }
       }
       else {
