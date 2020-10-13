@@ -34,6 +34,7 @@ export default {
       currQuestion: 0,
       answered: false,
       doublePoints: false,
+      resetNeeded: false,
 
       //QuizScore
       verdict: "",
@@ -88,7 +89,11 @@ export default {
   methods: {
     nextQuestion(){
       if(this.answered == false){
-        this.scoreStreak = 0;
+        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
+          this.$children[0].resetButtons()
+          this.resetNeeded = false
+        }
+        this.scoreStreak = 0
       }
       this.answered = false
 
@@ -97,16 +102,16 @@ export default {
         this.endQuiz();
       }
       else {
-        this.$children[0].resetButtons();
+
         this.currQuestion++
       }
     },
 
     endQuiz() {
       //reset all the powers
-      this.$children[1].resetButtons();
-      clearInterval(this.timerInstance);
-      this.$emit('done');
+      this.$children[1].resetButtons()
+      clearInterval(this.timerInstance)
+      this.$emit('done')
     },
 
     onAnswerQuestion(answer) {
@@ -126,17 +131,17 @@ export default {
 
         if (this.doublePoints) {
           console.log("HERE");
-          this.questionScore = this.timer * 100 * 2;
+          this.questionScore = this.timer * 100 * 2
         } else {
-          this.questionScore = this.timer * 100;
+          this.questionScore = this.timer * 100
         }
-        this.scoreStreak = this.scoreStreak + 1;
+        this.scoreStreak = this.scoreStreak + 1
 
         if(this.scoreStreak > 1){
-          this.questionScore = this.questionScore + (100 * this.scoreStreak);
+          this.questionScore = this.questionScore + (100 * this.scoreStreak)
         }
 
-        this.players[0].score += this.questionScore;
+        this.players[0].score += this.questionScore
       }
       else {
         this.verdict = "Incorrect!"
@@ -156,6 +161,7 @@ export default {
         case '50/50':
           //call the first childs (which is the QuizQuestion.vue file) disableButtons method
           this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
+          this.resetNeeded = true
           break;
       }
     }
@@ -165,9 +171,9 @@ export default {
 
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
-        this.nextQuestion();
-        this.doublePoints = false;
-        this.timer = this.timePerQ;
+        this.nextQuestion()
+        this.doublePoints = false
+        this.timer = this.timePerQ
       }
     }, 1000)
   }
