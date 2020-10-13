@@ -47,8 +47,15 @@ webapp.post('/pusher/auth', function(req, res)
 // Recieve data from clients
 webapp.post('/hook', (req, res) =>
 {
-	console.log(req.body);
+	switch (req.message) {
+		case expression:
+
+			break;
+		default:
+
+	}
 	res.sendStatus(200);
+
 });
 
 // Triggers an event with a message to all clients subscribed to the specified channel.
@@ -73,3 +80,72 @@ sendMsgEvent('private-channel', 'test', 'This is a test');
 webapp.listen(5000);
 
 console.log('Application started.');
+
+class Server
+{
+
+}
+
+class Player
+{
+	constructor()
+	{
+		const name = null;
+		const id = 0;
+		const score = 0;
+		const streak =0 ;
+	}
+
+	// Should send lobbyCode to server
+	/*function connectToLobby(lobbyCode)
+	{
+
+	}
+
+	// Sends the answer selected to the server
+	function sendAnswerChoice(option)
+	{
+
+	}*/
+}
+
+/*class ClientEventHandler
+{
+	const isLoggingOn = false;
+	const connectedChannels = [];
+
+	constructor(logging)
+	{
+		setLogging(logging);
+	}
+	constructor()
+	{
+		this.isLoggingOn = false;
+	}
+
+	// Allows logs to be turned on or off
+	function setLogging(onOff)
+	{
+		// Logs all network communication information to console
+		this.isLoggingOn = onOff;
+		Pusher.logToConsole = onOff;
+	}
+
+	// Channels are streams over which events can be sent. All channels should private-
+	function connectToChannel(channel)
+	{
+		connectedChannels.push(pusher.subscribe(channel));
+	}
+
+	// Will listen for a particular event on a single channel
+	function listenForEvent(channelNo, event, callback)
+	{
+		connectedCHannels[channelNo].bind(event, callback);
+	}
+
+
+	function findChannelNo(channelName)
+	{
+
+	}
+}*/
