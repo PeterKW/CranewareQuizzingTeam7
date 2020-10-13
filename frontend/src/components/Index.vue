@@ -59,7 +59,7 @@
                             </b-form-group>
 
                              <b-form-group label="Background Speed">
-                              <vue-slider v-model="sliderValue"></vue-slider>
+                              <vue-slider v-model="sliderValue"  @change="updateBackground"></vue-slider>
                             </b-form-group>
                             
                       <b-button class="mt-3" block @click="$bvModal.hide('bv-modal')">Close</b-button>
@@ -109,7 +109,10 @@ export default {
       if(!this.username){ alert("Enter a username"); return;}
 
       this.$emit('onCreateLobby', this.username);
-    }
+    },
+    updateBackground() {
+      this.$emit('updateBackground', this.sliderValue)     
+    },
   }
 }
 </script>

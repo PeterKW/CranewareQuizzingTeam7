@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <GradientContainer>
+    <GradientContainer :slider="sliderValue">
       <transition name="fade" mode="out-in">
-        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-if="currentView == 'index'"> </Index>
+        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-on:updateBackground="updateBackground" v-if="currentView == 'index'"> </Index>
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
          <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
         <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players"></Quiz>
@@ -41,6 +41,7 @@ export default {
       // Vars for passing into Lobby
       players: [],
       gamePin: "",
+
 
       pusher: null,
       eventReader: null
@@ -117,7 +118,12 @@ export default {
 
     onExitLeaderboard() {
       this.currentView = "index"
-    }
+    },
+
+    updateBackground(sliderValue) {
+      this.sliderValue = sliderValue
+      this.$forceUpdate();
+    },
   },
 };
 </script>

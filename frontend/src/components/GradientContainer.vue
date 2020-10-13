@@ -24,13 +24,12 @@ export default {
       gradientSpeed: 0.002
     }
   },
-  computed: {
-    gradient() {
-      return { 'background': "-webkit-gradient(linear, left top, right top, from(" + this.color1 + "), to(" + this.color2 + "))"}
-    }
-  },
-  mounted() {
-     //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
+  props: ["slider"],
+  methods: {
+    init(){
+      this.step = 0
+      this.istep = 0
+           //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
       window.setInterval(() => {
         var c0_0 = this.colors[this.colorIndices[0]];
         var c0_1 = this.colors[this.colorIndices[1]];
@@ -61,7 +60,22 @@ export default {
           this.colorIndices[3] = ( this.colorIndices[3] + Math.floor( 1 + Math.random() * (this.colors.length - 1))) % this.colors.length;
           
         }
-      }, 10)
+      }, 0.1)
+    }
+  },
+  watch: { 
+    'slider': function(newVal) { 
+      this.gradientSpeed = 0.0000005   * newVal
+      this.init() 
+    }
+  },
+  computed: {
+    gradient() {
+      return { 'background': "-webkit-gradient(linear, left top, right top, from(" + this.color1 + "), to(" + this.color2 + "))"}
+    }
+  },
+  mounted() {
+    this.init()
     }
 }
 </script>
