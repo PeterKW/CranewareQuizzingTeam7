@@ -5,10 +5,10 @@
         <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
         <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
       </b-row>
-      <b-row>
+      <!--<b-row>
         <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Template</span></b-button></b-col>
         <b-col ><b-button @click="onPower('D')" class="fancy-btn btn--delta" :disabled='disable'><span>Template</span></b-button></b-col>
-      </b-row>
+      </b-row>-->
     </div>
   </div>
 </template>

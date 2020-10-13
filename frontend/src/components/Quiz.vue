@@ -125,12 +125,11 @@ export default {
         this.verdict = "Correct!"
 
         if (this.doublePoints) {
+          console.log("HERE");
           this.questionScore = this.timer * 100 * 2;
-          this.doublePoints = false
         } else {
-          this.questionScore = this.timer * 100
+          this.questionScore = this.timer * 100;
         }
-
         this.scoreStreak = this.scoreStreak + 1;
 
         if(this.scoreStreak > 1){
@@ -142,7 +141,6 @@ export default {
       else {
         this.verdict = "Incorrect!"
         this.questionScore = 0;
-        this.doublePoints = false
         this.scoreStreak = 0;
       }
     },
@@ -167,7 +165,8 @@ export default {
 
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
-        this.nextQuestion()
+        this.nextQuestion();
+        this.doublePoints = false;
         this.timer = this.timePerQ;
       }
     }, 1000)
