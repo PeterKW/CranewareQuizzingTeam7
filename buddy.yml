@@ -1,0 +1,35 @@
+- pipeline: "Push Craneware"
+  trigger_mode: "ON_EVERY_PUSH"
+  ref_name: "Developer"
+  ref_type: "BRANCH"
+  target_site_url: "http://18.134.93.210/"
+  fetch_all_refs: true
+  fail_on_prepare_env_warning: true
+  trigger_condition: "ALWAYS"
+  actions:
+  - action: "Execute: npm test"
+    type: "BUILD"
+    working_directory: "/buddy/cranewarequizzingteam7"
+    docker_image_name: "library/node"
+    docker_image_tag: "12"
+    execute_commands:
+    - "# yarn install"
+    - "npm install"
+    - "npm test"
+    volume_mappings:
+    - "/frontend:/buddy/cranewarequizzingteam7"
+    trigger_condition: "ALWAYS"
+    shell: "BASH"
+  - action: "Upload files to 18.134.93.210"
+    type: "SFTP"
+    trigger_time: "ON_BACK_TO_SUCCESS"
+    input_type: "SCM_REPOSITORY"
+    local_path: "frontend"
+    remote_path: "/home/bitnami/projects/CranewareQuizzingTeam7/frontend"
+    login: "bitnami"
+    host: "18.134.93.210"
+    port: "22"
+    authentication_mode: "WORKSPACE_KEY"
+    use_temporary_files: true
+    deployment_excludes:
+    - "node_modules/"
