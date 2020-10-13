@@ -21,7 +21,8 @@ export default {
       ),
       step: 0,
       colorIndices: [0,1,2,3],
-      gradientSpeed: 0.002
+      gradientSpeed: 0.002,
+      intervalID: null
     }
   },
   props: ["slider"],
@@ -30,7 +31,7 @@ export default {
       this.step = 0
       this.istep = 0
            //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
-      window.setInterval(() => {
+      this.intervalID = window.setInterval(() => {
         var c0_0 = this.colors[this.colorIndices[0]];
         var c0_1 = this.colors[this.colorIndices[1]];
         var c1_0 = this.colors[this.colorIndices[2]];
@@ -46,27 +47,31 @@ export default {
         var g2 = Math.round(istep * c1_0[1] + this.step * c1_1[1]);
         var b2 = Math.round(istep * c1_0[2] + this.step * c1_1[2]);
         this.color2 = "rgb("+r2+","+g2+","+b2+")";
-          
+
+        console.log(this.step);
         this.step += this.gradientSpeed;
+        console.log(this.step);
         if ( this.step >= 1 )
         {
           this.step %= 1;
           this.colorIndices[0] = this.colorIndices[1];
           this.colorIndices[2] = this.colorIndices[3];
-          
+
           //pick two new target color indices
           //do not pick the same as the current one
           this.colorIndices[1] = ( this.colorIndices[1] + Math.floor( 1 + Math.random() * (this.colors.length - 1))) % this.colors.length;
           this.colorIndices[3] = ( this.colorIndices[3] + Math.floor( 1 + Math.random() * (this.colors.length - 1))) % this.colors.length;
-          
+
         }
       }, 0.1)
     }
   },
-  watch: { 
-    'slider': function(newVal) { 
-      this.gradientSpeed = 0.0000005   * newVal
-      this.init() 
+  watch: {
+    'slider': function(newVal) {
+      window.clearInterval(this.intervalId);
+      console.log(this.gradientSpeed);
+      this.gradientSpeed = 0.00004   * newVal
+      console.log(this.gradientSpeed);
     }
   },
   computed: {
