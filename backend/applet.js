@@ -67,7 +67,7 @@ function sendJSONEvent(channel, event, json)
 
 // TODO: Replace the following with more meaningful function.
 // Temporary event msg
-sendMsgEvent('private')
+sendMsgEvent('private-channel', 'test', 'This is a test');
 
 // Listening to port 5000
 webapp.listen(5000);

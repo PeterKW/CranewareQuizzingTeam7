@@ -53,7 +53,7 @@
           useTLS: true,
           authEndpoint: 'http://localhost:5000/pusher/auth'
         }),
-        eventReader: null
+        eventhandler: null
       };
     },
     components:
@@ -76,17 +76,10 @@
       {
         // TODO: Find lobby view shown here
       },
-      onCreateLobby(username)
+      onCreateLobby()
       {
         // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
 
-        // Logs all network communication information to console
-        Pusher.logToConsole = true
-
-        // Subscribes to the private lobby channel
-        this.eventReader = this.pusher.subscribe('private-lobby');
-
-        this.eventReader.bind('')
 
         // For now: we create and assign our own (players will be handled by lobby in the future)
         /*this.players = [
@@ -103,6 +96,18 @@
       onLobbyStart(code)
       {
         // TODO: Tell websocket to start and wait for response
+        // TODO: Remove the following hardcoded stuff
+        /*Pusher.logToConsole = true;
+        pusher.subscribe('private-channel').bind('test', function(data)
+        {
+          console.log(data.message);
+          if(data.message=='This is a test')
+          {
+
+          }
+          pusher.trigger('private-channel', 'test', data);
+        });*/
+
 
         // For now: just start
         this.currentView = "quiz"
@@ -127,6 +132,78 @@
         this.currentView = "index"
       }
     },
+    /*class Player
+    {
+      const name;
+      const id;
+      const score = 0;
+      const streak = 0;
+
+      // Should send lobbyCode to server
+      function connectToLobby(lobbyCode)
+      {
+
+      }
+
+      // Sends the answer selected to the server
+      function sendAnswerChoice(option)
+      {
+
+      }
+    },
+    class ClientEventHandler()
+    {
+      isLoggingOn = false;
+      connectedChannels = [];
+
+      constructor(logging)
+      {
+        setLogging(logging);
+      }
+      constructor()
+      {
+        this.isLoggingOn = false;
+      }
+
+      // Allows logs to be turned on or off
+      function setLogging(onOff)
+      {
+        // Logs all network communication information to console
+        this.isLoggingOn = onOff;
+        Pusher.logToConsole = onOff;
+      }
+
+      // Channels are streams over which events can be sent.
+      function connectToChannel(channel)
+      {
+        connectedChannels.push(pusher.subscribe(channel));
+      }
+
+      // Will listen for a particular event on a single channel
+      function listenForEvent(channelNo, event, callback)
+      {
+        connectedCHannels[channelNo].bind(event, callback);
+      }
+
+      /*
+      function findChannelNo(channelName)
+      {
+
+      }
+    },*/
+    mounted()
+    {
+      /*let evntHand = this.eventhandler;
+      evntHand = new ClientEventHandler(true);
+      evntHand.connectToChannel('private-channel');
+      evntHand.listenForEvent(0,'test', function(){console.log(evntHand);console.log('Old handler:');console.log(this.eventhandler);});
+      this.eventhandler = evntHand;*/
+
+      let externalScript = document.createElement('script')
+      externalScript.setAttribute('src', 'C:/Users/adidu/Desktop/Assignments/CranewareQuizzingTeam7/frontend/src/classes.js')
+      document.head.appendChild(externalScript)
+    }
+
   };
 </script>
 
