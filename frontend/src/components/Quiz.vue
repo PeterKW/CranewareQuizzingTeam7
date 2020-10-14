@@ -5,11 +5,10 @@
           <b-row class="w-100" style="margin-bottom: 5px;">
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
-          
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
-
           <QuizScore v-if="answered" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak"/>
-      </b-col>      
+          <PowerBar  class= "powers" v-if="!answered" v-on:power="onPower"/>
+      </b-col>
     </b-row>
   </b-container>
 </template>
@@ -17,12 +16,14 @@
 <script>
 import QuizQuestion from "./QuizQuestion.vue";
 import QuizScore from "./QuizScore.vue";
+import PowerBar from "./PowerBar.vue";
 
 export default {
   name: 'Quiz',
   components: {
     QuizQuestion,
-    QuizScore
+    PowerBar,
+    QuizScore,
   },
   props: ["players"],
   data() {
@@ -32,6 +33,8 @@ export default {
       timerInstance: null,
       currQuestion: 0,
       answered: false,
+      doublePoints: false,
+      resetNeeded: false,
 
       //QuizScore
       verdict: "",
@@ -86,22 +89,29 @@ export default {
   methods: {
     nextQuestion(){
       if(this.answered == false){
-        this.scoreStreak = 0;
+        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
+          this.$children[0].resetButtons()
+          this.resetNeeded = false
+        }
+        this.scoreStreak = 0
       }
       this.answered = false
-      
+
 
       if(this.currQuestion + 1 > this.quiz.length - 1) {
-        this.endQuiz()
+        this.endQuiz();
       }
       else {
+
         this.currQuestion++
       }
     },
 
     endQuiz() {
-      clearInterval(this.timerInstance);
-      this.$emit('done');
+      //reset all the powers
+      this.$children[1].resetButtons()
+      clearInterval(this.timerInstance)
+      this.$emit('done')
     },
 
     onAnswerQuestion(answer) {
@@ -114,23 +124,45 @@ export default {
         'message': answer,
       });*/
 
-      
+
       // TODO: This will go server side in the future
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
 
-        this.scoreStreak = this.scoreStreak + 1;
-        this.questionScore = this.timer * 100;
-        if(this.scoreStreak > 1){
-          this.questionScore = this.questionScore + (100 * this.scoreStreak);
+        if (this.doublePoints) {
+          console.log("HERE");
+          this.questionScore = this.timer * 100 * 2
+        } else {
+          this.questionScore = this.timer * 100
         }
-        this.players[0].score += this.questionScore;
-        
+        this.scoreStreak = this.scoreStreak + 1
+
+        if(this.scoreStreak > 1){
+          this.questionScore = this.questionScore + (100 * this.scoreStreak)
+        }
+
+        this.players[0].score += this.questionScore
       }
       else {
         this.verdict = "Incorrect!"
         this.questionScore = 0;
         this.scoreStreak = 0;
+      }
+    },
+
+    //Function is responsible for Handling the power abilities
+    onPower(power) {
+
+      switch (power) {
+        case 'doublep':
+          this.doublePoints = true
+          break;
+
+        case '50/50':
+          //call the first childs (which is the QuizQuestion.vue file) disableButtons method
+          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
+          this.resetNeeded = true
+          break;
       }
     }
   },
@@ -140,7 +172,8 @@ export default {
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
         this.nextQuestion()
-        this.timer = this.timePerQ;
+        this.doublePoints = false
+        this.timer = this.timePerQ
       }
     }, 1000)
   }
@@ -166,6 +199,14 @@ export default {
   border-radius:10px;
   padding:10px;
   font-size:220%;
+  min-width: 10vh;
+  margin-bottom:0;
+}
+
+.powers {
+  background-color: #fff;
+  border-radius:10px;
+  padding:5px;
   min-width: 10vh;
   margin-bottom:0;
 }
