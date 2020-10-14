@@ -40,7 +40,6 @@
                         Create Lobby
                       </b-button>
                     </div>
-
                   <div>
                     <b-button id="show-btn" variant="primary" class="button_base b09_electric" @click="$bvModal.show('bv-modal')">Settings</b-button>
                     
@@ -58,7 +57,6 @@
                                 v-on:input="updateSettings"
                               ></b-form-checkbox-group>
                             </b-form-group>
-
                              <b-form-group label="Background Speed">
                               <vue-slider v-model="sliderValue"  @change="updateBackground"></vue-slider>
                             </b-form-group>
@@ -85,13 +83,13 @@ export default {
       username: "",
       gamePin: "",
       sliderValue: 50,
-      selected: [], 
+      selected: [],
       options: [
         { text: 'Music', value: 'music' },
         { text: 'Sound Effects', value: 'effect' },
-        { text: 'Vibrations', value: 'vibration'},
+        { text: 'Vibrations', value: 'vibration', disabled: !"vibrate" in navigator},
         { text: 'Placeholder', value: 'ph' }
-      ]
+      ],
     }
   },
   components: {
