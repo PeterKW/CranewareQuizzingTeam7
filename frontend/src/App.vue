@@ -13,6 +13,7 @@
 </template>
 
 <script>
+<<<<<<< Updated upstream
   import Vue from "vue";
 
   import { BootstrapVue } from "bootstrap-vue";
@@ -57,12 +58,82 @@
         }),
         eventhandler: null,
         player:
+=======
+import Vue from "vue";
+
+import { BootstrapVue } from "bootstrap-vue";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+Vue.use(BootstrapVue);
+
+// eslint-disable-next-line no-unused-vars
+import Pusher from "pusher-js";
+
+// Views
+import Index from "./components/Index.vue";
+import Lobby from "./components/Lobby.vue";
+import Quiz from "./components/Quiz.vue";
+import Leaderboard from "./components/Leaderboard.vue";
+
+// Components
+import GradientContainer from "./components/GradientContainer.vue";
+
+export default {
+  name: "App",
+  data: function() {
+    return {
+      currentView: "index",
+
+      // Vars for passing into Lobby
+      players: [],
+      gamePin: "",
+      // Instantiates a Pusher connection.
+      pusher: new Pusher('072127b07acd646fc5ec',
+        {
+          cluster: 'eu',
+          useTLS: true,
+          authEndpoint: 'http://localhost:5000/pusher/auth'
+        }
+      ),
+      eventReader: null
+    };
+  },
+  components: {
+    Index,
+    Lobby,
+    Quiz,
+    Leaderboard,
+    GradientContainer
+  },
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+    onJoinLobby(username, gamePin) {
+      // TODO: Validate username and game pin and display lobby view
+    },
+    // eslint-disable-next-line no-unused-vars
+    onFindLobby(username) {
+      // TODO: Find lobby view shown here
+    },
+    onCreateLobby() {
+      // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
+      // TODO: This block is temporary and a test
+      // Logs all network communication information to console
+      Pusher.logToConsole = true;
+
+      // Run the tests on lobby creation.
+      this.runTests();
+
+
+      // For now: we create and assign our own (players will be handled by lobby in the future)
+      /*this.players = [
+>>>>>>> Stashed changes
         {
           name: null,
           id: 0,
           score: 0,
           streak: 0,
         }
+<<<<<<< Updated upstream
       };
     },
     components:
@@ -72,6 +143,11 @@
       Quiz,
       Leaderboard,
       GradientContainer
+=======
+      ]*/
+      this.gamePin = "ABCDEF"
+      this.currentView = "lobby";
+>>>>>>> Stashed changes
     },
     methods:
     {
@@ -168,6 +244,77 @@
   };
 
 
+<<<<<<< Updated upstream
+=======
+    onExitLeaderboard() {
+      this.currentView = "index"
+    },
+    listenToEvent(channel, event, callback)
+    {
+      // Will listen to an event on a channel, and run the callback function on the event's occurence
+      // Only needs to be run once to read the specified events.
+      this.pusher.subscribe(channel).bind(event, callback);
+    },
+    // Sends a json file through pusher on the specific channel as the specified event.
+    // channel & event are strings
+    // jsonData is a json file/object
+    sendData(channel, event, jsonData)
+    {
+      this.pusher.trigger(channel, event, jsonData);
+    },
+    // Works like sendData but sends only a string as a message.
+    sendMsg(channel, event, msg)
+    {
+      this.pusher.trigger(channel, event, { 'message': msg });
+    },
+    // Listens to special events that can be found at https://pusher.com/docs/channels/using_channels/connection#connection-states
+    // Runs the callback function when the event occurs.
+    listenToPusherEvnts(event, callback)
+    {
+      this.pusher.connection.bind(event, callback);
+    },
+    runTests()
+    {
+      const testChannel = 'private-channel';
+      const testEvnt = 'test';
+      const testMsg = 'This is a test';
+      // Tests are stored in an array in the format string 'TestName':bool pass/fail
+      let tests = [];
+
+      // Tests if the connection to the API was successful
+      this.listenToPusherEvnts('connected', (conn) =>
+      {
+        console.log('Connected to Pusher API successfully.');
+        console.log(conn);
+        tests.push({'APIConnTest':true});
+      });
+      this.listenToPusherEvnts('failed', function(conn)
+      {
+        console.log('Failed Connected to Pusher API successfully.');
+        console.log(conn);
+        tests.push({'APIConnTest':false});
+      });
+
+      // Tests if data is being recieved from the server. Sends the same data to server to ensure data is sent back and forth correctly.
+      this.listenToEvent(testChannel, testEvnt, function(data){
+        console.log("Recieved the following data:");
+        console.log(data);
+
+        if(data.message == testMsg)
+        {
+          tests.push({'RecievingData':true});
+          this.sendMsg(testChannel, testEvnt, data.message);
+        }
+        else
+        {
+          tests.push({'RecievingData':false})
+        }
+
+      });
+    }
+  },
+};
+>>>>>>> Stashed changes
 </script>
 
 <style>

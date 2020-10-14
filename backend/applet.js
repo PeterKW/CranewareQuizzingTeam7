@@ -4,9 +4,13 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const cors = require('cors');
 const crypto = require('crypto');
+// TODO: potentially remove following module and input command set up after.
+const readline = require('readline');
 
-// Logs all changes to connections to console
-Pusher.logToConsole = true;
+const userInputReader = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout,
+});
 
 // Serves as handler for routing
 const webapp = express();
@@ -47,6 +51,7 @@ webapp.post('/pusher/auth', function(req, res)
 // Recieve data from clients
 webapp.post('/hook', (req, res) =>
 {
+<<<<<<< Updated upstream
 	switch (req.message) {
 		case expression:
 
@@ -54,8 +59,12 @@ webapp.post('/hook', (req, res) =>
 		default:
 
 	}
+=======
+	console.log(req);
+>>>>>>> Stashed changes
 	res.sendStatus(200);
 
+<<<<<<< Updated upstream
 });
 
 // Triggers an event with a message to all clients subscribed to the specified channel.
@@ -149,3 +158,69 @@ class Player
 
 	}
 }*/
+=======
+// Listening to port 5000
+webapp.listen(5000);
+
+
+// This class handles events to and from the client and server.
+class EventHandler
+{
+	// Sends a json file through pusher on the specific channel as the specified event.
+	// channel & event are strings
+	// jsonData is a json file/object
+	sendData(channel, event, jsonData)
+	{
+		pusher.trigger(channel, event, jsonData);
+	}
+
+	// Works like sendData but sends only a string as a message.
+	sendMsg(channel, event, msg)
+	{
+		pusher.trigger(channel, event, { 'message': msg });
+	}
+
+	// Will listen to an event on a channel, and run the callback function on the event's occurence
+	/* listenToEvent(channel, event, callback)
+	{
+		pusher.subscribe(channel).bind(event, callback);
+	}*/
+}
+
+// This is a global EventHandler
+const evntManager = new EventHandler();
+
+// Is the main method that runs the usual server operation.
+function main()
+{
+	tests();
+}
+
+// The test cases
+function tests()
+{
+
+	const testChannel = 'private-channel';
+	const testEvnt = 'test';
+	const testMsg = 'This is a test';
+
+	// Currently using readline to halt test until tester ensures a client instance is running.
+	userInputReader.question('Press enter when ready to trigger event to run test', (ans) =>
+	{
+		console.log(ans);
+		userInputReader.close();
+	});
+
+	// Send a message to all clients listening to the channel and event declared at the start of tests()
+	evntManager.sendMsg(testChannel, testEvnt, testMsg);
+
+	// Testing if data recieved from client is sent in expected format.
+	/*evntManager.listenToEvent(testChannel, testEvnt, function(data)
+	{
+		return(data.message == testMsg);
+	});*/
+
+}
+
+main();
+>>>>>>> Stashed changes
