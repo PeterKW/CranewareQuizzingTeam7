@@ -55,13 +55,13 @@
                                 :options="options"
                                 switches
                                 stacked
+                                v-on:input="updateSettings"
                               ></b-form-checkbox-group>
                             </b-form-group>
 
                              <b-form-group label="Background Speed">
                               <vue-slider v-model="sliderValue"  @change="updateBackground"></vue-slider>
                             </b-form-group>
-                            
                       <b-button class="mt-3" block @click="$bvModal.hide('bv-modal')">Close</b-button>
                     </b-modal>
                   </div>
@@ -113,6 +113,9 @@ export default {
     updateBackground() {
       this.$emit('updateBackground', this.sliderValue)     
     },
+    updateSettings(){
+      this.$emit('updateSettings', this.selected)
+    }
   }
 }
 </script>

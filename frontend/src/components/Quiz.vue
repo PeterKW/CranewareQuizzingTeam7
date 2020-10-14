@@ -24,7 +24,7 @@ export default {
     QuizQuestion,
     QuizScore
   },
-  props: ["players"],
+  props: ["players", "options"],
   data() {
     return {
       timePerQ: 10,
@@ -118,13 +118,21 @@ export default {
       // TODO: This will go server side in the future
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
-
+      
         this.scoreStreak = this.scoreStreak + 1;
         this.questionScore = this.timer * 100;
         if(this.scoreStreak > 1){
           this.questionScore = this.questionScore + (100 * this.scoreStreak);
         }
         this.players[0].score += this.questionScore;
+
+        if(this.options.includes("vibration")){
+          if (navigator.vibrate) {
+            // vibration API supported
+            window.navigator.vibrate(500);
+          }
+      }
+       
         
       }
       else {
