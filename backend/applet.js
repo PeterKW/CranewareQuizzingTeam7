@@ -123,6 +123,57 @@ webapp.post('/hook', (req, res) =>
 // Listening to port 5000
 webapp.listen(5000);
 
+// Helps to run tests.
+class Tester
+{
+	constructor()
+	{
+		// Stores the outcome of all tests
+		this.testResults = [];
+	}
+
+	// Will return a bool based on if the HTTP response suceeds.
+	evalResponse(err, req, res)
+	{
+		// If the err exists
+		if(err != null)
+		{
+			// Log the err and return false.
+			console.log('Message failed to send');
+			console.log(err);
+			return false;
+		}
+		else if(res.statusCode == 200)
+		{
+			// Returns true if the response suceeded.
+			console.log('Sending message...');
+			return true;
+		}
+		else if(req.method == 'POST')
+		{
+			console.log('Sending request to send message.');
+		}
+	}
+
+	// Will test a bool function and add its result to the testResults.
+	// boolFunction is a function that returns a bool.
+	// testName is a string that represents the test.
+	testBoolFunction(testName, boolFunction)
+	{
+		if(boolFunction)
+		{
+			console.log('Event sent to channel successfully');
+			this.testResults.push({ testName:true });
+		}
+		else
+		{
+			console.log('Event failed to send to channel');
+			this.testResults.push({ testName:false });
+		}
+	}
+}
+
+const testerInstance = new Tester();
 
 // This class handles events to and from the client and server.
 class EventHandler
@@ -130,21 +181,34 @@ class EventHandler
 	// Sends a json file through pusher on the specific channel as the specified event.
 	// channel & event are strings
 	// jsonData is a json file/object
-	sendData(channel, event, jsonData)
+	// isTestingOn is a bool which determines if the code should be tested.
+	async sendData(channel, event, jsonData, isTestingOn)
 	{
-		pusher.trigger(channel, event, jsonData);
+		pusher.trigger(channel, event, jsonData, function(err, req, res)
+		{
+			if(isTestingOn)
+			{
+				return testerInstance.evalResponse(err, req, res);
+			}
+		});
 	}
 
 	// Works like sendData but sends only a string as a message.
-	sendMsg(channel, event, msg)
+	sendMsg(channel, event, msg, isTestingOn)
 	{
-		pusher.trigger(channel, event, { 'message': msg });
+		this.sendData(channel, event, { 'message': msg }, isTestingOn);
 	}
 
-	// Will listen to an event on a channel, and run the callback function on the event's occurence
+	// Will listen to an event and run the callback function on the event's occurence
 	/* listenToEvent(channel, event, callback)
 	{
-		pusher.subscribe(channel).bind(event, callback);
+		pusher.bind(channel, event, callback);
+	}*/
+
+	// Listens to all events and uses the callback function for all of them. The function can take a variable which is the incoming data.
+	/* listenToAllEvents(callback)
+	{
+		pusher.bind_global(callback);
 	}*/
 }
 
@@ -160,10 +224,14 @@ function main()
 // The test cases
 function tests()
 {
-
 	const testChannel = 'private-channel';
 	const testEvnt = 'test';
 	const testMsg = 'This is a test';
+	const JSONTest = { 'message':'Let\'s go', 'test':'tested' };
+
+	// TODO: Fix broken test. The code is working but the test jumps the gun. Will require async and await keywords to solve.
+	testerInstance.testBoolFunction('isSendMessageWorking', evntManager.sendMsg(testChannel, testEvnt, testMsg, true));
+	testerInstance.testBoolFunction('isSendDataWorking', evntManager.sendData(testChannel, testEvnt, JSONTest, true));
 
 	// Currently using readline to halt test until tester ensures a client instance is running.
 	/* userInputReader.question('Press enter when ready to trigger event to run test', (ans) =>
@@ -172,8 +240,16 @@ function tests()
 		userInputReader.close();
 	});*/
 
-	// Send a message to all clients listening to the channel and event declared at the start of tests()
-	evntManager.sendMsg(testChannel, testEvnt, testMsg);
+	/* evntManager.listenToEvent(testChannel, 'pusher:subscription_succeeded', function()
+	{
+		console.log('Successfully connected to channel ' + testChannel);
+	});*/
+
+	/* evntManager.listenToEvent(testChannel, testEvnt, function(data)
+	{
+		console.log('event heard:');
+		console.log(data);
+	});*/
 
 	// Testing if data recieved from client is sent in expected format.
 	/* evntManager.listenToEvent(testChannel, testEvnt, function(data)

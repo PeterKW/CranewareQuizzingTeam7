@@ -62,6 +62,7 @@
           score: 0,
           streak: 0,
         },
+        channels: [],
       };
     },
     components: {
@@ -118,18 +119,47 @@
       {
         this.currentView = "index"
       },
+      // Will subscribe to a channel and add it to the list of channels.
+      // channel is a string
+      // isAnnouncementChan is a boolean. When false means events can only be read.
+      subToChannel(channel, isAnnouncementChan)
+      {
+        // Helps track if channel connection succeeded
+        let subscriptionSuccess = false;
+        let newChannel;
 
-      // Sends a json file to the server
-      // Data is a json file.
-      sendDataToServer(channel, event, data)
-      {
-        this.pusher.trigger(channel, event, data);
+        if(isAnnouncementChan)
+        {
+          // Create or grab an announcement channel.
+          newChannel = this.pusher.subscribe(channel);
+        }
+        else
+        {
+          // Create or grab a private channel.
+          newChannel = this.pusher.subscribe('private-' + channel);
+        }
+
+        // Listens for the event that informs us that the channel was subscribed to.
+        newChannel.bind('pusher:subscription_succeeded', function()
+        {
+          subscriptionSuccess = true;
+        })
+
+        this.channels.push(newChannel);
+
+        return subscriptionSuccess;
       },
-      // Sends a message to the server
-      sendMsgToServer(channel, event, msg)
+      // TODO: implement search function below
+      /*findChannel()
       {
-        // TODO: Fix the error caused on this line
-        this.pusher.trigger(channel, event, JSON.parse({'message': msg}));
+
+      },*/
+
+      // Listens to special events that can be found at https://pusher.com/docs/channels/using_channels/connection#connection-states
+      // Runs the callback function when the event occurs.
+      listenToPusherEvnts(event, callback)
+      {
+        this.pusher.connection.bind(event, callback);
       },
       listenToEvent(channel, event, callback)
       {
@@ -138,41 +168,59 @@
         this.pusher.subscribe(channel).bind(event, callback);
       },
       // Sends a json file through pusher on the specific channel as the specified event.
-      // channel & event are strings
+      // Channel is a channel object
+      // Event is a string
       // jsonData is a json file/object
       sendData(channel, event, jsonData)
       {
-        this.pusher.trigger(channel, event, jsonData);
+        return channel.trigger(event, jsonData);
       },
       // Works like sendData but sends only a string as a message.
       sendMsg(channel, event, msg)
       {
+        console.log(this.pusher);
         this.pusher.trigger(channel, event, { 'message': msg });
-      },
-      // Listens to special events that can be found at https://pusher.com/docs/channels/using_channels/connection#connection-states
-      // Runs the callback function when the event occurs.
-      listenToPusherEvnts(event, callback)
-      {
-        this.pusher.connection.bind(event, callback);
       },
       runTests()
       {
-        const testChannel = 'private-channel';
+        const testChannel = 'tester';
         const testEvnt = 'client-test';
         const testMsg = 'This is a test';
+        const jsonTest = { name: "abd", type: "water" };
         // Tests are stored in an array in the format string 'TestName':bool pass/fail
-        let tests = [];
+        const tests = [];
 
-        // Event that is sent when a connection to the API succeeded.
-        this.listenToEvent(testChannel, 'pusher:subscription_succeeded', function()
+        // Create a channel instance
+        if(this.subToChannel(testChannel, false))
         {
-          console.log('Successfully Connected to Channel');
-        });
-
-        if(this.pusher != null)
-        {
-          this.sendMsg(testChannel, testEvnt, testMsg);
+          // Test to see if channels can be subscribed to has passed
+          tests.push({'ChannelConnectable':true});
+          console.log('Successfully Connected to Channel: ' + testChannel);
+          // If data is sent through the channel
+          if(this.sendData(this.channels[0], testEvnt, jsonTest))
+          {
+            // The data file was sent successfully
+            tests.push({'JSONDelivery':true});
+          }
+          else
+          {
+            // The file failed to be sent.
+            tests.push({'JSONDelivery':false})
+          }
         }
+        else
+        {
+          // Channel failed to be subscribed to.
+          tests.push({'ChannelConnectable':false});
+          tests.push({'JSONDelivery':false})
+        }
+
+        /*if(this.pusher != null)
+        {
+          //this.sendMsg(testChannel, testEvnt, testMsg);
+          this.sendData(testChannel, testEvnt, jsonF);
+        }*/
+
 
         // Tests if the connection to the API was successful
         this.listenToPusherEvnts('connected', (conn) =>
@@ -204,6 +252,7 @@
             tests.push({'RecievingData':false})
           }
 
+          return tests;
         });
       }
     },
