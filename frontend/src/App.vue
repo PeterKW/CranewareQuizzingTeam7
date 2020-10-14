@@ -13,7 +13,6 @@
 </template>
 
 <script>
-<<<<<<< Updated upstream
   import Vue from "vue";
 
   import { BootstrapVue } from "bootstrap-vue";
@@ -130,9 +129,6 @@
       sendMsgToServer(channel, event, msg)
       {
         this.pusher.trigger(channel, event, {'message': msg});
-      },
-      onExitLeaderboard() {
-        this.currentView = "index"
       },
       listenToEvent(channel, event, callback)
       {
