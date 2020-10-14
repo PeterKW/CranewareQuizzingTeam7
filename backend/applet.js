@@ -5,12 +5,12 @@ const bodyparser = require('body-parser');
 const cors = require('cors');
 const crypto = require('crypto');
 // TODO: potentially remove following module and input command set up after.
-const readline = require('readline');
+/* const readline = require('readline');
 
 const userInputReader = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout,
-});
+});*/
 
 // Serves as handler for routing
 const webapp = express();
@@ -79,7 +79,7 @@ webapp.post('/hook', (req, res) =>
 	}
 }*/
 
-/*class ClientEventHandler
+/* class ClientEventHandler
 {
 	const isLoggingOn = false;
 	const connectedChannels = [];
@@ -166,11 +166,11 @@ function tests()
 	const testMsg = 'This is a test';
 
 	// Currently using readline to halt test until tester ensures a client instance is running.
-	userInputReader.question('Press enter when ready to trigger event to run test', (ans) =>
+	/* userInputReader.question('Press enter when ready to trigger event to run test', (ans) =>
 	{
 		console.log(ans);
 		userInputReader.close();
-	});
+	});*/
 
 	// Send a message to all clients listening to the channel and event declared at the start of tests()
 	evntManager.sendMsg(testChannel, testEvnt, testMsg);

@@ -128,7 +128,8 @@
       // Sends a message to the server
       sendMsgToServer(channel, event, msg)
       {
-        this.pusher.trigger(channel, event, {'message': msg});
+        // TODO: Fix the error caused on this line
+        this.pusher.trigger(channel, event, JSON.parse({'message': msg}));
       },
       listenToEvent(channel, event, callback)
       {
@@ -157,10 +158,21 @@
       runTests()
       {
         const testChannel = 'private-channel';
-        const testEvnt = 'test';
+        const testEvnt = 'client-test';
         const testMsg = 'This is a test';
         // Tests are stored in an array in the format string 'TestName':bool pass/fail
         let tests = [];
+
+        // Event that is sent when a connection to the API succeeded.
+        this.listenToEvent(testChannel, 'pusher:subscription_succeeded', function()
+        {
+          console.log('Successfully Connected to Channel');
+        });
+
+        if(this.pusher != null)
+        {
+          this.sendMsg(testChannel, testEvnt, testMsg);
+        }
 
         // Tests if the connection to the API was successful
         this.listenToPusherEvnts('connected', (conn) =>
@@ -176,7 +188,9 @@
           tests.push({'APIConnTest':false});
         });
 
-        // Tests if data is being recieved from the server. Sends the same data to server to ensure data is sent back and forth correctly.
+        // Tests if data is being sent and recieved to and from the server. Sends the same data to server to ensure data is sent back and forth correctly.
+        // this.sendMsg(testChannel, testEvnt, testMsg);
+
         this.listenToEvent(testChannel, testEvnt, function(data){
           console.log("Recieved the following data:");
           console.log(data);
@@ -184,7 +198,6 @@
           if(data.message == testMsg)
           {
             tests.push({'RecievingData':true});
-            this.sendMsg(testChannel, testEvnt, data.message);
           }
           else
           {
