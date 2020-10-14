@@ -51,51 +51,12 @@ webapp.post('/pusher/auth', function(req, res)
 // Recieve data from clients
 webapp.post('/hook', (req, res) =>
 {
-<<<<<<< Updated upstream
-	switch (req.message) {
-		case expression:
-
-			break;
-		default:
-
-	}
-=======
 	console.log(req);
->>>>>>> Stashed changes
 	res.sendStatus(200);
 
-<<<<<<< Updated upstream
 });
 
-// Triggers an event with a message to all clients subscribed to the specified channel.
-function sendMsgEvent(channel, event, message)
-{
-	pusher.trigger(channel, event, {
-		'message': message,
-	});
-}
-
-// Triggers event with a json object of data to all clients subscribes to channel
-function sendJSONEvent(channel, event, json)
-{
-	pusher.trigger(channel, event, { json });
-}
-
-// TODO: Replace the following with more meaningful function.
-// Temporary event msg
-sendMsgEvent('private-channel', 'test', 'This is a test');
-
-// Listening to port 5000
-webapp.listen(5000);
-
-console.log('Application started.');
-
-class Server
-{
-
-}
-
-class Player
+/* class Player
 {
 	constructor()
 	{
@@ -115,8 +76,8 @@ class Player
 	function sendAnswerChoice(option)
 	{
 
-	}*/
-}
+	}
+}*/
 
 /*class ClientEventHandler
 {
@@ -158,7 +119,7 @@ class Player
 
 	}
 }*/
-=======
+
 // Listening to port 5000
 webapp.listen(5000);
 
@@ -215,7 +176,7 @@ function tests()
 	evntManager.sendMsg(testChannel, testEvnt, testMsg);
 
 	// Testing if data recieved from client is sent in expected format.
-	/*evntManager.listenToEvent(testChannel, testEvnt, function(data)
+	/* evntManager.listenToEvent(testChannel, testEvnt, function(data)
 	{
 		return(data.message == testMsg);
 	});*/
@@ -223,4 +184,3 @@ function tests()
 }
 
 main();
->>>>>>> Stashed changes
