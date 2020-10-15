@@ -254,6 +254,8 @@
 
           return tests;
         });
+
+        console.log(tests);
       }
     },
   /*mounted()
