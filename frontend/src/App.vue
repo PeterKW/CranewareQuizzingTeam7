@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <GradientContainer>
+    <GradientContainer :slider="sliderValue">
       <transition name="fade" mode="out-in">
-        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-if="currentView == 'index'"> </Index>
+        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-on:updateBackground="updateBackground" v-on:updateSettings="updateSettings" v-if="currentView == 'index'"> </Index>
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
          <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
-        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players"></Quiz>
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :options="settings"></Quiz>
         <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="players"></Leaderboard>
       </transition>
     </GradientContainer>
@@ -15,10 +15,11 @@
 <script>
 import Vue from "vue";
 
-import { BootstrapVue } from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons)
 
 // eslint-disable-next-line no-unused-vars
 import Pusher from "pusher-js";
@@ -42,6 +43,8 @@ export default {
       players: [],
       gamePin: "",
 
+      sliderValue: '',
+      settings: '',
       pusher: null,
       eventReader: null
     };
@@ -117,6 +120,15 @@ export default {
 
     onExitLeaderboard() {
       this.currentView = "index"
+    },
+
+    updateBackground(sliderValue) {
+      this.sliderValue = sliderValue
+      this.$forceUpdate();
+    },
+
+    updateSettings(updateSettings){
+      this.settings = updateSettings
     }
   },
 };
