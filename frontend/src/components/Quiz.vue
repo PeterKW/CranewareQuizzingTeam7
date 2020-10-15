@@ -13,9 +13,9 @@
         <b-icon icon="info-circle-fill" aria-label="Help"></b-icon>
       </b-button>
     </b-row>
-    
+
   </b-container>
-  
+
 </template>
 
 <script>
@@ -164,9 +164,9 @@ export default {
             this.playSound(correct)
           }
         }
-          
-       
-        
+
+
+
       }
       else {
         if(this.options != null)
@@ -192,6 +192,7 @@ export default {
           this.resetNeeded = true
           break;
       }
+    },
 
     playSound (src) {
       if(src == music){
@@ -213,7 +214,7 @@ export default {
           .catch(error => {
           console.log  (error);
           });
-        } 
+        }
       }
 
   },
@@ -222,7 +223,7 @@ export default {
     if(this.options.includes("music")){
       this.playSound(music)
     }
-      
+
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
         this.nextQuestion()

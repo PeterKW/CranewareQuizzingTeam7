@@ -41,8 +41,8 @@
                       </b-button>
                     </div>
                   <div>
-                    <b-button id="show-btn" variant="primary" class="button_base b09_electric" @click="$bvModal.show('bv-modal')">Settings</b-button>
-                    
+                    <b-button style="margin-top:10px" id="show-btn" variant="primary" class="button_base b09_electric" @click="$bvModal.show('bv-modal')">Settings</b-button>
+
                     <!--Settings Modal-->
                     <b-modal id="bv-modal" hide-footer>
                       <template v-slot:modal-title>
@@ -108,7 +108,7 @@ export default {
       this.$emit('onCreateLobby', this.username);
     },
     updateBackground() {
-      this.$emit('updateBackground', this.sliderValue)     
+      this.$emit('updateBackground', this.sliderValue)
     },
     updateSettings(){
       this.$emit('updateSettings', this.selected)
