@@ -92,6 +92,8 @@
 
         this.gamePin = "ABCDEF"
         this.currentView = "lobby";
+
+        // this.subToChannel(, false)
       },
       // eslint-disable-next-line no-unused-vars
       onLobbyStart(code)

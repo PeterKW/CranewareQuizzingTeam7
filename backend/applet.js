@@ -48,26 +48,18 @@ webapp.post('/pusher/auth', function(req, res)
 	res.send(auth);
 });
 
-// Recieve data from clients
-webapp.post('/hook', (req, res) =>
+class Player
 {
-	console.log(req);
-	res.sendStatus(200);
-
-});
-
-/* class Player
-{
-	constructor()
+	constructor(data)
 	{
-		const name = null;
-		const id = 0;
+		const name = data.name;
+		const id = data.user_id;
 		const score = 0;
-		const streak =0 ;
+		const streak = 0 ;
 	}
 
 	// Should send lobbyCode to server
-	/*function connectToLobby(lobbyCode)
+	/* function connectToLobby(lobbyCode)
 	{
 
 	}
@@ -76,8 +68,124 @@ webapp.post('/hook', (req, res) =>
 	function sendAnswerChoice(option)
 	{
 
+	}*/
+}
+
+class Lobby
+{
+	constructor(code, lobbyName, host)
+	{
+		this.players = [];
+		this.name = lobbyName;
+		this.code = code; // this.generateCode();
+		this.host = host;
 	}
-}*/
+}
+
+// This class handles events to and from the client and server.
+class EventHandler
+{
+	// Sends a json file through pusher on the specific channel as the specified event.
+	// channel & event are strings
+	// jsonData is a json file/object
+	// isTestingOn is a bool which determines if the code should be tested.
+	async sendData(channel, event, jsonData, isTestingOn)
+	{
+		pusher.trigger(channel, event, jsonData, function(err, req, res)
+		{
+			if(isTestingOn)
+			{
+				return testerInstance.evalResponse(err, req, res);
+			}
+		});
+	}
+
+	// Works like sendData but sends only a string as a message.
+	sendMsg(channel, event, msg, isTestingOn)
+	{
+		this.sendData(channel, event, { 'message': msg }, isTestingOn);
+	}
+
+	// Will listen to an event and run the callback function on the event's occurence
+	/* listenToEvent(channel, event, callback)
+	{
+		pusher.bind(channel, event, callback);
+	}*/
+
+	// Listens to all events and uses the callback function for all of them. The function can take a variable which is the incoming data.
+	/* listenToAllEvents(callback)
+	{
+		pusher.bind_global(callback);
+	}*/
+}
+
+// This is a global EventHandler
+const evntManager = new EventHandler();
+
+// Recieve data from clients
+webapp.post('/hook', (req, res) =>
+{
+	console.log(req.body);
+	const firstEvent = req.body.events[0];
+	const data = JSON.parse(firstEvent.data);
+	const code = firstEvent.channel.replace('private-', '');
+	switch(firstEvent.event)
+	{
+	case 'client-new-lobby':
+		createLobby(data);
+		break;
+	case 'client-join':
+		joinLobby(code, data);
+		break;
+	}
+
+	// if(firstEvent.startsWith())
+
+	res.sendStatus(200);
+});
+
+const lobbies = {};
+// Rmove This
+// createLobby({ name: 'Dancho lobby', host: 'zyq' });
+
+function joinLobby(code, data)
+{
+	if(lobbies[code] == null)
+	{
+		console.log('\nPlayer failed to join lobby due to lobby not existing.\n');
+		return;
+	}
+
+	const newPlayer = new Player(data);
+
+	if (lobbies[code].players.length == 0)
+	{
+		lobbies[code].host = newPlayer.id;
+	}
+	lobbies[code].players.push(newPlayer);
+	getLobbySize(lobbies[code]);
+	evntManager.sendMsg('private-' + data.user_id, 'approved', '', true);
+}
+
+function getLobbySize(lobby)
+{
+	console.log(lobby.players.length);
+}
+
+function createLobby(data)
+{
+	const code = generateCode();
+	const newLobby = new Lobby(code, data.name, data.host);
+
+
+	lobbies[code] = newLobby;
+	evntManager.sendMsg('private-lobby-manager', 'lobby-created', newLobby.code, true);
+}
+
+function generateCode()
+{
+	return 'abcd'; // crypto.randomBytes(6).toString('hex').slice(0, 4);
+}
 
 /* class ClientEventHandler
 {
@@ -119,9 +227,6 @@ webapp.post('/hook', (req, res) =>
 
 	}
 }*/
-
-// Listening to port 5000
-webapp.listen(5000);
 
 // Helps to run tests.
 class Tester
@@ -175,45 +280,7 @@ class Tester
 
 const testerInstance = new Tester();
 
-// This class handles events to and from the client and server.
-class EventHandler
-{
-	// Sends a json file through pusher on the specific channel as the specified event.
-	// channel & event are strings
-	// jsonData is a json file/object
-	// isTestingOn is a bool which determines if the code should be tested.
-	async sendData(channel, event, jsonData, isTestingOn)
-	{
-		pusher.trigger(channel, event, jsonData, function(err, req, res)
-		{
-			if(isTestingOn)
-			{
-				return testerInstance.evalResponse(err, req, res);
-			}
-		});
-	}
 
-	// Works like sendData but sends only a string as a message.
-	sendMsg(channel, event, msg, isTestingOn)
-	{
-		this.sendData(channel, event, { 'message': msg }, isTestingOn);
-	}
-
-	// Will listen to an event and run the callback function on the event's occurence
-	/* listenToEvent(channel, event, callback)
-	{
-		pusher.bind(channel, event, callback);
-	}*/
-
-	// Listens to all events and uses the callback function for all of them. The function can take a variable which is the incoming data.
-	/* listenToAllEvents(callback)
-	{
-		pusher.bind_global(callback);
-	}*/
-}
-
-// This is a global EventHandler
-const evntManager = new EventHandler();
 
 // Is the main method that runs the usual server operation.
 function main()
@@ -258,5 +325,8 @@ function tests()
 	});*/
 
 }
+
+// Listening to port 5000
+webapp.listen(5000);
 
 main();
