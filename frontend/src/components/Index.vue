@@ -114,6 +114,9 @@ export default {
     updateSettings(){
       this.$emit('updateSettings', this.selected)
     }
+  },
+  mounted() {
+    this.updateSettings()
   }
 }
 </script>
