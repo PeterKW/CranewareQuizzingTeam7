@@ -4,12 +4,12 @@
       <h2 class="question w-100">{{question}}</h2>
     </b-row>
     <b-row style="margin-bottom:10px">
-      <b-col style="margin-right:10px;"><b-button @click="onAnswer('A')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
-      <b-col><b-button @click="onAnswer('B')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button v-if=!disableA @click="onAnswer('A')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
+      <b-col><b-button v-if=!disableB @click="onAnswer('B')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col style="margin-right:10px;"><b-button @click="onAnswer('C')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
-      <b-col><b-button @click="onAnswer('D')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button v-if=!disableC @click="onAnswer('C')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
+      <b-col><b-button v-if=!disableD @click="onAnswer('D')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
     </b-row>
   </div>
 </template>
@@ -17,13 +17,97 @@
 <script>
 export default {
   name: 'QuizQuestion',
+
+  data: function() {
+    return {
+      disableA: false,
+      disableB: false,
+      disableC: false,
+      disableD: false,
+    };
+  },
+
   props: [
       "question","a","b","c","d"
   ],
   methods: {
+
+    //unhide all the buttons, used only for 50/50 power
+    resetButtons() {
+      this.disableA = false;
+      this.disableB = false;
+      this.disableC = false;
+      this.disableD = false;
+    },
+
     onAnswer(answer) {
       this.$emit('answer', answer);
-    }
+      this.resetButtons(); //make sure all buttons visisble
+    },
+
+    /**
+    * Take in a answer (A, B, C or D) and hide two other random buttons. I.e if
+    * The answer passed in is A then two of B, C or D will be disabled at random
+    * Commented out statements are for debugging purposes
+    */
+    disableButtons(answer) {
+
+      //console.log("correct answer");
+      //console.log(answer);
+
+      //remove real answer from array of letters to remove
+      var index = this.letterToNum(answer);
+      var answerArray = ['A', 'B', 'C', 'D'];
+      answerArray.splice(index, 1);
+
+      //console.log("after answer has been removed");
+      //console.log(answerArray);
+
+      //remove and turn off two buttons
+
+      var firstSplice = Math.floor((Math.random() * 3));
+      //console.log("first splice index");
+      //console.log(firstSplice);
+      this.disableButton(answerArray[firstSplice]);
+      answerArray.splice(firstSplice, 1);
+
+      //console.log(answerArray);
+
+      var secondSplice = Math.floor((Math.random() * 2));
+      //console.log("second splice index");
+      //console.log(secondSplice);
+      this.disableButton(answerArray[secondSplice]);
+
+
+      //console.log("array after splicing");
+      //console.log(answerArray);
+    },
+
+    //Converts letter into ASCII and take it away from 65, 65 is the code for
+    //a capital A, so A returns 0, B: 1 etc
+    letterToNum(letter) {
+      return 65 - letter.charCodeAt(0);
+    },
+
+    //hides the specified answer
+    disableButton(letter) {
+      //console.log("Letter to be disabled");
+      //console.log(letter);
+      switch (letter) {
+        case 'A':
+          this.disableA = true
+          break;
+        case 'B':
+          this.disableB = true
+          break;
+        case 'C':
+          this.disableC = true
+          break;
+        case 'D':
+          this.disableD = true
+          break;
+      }
+    },
   }
 }
 </script>
@@ -86,16 +170,16 @@ $btns: (
   display: block;
   line-height: 1em; /* a */
   min-height: 3em; /* a x number of line to show (ex : 2 line)  */
-  
+
   & + & {
     margin-top: 1rem;
   }
-  
+
   span {
     position: relative;
     z-index: 1;
   }
-  
+
   &:before {
     content: "";
     background-color: #21D4FD;
@@ -107,13 +191,13 @@ $btns: (
     transform: scale(4) translateX(-100%);
     transition: all $time * 1.5 ease-out;
   }
-  
+
   &:hover,
   &:focus,
-  &:active {    
+  &:active {
     &:before {
       transform: scale(4) translate(37%);
-    } 
+    }
   }
 }
 
@@ -122,16 +206,16 @@ $btns: (
   .btn--#{$bname} {
     background-color: map-get($bcolors, gstart);
     color: map-get($bcolors, tstart);
-  
+
     &:before {
       background-color: map-get($bcolors, gend);
       background-image: linear-gradient(to right, map-get($bcolors, gend) 30%, map-get($bcolors, gstart) 100%);
       position: absolute;
     }
-    
+
     &:hover,
     &:focus,
-    &:active {    
+    &:active {
       color: map-get($bcolors, tend);
     }
   }
