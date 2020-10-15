@@ -88,7 +88,6 @@ export default {
         { text: 'Music', value: 'music' },
         { text: 'Sound Effects', value: 'effect' },
         { text: 'Vibrations', value: 'vibration', disabled: !"vibrate" in navigator},
-        { text: 'Placeholder', value: 'ph' }
       ],
     }
   },

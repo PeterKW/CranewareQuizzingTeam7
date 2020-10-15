@@ -110,7 +110,10 @@ export default {
 
     endQuiz() {
       clearInterval(this.timerInstance);
-      this.musicAudio.pause()
+      if(this.options.includes("music")){
+        this.musicAudio.pause()
+      }
+      
       this.$emit('done');
     },
 
@@ -163,13 +166,12 @@ export default {
 
     playSound (src) {
       if(src == music){
-        this.musicAudio = new Audio();
-        this.musicAudio.src = src;
-        this.musicAudio.loop = true
-        this.musicAudio.volume = 0.1
-        this.musicAudio.load();
-        this.musicAudio.play()
-        
+          this.musicAudio = new Audio();
+          this.musicAudio.src = src;
+          this.musicAudio.loop = true
+          this.musicAudio.volume = 0.1
+          this.musicAudio.load();
+          this.musicAudio.play()
       }
       else{
         this.sound = new Audio();
@@ -188,8 +190,10 @@ export default {
   },
   mounted() {
     // TODO: Populate quiz questions from DB
-
-    this.playSound(music)
+    if(this.options.includes("music")){
+      this.playSound(music)
+    }
+      
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
         this.nextQuestion()
