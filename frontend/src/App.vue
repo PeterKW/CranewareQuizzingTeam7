@@ -15,10 +15,11 @@
 <script>
 import Vue from "vue";
 
-import { BootstrapVue } from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons)
 
 // eslint-disable-next-line no-unused-vars
 import Pusher from "pusher-js";
@@ -42,7 +43,8 @@ export default {
       players: [],
       gamePin: "",
 
-
+      sliderValue: '',
+      settings: '',
       pusher: null,
       eventReader: null
     };
@@ -124,7 +126,7 @@ export default {
       this.sliderValue = sliderValue
       this.$forceUpdate();
     },
-    
+
     updateSettings(updateSettings){
       this.settings = updateSettings
     }

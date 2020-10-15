@@ -83,7 +83,7 @@ export default {
       username: "",
       gamePin: "",
       sliderValue: 50,
-      selected: [],
+      selected: ["music", "effect", "vibration"],
       options: [
         { text: 'Music', value: 'music' },
         { text: 'Sound Effects', value: 'effect' },

@@ -10,13 +10,22 @@
 
           <QuizScore v-if="answered" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak"/>
       </b-col>      
+      <b-button v-b-tooltip.hover title="Sound effects & music obtained from www.zapsplat.com" size="lg" variant="primary" class="mb-2 license">
+        <b-icon icon="info-circle-fill" aria-label="Help"></b-icon>
+      </b-button>
     </b-row>
+    
   </b-container>
+  
 </template>
 
 <script>
 import QuizQuestion from "./QuizQuestion.vue";
 import QuizScore from "./QuizScore.vue";
+const correct = require("../assets/correct.mp3");
+const incorrect = require("../assets/incorrect.mp3");
+const music = require("../assets/music.mp3");
+
 
 export default {
   name: 'Quiz',
@@ -32,7 +41,7 @@ export default {
       timerInstance: null,
       currQuestion: 0,
       answered: false,
-
+  
       //QuizScore
       verdict: "",
       questionScore: 0,
@@ -101,6 +110,7 @@ export default {
 
     endQuiz() {
       clearInterval(this.timerInstance);
+      this.musicAudio.pause()
       this.$emit('done');
     },
 
@@ -118,7 +128,7 @@ export default {
       // TODO: This will go server side in the future
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
-      
+        
         this.scoreStreak = this.scoreStreak + 1;
         this.questionScore = this.timer * 100;
         if(this.scoreStreak > 1){
@@ -126,25 +136,60 @@ export default {
         }
         this.players[0].score += this.questionScore;
 
-        if(this.options.includes("vibration")){
-          if (navigator.vibrate) {
-            // vibration API supported
-            window.navigator.vibrate(500);
+        if(this.options != null){
+          if(this.options.includes("vibration")){
+            if (navigator.vibrate) {
+              // vibration API supported
+              window.navigator.vibrate(500);
+            }
           }
-      }
+          if(this.options.includes("effect")){
+            this.playSound(correct)
+          }
+        }
+          
        
         
       }
       else {
+        if(this.options != null)
+          if(this.options.includes("effect"))
+            this.playSound(incorrect)
         this.verdict = "Incorrect!"
         this.questionScore = 0;
         this.scoreStreak = 0;
       }
-    }
+    },
+
+    playSound (src) {
+      if(src == music){
+        this.musicAudio = new Audio();
+        this.musicAudio.src = src;
+        this.musicAudio.loop = true
+        this.musicAudio.volume = 0.1
+        this.musicAudio.load();
+        this.musicAudio.play()
+        
+      }
+      else{
+        this.sound = new Audio();
+        this.sound.src = src;
+        this.sound.load();
+        this.sound.play()
+          .then(() => {
+            // Audio is playing.
+          })
+          .catch(error => {
+          console.log  (error);
+          });
+        } 
+      }
+
   },
   mounted() {
     // TODO: Populate quiz questions from DB
 
+    this.playSound(music)
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
         this.nextQuestion()
@@ -176,6 +221,12 @@ export default {
   font-size:220%;
   min-width: 10vh;
   margin-bottom:0;
+}
+
+.license{
+  position: absolute;
+  display: fixed;
+  bottom: 0;
 }
 
 @media (max-width: 768px) {
