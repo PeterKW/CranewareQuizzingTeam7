@@ -5,11 +5,10 @@
           <b-row class="w-100" style="margin-bottom: 5px;">
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
-          
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
-
           <QuizScore v-if="answered" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak"/>
-      </b-col>      
+          <PowerBar  class= "powers" v-if="!answered" v-on:power="onPower"/>
+      </b-col>
       <b-button v-b-tooltip.hover title="Sound effects & music obtained from www.zapsplat.com" size="lg" variant="primary" class="mb-2 license">
         <b-icon icon="info-circle-fill" aria-label="Help"></b-icon>
       </b-button>
@@ -25,13 +24,15 @@ import QuizScore from "./QuizScore.vue";
 const correct = require("../assets/correct.mp3");
 const incorrect = require("../assets/incorrect.mp3");
 const music = require("../assets/music.mp3");
+import PowerBar from "./PowerBar.vue";
 
 
 export default {
   name: 'Quiz',
   components: {
     QuizQuestion,
-    QuizScore
+    PowerBar,
+    QuizScore,
   },
   props: ["players", "options"],
   data() {
@@ -41,7 +42,9 @@ export default {
       timerInstance: null,
       currQuestion: 0,
       answered: false,
-  
+      doublePoints: false,
+      resetNeeded: false,
+
       //QuizScore
       verdict: "",
       questionScore: 0,
@@ -95,26 +98,32 @@ export default {
   methods: {
     nextQuestion(){
       if(this.answered == false){
-        this.scoreStreak = 0;
+        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
+          this.$children[0].resetButtons()
+          this.resetNeeded = false
+        }
+        this.scoreStreak = 0
       }
       this.answered = false
-      
+
 
       if(this.currQuestion + 1 > this.quiz.length - 1) {
-        this.endQuiz()
+        this.endQuiz();
       }
       else {
+
         this.currQuestion++
       }
     },
 
     endQuiz() {
-      clearInterval(this.timerInstance);
       if(this.options.includes("music")){
         this.musicAudio.pause()
       }
-      
-      this.$emit('done');
+      //reset all the powers
+      this.$children[1].resetButtons()
+      clearInterval(this.timerInstance)
+      this.$emit('done')
     },
 
     onAnswerQuestion(answer) {
@@ -127,15 +136,20 @@ export default {
         'message': answer,
       });*/
 
-      
+
       // TODO: This will go server side in the future
       if(this.quiz[this.currQuestion]["answer"] == answer){
         this.verdict = "Correct!"
-        
-        this.scoreStreak = this.scoreStreak + 1;
-        this.questionScore = this.timer * 100;
+
+        if (this.doublePoints) {
+          this.questionScore = this.timer * 100 * 2
+        } else {
+          this.questionScore = this.timer * 100
+        }
+        this.scoreStreak = this.scoreStreak + 1
+
         if(this.scoreStreak > 1){
-          this.questionScore = this.questionScore + (100 * this.scoreStreak);
+          this.questionScore = this.questionScore + (100 * this.scoreStreak)
         }
         this.players[0].score += this.questionScore;
 
@@ -163,6 +177,21 @@ export default {
         this.scoreStreak = 0;
       }
     },
+
+    //Function is responsible for Handling the power abilities
+    onPower(power) {
+
+      switch (power) {
+        case 'doublep':
+          this.doublePoints = true
+          break;
+
+        case '50/50':
+          //call the first childs (which is the QuizQuestion.vue file) disableButtons method
+          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
+          this.resetNeeded = true
+          break;
+      }
 
     playSound (src) {
       if(src == music){
@@ -197,7 +226,8 @@ export default {
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
         this.nextQuestion()
-        this.timer = this.timePerQ;
+        this.doublePoints = false
+        this.timer = this.timePerQ
       }
     }, 1000)
   }
@@ -223,6 +253,14 @@ export default {
   border-radius:10px;
   padding:10px;
   font-size:220%;
+  min-width: 10vh;
+  margin-bottom:0;
+}
+
+.powers {
+  background-color: #fff;
+  border-radius:10px;
+  padding:5px;
   min-width: 10vh;
   margin-bottom:0;
 }
