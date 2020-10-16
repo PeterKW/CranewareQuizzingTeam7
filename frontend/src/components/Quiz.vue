@@ -34,7 +34,7 @@ export default {
     PowerBar,
     QuizScore,
   },
-  props: ["players", "options", "volume"],
+  props: ["players", "options"],
   data() {
     return {
       timePerQ: 10,
@@ -195,14 +195,13 @@ export default {
           this.musicAudio = new Audio();
           this.musicAudio.src = src;
           this.musicAudio.loop = true
-          this.musicAudio.volume = 0.001 * this.volume[0]
+          this.musicAudio.volume = 0.1
           this.musicAudio.load();
           this.musicAudio.play()
       }
       else{
         this.sound = new Audio();
         this.sound.src = src;
-        this.sound.volume = 0.005 * this.volume[1]
         this.sound.load();
         this.sound.play()
           .then(() => {
