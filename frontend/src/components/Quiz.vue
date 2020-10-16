@@ -195,7 +195,6 @@ export default {
     },
 
     playSound (src) {
-      alert(this.volume)
       if(src == music){
           this.musicAudio = new Audio();
           this.musicAudio.src = src;
