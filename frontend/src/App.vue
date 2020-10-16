@@ -60,8 +60,8 @@ export default {
           score: 0,
           streak: 0,
         },
-        channels: []
-      volume: ''
+        channels: [],
+        volume: ''
     };
   },
   
@@ -259,15 +259,6 @@ export default {
         console.log(tests);
       }
     },
-  /*mounted()
-  {
-    let evntHand = this.eventhandler;
-    evntHand = new ClientEventHandler(true);
-    evntHand.connectToChannel('private-channel');
-    evntHand.listenForEvent(0,'test', function(){console.log(evntHand);console.log('Old handler:');console.log(this.eventhandler);});
-    this.eventhandler = evntHand;*/
-
-
     updateBackground(sliderValue) {
       this.sliderValue = sliderValue
       this.$forceUpdate();
@@ -279,7 +270,14 @@ export default {
     updateVolume(updateVolume){
       this.volume = updateVolume
     }
-  },
+  /*mounted()
+  {
+    let evntHand = this.eventhandler;
+    evntHand = new ClientEventHandler(true);
+    evntHand.connectToChannel('private-channel');
+    evntHand.listenForEvent(0,'test', function(){console.log(evntHand);console.log('Old handler:');console.log(this.eventhandler);});
+    this.eventhandler = evntHand;
+  },*/
 };
 </script>
 
