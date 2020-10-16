@@ -40,6 +40,29 @@
                         Create Lobby
                       </b-button>
                     </div>
+                  <div>
+                    <b-button style="margin-top:10px" id="show-btn" variant="primary" class="button_base b09_electric" @click="$bvModal.show('bv-modal')">Settings</b-button>
+
+                    <!--Settings Modal-->
+                    <b-modal id="bv-modal" hide-footer>
+                      <template v-slot:modal-title>
+                        <code>Settings</code>
+                      </template>
+                           <b-form-group label="Audio">
+                            <b-form-checkbox-group
+                                v-model="selected"
+                                :options="options"
+                                switches
+                                stacked
+                                v-on:input="updateSettings"
+                              ></b-form-checkbox-group>
+                            </b-form-group>
+                             <b-form-group label="Background Speed">
+                              <vue-slider v-model="sliderValue"  @change="updateBackground"></vue-slider>
+                            </b-form-group>
+                      <b-button class="mt-3" block @click="$bvModal.hide('bv-modal')">Close</b-button>
+                    </b-modal>
+                  </div>
                 </b-form>
             </div>
           </b-col>
@@ -51,13 +74,25 @@
 <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
 <script>
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
 export default {
   name: 'Index',
   data: function() {
     return {
       username: "",
-      gamePin: ""
+      gamePin: "",
+      sliderValue: 50,
+      selected: ["music", "effect", "vibration"],
+      options: [
+        { text: 'Music', value: 'music' },
+        { text: 'Sound Effects', value: 'effect' },
+        { text: 'Vibrations', value: 'vibration', disabled: !"vibrate" in navigator},
+      ],
     }
+  },
+  components: {
+    VueSlider
   },
   methods: {
     onJoinLobby() {
@@ -71,7 +106,16 @@ export default {
       if(!this.username){ alert("Enter a username"); return;}
 
       this.$emit('onCreateLobby', this.username);
+    },
+    updateBackground() {
+      this.$emit('updateBackground', this.sliderValue)
+    },
+    updateSettings(){
+      this.$emit('updateSettings', this.selected)
     }
+  },
+  mounted() {
+    this.updateSettings()
   }
 }
 </script>

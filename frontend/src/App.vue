@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <GradientContainer>
+    <GradientContainer :slider="sliderValue">
       <transition name="fade" mode="out-in">
-        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-if="currentView == 'index'"> </Index>
+        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-on:updateBackground="updateBackground" v-on:updateSettings="updateSettings" v-if="currentView == 'index'"> </Index>
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
          <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
-        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players"></Quiz>
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :options="settings"></Quiz>
         <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="players"></Leaderboard>
       </transition>
     </GradientContainer>
@@ -13,75 +13,73 @@
 </template>
 
 <script>
-  import Vue from "vue";
+import Vue from "vue";
 
-  import { BootstrapVue } from "bootstrap-vue";
-  import "bootstrap/dist/css/bootstrap.css";
-  import "bootstrap-vue/dist/bootstrap-vue.css";
-  Vue.use(BootstrapVue);
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons)
 
-  // eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+import Pusher from "pusher-js";
 
-  // Pusher included for event system
-  import Pusher from "pusher-js";
+// Views
+import Index from "./components/Index.vue";
+import Lobby from "./components/Lobby.vue";
+import Quiz from "./components/Quiz.vue";
+import Leaderboard from "./components/Leaderboard.vue";
 
-  // Views
-  import Index from "./components/Index.vue";
-  import Lobby from "./components/Lobby.vue";
-  import Quiz from "./components/Quiz.vue";
-  import Leaderboard from "./components/Leaderboard.vue";
+// Components
+import GradientContainer from "./components/GradientContainer.vue";
 
-  // Components
-  import GradientContainer from "./components/GradientContainer.vue";
+export default {
+  name: "App",
+  data: function() {
+    return {
+      currentView: "index",
 
+      // Vars for passing into Lobby
+      players: [],
+      gamePin: "",
 
-
-  export default
-  {
-    name: "App",
-    data: function()
-    {
-      return{
-        currentView: "index",
-
-        // Vars for passing into Lobby
-        players: [],
-        gamePin: "",
-
-        // Instantiates a Pusher connection.
-        pusher: new Pusher('072127b07acd646fc5ec',
-        {
-          cluster: 'eu',
-          useTLS: true,
-          authEndpoint: 'http://localhost:5000/pusher/auth'
-        }),
-        eventhandler: null,
-        player: {
+      sliderValue: '',
+      settings: '',
+      // Instantiates a Pusher connection.
+      pusher: new Pusher('072127b07acd646fc5ec',
+      {
+        cluster: 'eu',
+        useTLS: true,
+        authEndpoint: 'http://localhost:5000/pusher/auth'
+      }),
+      eventReader: null,
+      player: {
           name: null,
           id: 0,
           score: 0,
           streak: 0,
         },
         channels: [],
-      };
+    };
+  },
+  
+  components: {
+    Index,
+    Lobby,
+    Quiz,
+    Leaderboard,
+    GradientContainer
+  },
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+    onJoinLobby(username, gamePin) {
+      // TODO: Validate username and game pin and display lobby view
     },
-    components: {
-      Index,
-      Lobby,
-      Quiz,
-      Leaderboard,
-      GradientContainer
+    // eslint-disable-next-line no-unused-vars
+    onFindLobby(username) {
+      // TODO: Find lobby view shown here
     },
-    methods: {
-      // eslint-disable-next-line no-unused-vars
-      onJoinLobby(username, gamePin) {
-        // TODO: Validate username and game pin and display lobby view
-      },
-      // eslint-disable-next-line no-unused-vars
-      onFindLobby(username) {
-        // TODO: Find lobby view shown here
-      },
-      onCreateLobby() {
+    onCreateLobby() {
         // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
         // TODO: This block is temporary and a test
         // Logs all network communication information to console
@@ -116,7 +114,6 @@
       {
         this.currentView = "leaderboard"
       },
-
       onExitLeaderboard()
       {
         this.currentView = "index"
@@ -268,11 +265,17 @@
     evntHand.listenForEvent(0,'test', function(){console.log(evntHand);console.log('Old handler:');console.log(this.eventhandler);});
     this.eventhandler = evntHand;*/
 
-    /*let externalScript = document.createElement('script')
-    externalScript.setAttribute('src', 'C:/Users/adidu/Desktop/Assignments/CranewareQuizzingTeam7/frontend/src/classes.js')
-    document.head.appendChild(externalScript)
-  }*/
-  };
+
+    updateBackground(sliderValue) {
+      this.sliderValue = sliderValue
+      this.$forceUpdate();
+    },
+
+    updateSettings(updateSettings){
+      this.settings = updateSettings
+    }
+  },
+};
 </script>
 
 <style>
