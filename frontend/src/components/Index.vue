@@ -61,9 +61,9 @@
                                   </b-col>
 
                                   <b-col style="margin-top:10px">
-                                    <vue-slider v-model="musicVolume" :disabled="!this.selected.includes('music')"></vue-slider>
+                                    <vue-slider v-model="musicVolume" :disabled="!this.selected.includes('music') "  @change="updateVolume"></vue-slider>
                                     <hr>
-                                    <vue-slider v-model="effectsVolume" :disabled="!this.selected.includes('effect')"></vue-slider>
+                                    <vue-slider v-model="effectsVolume" :disabled="!this.selected.includes('effect')"  @change="updateVolume"></vue-slider>
                                   </b-col>
                                 </b-row>
                             
@@ -125,10 +125,15 @@ export default {
     },
     updateSettings(){
       this.$emit('updateSettings', this.selected)
+    },
+    updateVolume(){
+      this.volume = [this.musicVolume, this.effectsVolume]
+      this.$emit('updateVolume', this.volume)
     }
   },
   mounted() {
-    this.updateSettings()
+    this.updateSettings(),
+    this.updateVolume()
   }
 }
 </script>
