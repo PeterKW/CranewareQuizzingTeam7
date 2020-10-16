@@ -98,11 +98,10 @@ export default {
   methods: {
     nextQuestion(){
       if(this.answered == false){
-        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
-          this.$children[0].resetButtons()
-          this.resetNeeded = false
-        }
         this.scoreStreak = 0
+      }
+      else {
+        this.resetNeeded = false
       }
       this.answered = false
 
@@ -111,7 +110,6 @@ export default {
         this.endQuiz();
       }
       else {
-
         this.currQuestion++
       }
     },
@@ -120,8 +118,6 @@ export default {
       if(this.options.includes("music")){
         this.musicAudio.pause()
       }
-      //reset all the powers
-      this.$children[1].resetButtons()
       clearInterval(this.timerInstance)
       this.$emit('done')
     },
@@ -220,15 +216,21 @@ export default {
   },
   mounted() {
     // TODO: Populate quiz questions from DB
+    //reset all the powers
+    this.$children[1].resetButtons()
+
     if(this.options.includes("music")){
       this.playSound(music)
     }
-
     this.timerInstance = window.setInterval(() => {
       if(this.timer-- == 0) {
         this.nextQuestion()
         this.doublePoints = false
         this.timer = this.timePerQ
+        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
+          this.$children[0].resetButtons()
+          this.resetNeeded = false
+        }
       }
     }, 1000)
   }
