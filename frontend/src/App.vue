@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <GradientContainer>
+    <GradientContainer :slider="sliderValue">
       <transition name="fade" mode="out-in">
-        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-if="currentView == 'index'"> </Index>
+        <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-on:updateBackground="updateBackground" v-on:updateSettings="updateSettings" v-on:updateVolume="updateVolume" v-if="currentView == 'index'"> </Index>
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
          <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
-        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players"></Quiz>
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :options="settings" :volume="volume"></Quiz>
         <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="players"></Leaderboard>
       </transition>
     </GradientContainer>
@@ -13,124 +13,102 @@
 </template>
 
 <script>
-  import Vue from "vue";
+import Vue from "vue";
 
-  import { BootstrapVue } from "bootstrap-vue";
-  import "bootstrap/dist/css/bootstrap.css";
-  import "bootstrap-vue/dist/bootstrap-vue.css";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons)
 
+// eslint-disable-next-line no-unused-vars
+import VueSocketIO from 'vue-socket.io'
+Vue.use(new VueSocketIO({
+    debug: true,
+    connection: 'http://localhost:5000',
+}))
 
-  // eslint-disable-next-line no-unused-vars
+// Views
+import Index from "./components/Index.vue";
+import Lobby from "./components/Lobby.vue";
+import Quiz from "./components/Quiz.vue";
+import Leaderboard from "./components/Leaderboard.vue";
 
-  // Views
-  import Index from "./components/Index.vue";
-  import Lobby from "./components/Lobby.vue";
-  import Quiz from "./components/Quiz.vue";
-  import Leaderboard from "./components/Leaderboard.vue";
+// Components
+import GradientContainer from "./components/GradientContainer.vue";
 
-  // Components
-  import GradientContainer from "./components/GradientContainer.vue";
+export default {
+  name: "App",
+  data: function() {
+    return {
+      currentView: "index",
 
-  import socketio from 'socket.io-client';
-  import VueSocketIO from 'vue-socket.io';
+      // Vars for passing into Lobby
+      players: [],
+      gamePin: "",
+      sliderValue: '',
+      settings: '',
 
-  export const SocketInstance = socketio('http://localhost:5000');
-
-  Vue.use(BootstrapVue, VueSocketIO, SocketInstance);
-
-  export default
-  {
-    name: "App",
-    data: function()
-    {
-      return{
-        currentView: "index",
-
-        // Vars for passing into Lobby
-        players: [],
-        gamePin: "",
-        eventhandler: null,
-        player: {
+      // Instantiates a Pusher connection.
+      player: {
           name: null,
           id: 0,
           score: 0,
           streak: 0,
-        },
-        channels: [],
-        socket: SocketInstance,
-      };
-      /*sockets:{
+      },
+      channels: [],
+      volume: ''
+    }
+  },
 
-      }*/
+  components: {
+    Index,
+    Lobby,
+    Quiz,
+    Leaderboard,
+    GradientContainer
+  },
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+    onJoinLobby(name, pin) {
+      this.$socket.emit('onJoinLobby', name, pin);
     },
-    created()
+    // eslint-disable-next-line no-unused-vars
+    onFindLobby(username) {
+      // TODO: Find lobby view shown here
+    },
+    onCreateLobby(name) {
+        this.$socket.emit('onCreateLobby', name)
+    },
+    // eslint-disable-next-line no-unused-vars
+    onLobbyStart(code)
     {
-
+      // TODO: Tell websocket to start and wait for response
+      // For now: just start
+      this.currentView = "quiz"
     },
-    mounted()
+    // eslint-disable-next-line no-unused-vars
+    onLobbyExit(code)
     {
+      this.currentView = "index"
+      
+      // TODO: Tell websocket lobby has been quit
 
+      this.players = []
     },
-    components: {
-      Index,
-      Lobby,
-      Quiz,
-      Leaderboard,
-      GradientContainer
+
+    onQuizFinish()
+    {
+      this.currentView = "leaderboard"
     },
-    methods: {
-      // eslint-disable-next-line no-unused-vars
-      onJoinLobby(username, gamePin) {
-        // TODO: Validate username and game pin and display lobby view
-      },
-      // eslint-disable-next-line no-unused-vars
-      onFindLobby(username) {
-        // TODO: Find lobby view shown here
-      },
-      onCreateLobby() {
-        // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
-        // TODO: This block is temporary and a test
-        // Logs all network communication information to console
-        // Pusher.logToConsole = true;
-
-        // Run the tests on lobby creation.
-        this.runTests();
-
-        this.gamePin = "ABCDEF"
-        this.currentView = "lobby";
-
-        // this.subToChannel(, false)
-      },
-      // eslint-disable-next-line no-unused-vars
-      onLobbyStart(code)
-      {
-        // TODO: Tell websocket to start and wait for response
-        // For now: just start
-        this.currentView = "quiz"
-      },
-      // eslint-disable-next-line no-unused-vars
-      onLobbyExit(code)
-      {
-        this.currentView = "index"
-
-        // TODO: Tell websocket lobby has been quit
-
-        this.players = []
-      },
-
-      onQuizFinish()
-      {
-        this.currentView = "leaderboard"
-      },
-
-      onExitLeaderboard()
-      {
-        this.currentView = "index"
-      },
+    onExitLeaderboard()
+    {
+      this.currentView = "index"
+    },
       // Will subscribe to a channel and add it to the list of channels.
       // channel is a string
       // isAnnouncementChan is a boolean. When false means events can only be read.
-      subToChannel(channel, isAnnouncementChan)
+      /*subToChannel(channel, isAnnouncementChan)
       {
         // Helps track if channel connection succeeded
         let subscriptionSuccess = false;
@@ -156,7 +134,7 @@
         this.channels.push(newChannel);
 
         return subscriptionSuccess;
-      },
+      },*/
       // TODO: implement search function below
       /*findChannel()
       {
@@ -165,7 +143,7 @@
 
       // Listens to special events that can be found at https://pusher.com/docs/channels/using_channels/connection#connection-states
       // Runs the callback function when the event occurs.
-      listenToPusherEvnts(event, callback)
+      /*listenToPusherEvnts(event, callback)
       {
         this.pusher.connection.bind(event, callback);
       },
@@ -227,7 +205,7 @@
         {
           //this.sendMsg(testChannel, testEvnt, testMsg);
           this.sendData(testChannel, testEvnt, jsonF);
-        }*/
+        }
 
 
         // Tests if the connection to the API was successful
@@ -264,8 +242,33 @@
         });
 
         console.log(tests);
+      },
+      */
+      updateBackground(sliderValue) {
+        this.sliderValue = sliderValue
+        this.$forceUpdate();
+      },
+      updateSettings(updateSettings){
+        this.settings = updateSettings
+      },
+      updateVolume(updateVolume){
+        this.volume = updateVolume
       }
     },
+    sockets: {
+      onError: function(data){
+        //TODO: Proper error messages
+        alert(data)
+      },
+      onLobbyCreated: function(data){
+        console.log(data)
+
+        this.players = data.players
+        this.gamePin = data.gamePin
+        this.currentView = "lobby"
+      }
+    }
+};
   };
 </script>
 

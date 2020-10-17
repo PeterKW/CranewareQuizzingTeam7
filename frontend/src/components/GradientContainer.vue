@@ -21,17 +21,17 @@ export default {
       ),
       step: 0,
       colorIndices: [0,1,2,3],
-      gradientSpeed: 0.002
+      gradientSpeed: 0.001,
+      intervalID: null
     }
   },
-  computed: {
-    gradient() {
-      return { 'background': "-webkit-gradient(linear, left top, right top, from(" + this.color1 + "), to(" + this.color2 + "))"}
-    }
-  },
-  mounted() {
-     //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
-      window.setInterval(() => {
+  props: ["slider"],
+  methods: {
+    init(){
+      this.step = 0
+      this.istep = 0
+           //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
+      this.intervalID = window.setInterval(() => {
         var c0_0 = this.colors[this.colorIndices[0]];
         var c0_1 = this.colors[this.colorIndices[1]];
         var c1_0 = this.colors[this.colorIndices[2]];
@@ -47,21 +47,36 @@ export default {
         var g2 = Math.round(istep * c1_0[1] + this.step * c1_1[1]);
         var b2 = Math.round(istep * c1_0[2] + this.step * c1_1[2]);
         this.color2 = "rgb("+r2+","+g2+","+b2+")";
-          
+
         this.step += this.gradientSpeed;
         if ( this.step >= 1 )
         {
           this.step %= 1;
           this.colorIndices[0] = this.colorIndices[1];
           this.colorIndices[2] = this.colorIndices[3];
-          
+
           //pick two new target color indices
           //do not pick the same as the current one
           this.colorIndices[1] = ( this.colorIndices[1] + Math.floor( 1 + Math.random() * (this.colors.length - 1))) % this.colors.length;
           this.colorIndices[3] = ( this.colorIndices[3] + Math.floor( 1 + Math.random() * (this.colors.length - 1))) % this.colors.length;
-          
+
         }
-      }, 10)
+      }, 0.1)
+    }
+  },
+  watch: {
+    'slider': function(newVal) {
+      window.clearInterval(this.intervalId);
+      this.gradientSpeed = 0.00002   * newVal
+    }
+  },
+  computed: {
+    gradient() {
+      return { 'background': "-webkit-gradient(linear, left top, right top, from(" + this.color1 + "), to(" + this.color2 + "))"}
+    }
+  },
+  mounted() {
+    this.init()
     }
 }
 </script>
