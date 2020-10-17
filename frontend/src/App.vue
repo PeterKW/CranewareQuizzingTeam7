@@ -22,7 +22,11 @@ Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons)
 
 // eslint-disable-next-line no-unused-vars
-import Pusher from "pusher-js";
+import VueSocketIO from 'vue-socket.io'
+Vue.use(new VueSocketIO({
+    debug: true,
+    connection: 'http://localhost:5000',
+}))
 
 // Views
 import Index from "./components/Index.vue";
@@ -46,22 +50,15 @@ export default {
       settings: '',
 
       // Instantiates a Pusher connection.
-      pusher: new Pusher('072127b07acd646fc5ec',
-      {
-        cluster: 'eu',
-        useTLS: true,
-        authEndpoint: 'http://localhost:5000/pusher/auth'
-      }),
-      eventReader: null,
       player: {
           name: null,
           id: 0,
           score: 0,
           streak: 0,
-        },
-        channels: [],
-        volume: ''
-    };
+      },
+      channels: [],
+      volume: ''
+    }
   },
 
   components: {
@@ -75,27 +72,15 @@ export default {
     // eslint-disable-next-line no-unused-vars
     onJoinLobby(username, gamePin) {
       // TODO: Validate username and game pin and display lobby view
+      //this.$socket.emit('onJoinLobby', {})
     },
     // eslint-disable-next-line no-unused-vars
     onFindLobby(username) {
       // TODO: Find lobby view shown here
     },
     onCreateLobby(name) {
-        // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
-        // TODO: This block is temporary and a test
-        // Logs all network communication information to console
-        Pusher.logToConsole = true;
-
-        // Run the tests on lobby creation.
-        this.runTests();
-
-
-        this.players[0] = { username : name, score : 0 };
-        this.gamePin = "ABCDEF"
-        this.currentView = "lobby";
-
-        // this.subToChannel(, false)
-      },
+        this.$socket.emit('onCreateLobby', {username: name})
+    },
       // eslint-disable-next-line no-unused-vars
       onLobbyStart(code)
       {
@@ -124,7 +109,7 @@ export default {
       // Will subscribe to a channel and add it to the list of channels.
       // channel is a string
       // isAnnouncementChan is a boolean. When false means events can only be read.
-      subToChannel(channel, isAnnouncementChan)
+      /*subToChannel(channel, isAnnouncementChan)
       {
         // Helps track if channel connection succeeded
         let subscriptionSuccess = false;
@@ -150,7 +135,7 @@ export default {
         this.channels.push(newChannel);
 
         return subscriptionSuccess;
-      },
+      },*/
       // TODO: implement search function below
       /*findChannel()
       {
@@ -159,7 +144,7 @@ export default {
 
       // Listens to special events that can be found at https://pusher.com/docs/channels/using_channels/connection#connection-states
       // Runs the callback function when the event occurs.
-      listenToPusherEvnts(event, callback)
+      /*listenToPusherEvnts(event, callback)
       {
         this.pusher.connection.bind(event, callback);
       },
@@ -221,7 +206,7 @@ export default {
         {
           //this.sendMsg(testChannel, testEvnt, testMsg);
           this.sendData(testChannel, testEvnt, jsonF);
-        }*/
+        }
 
 
         // Tests if the connection to the API was successful
@@ -259,7 +244,7 @@ export default {
 
         console.log(tests);
       },
-
+      */
       updateBackground(sliderValue) {
         this.sliderValue = sliderValue
         this.$forceUpdate();
@@ -271,6 +256,12 @@ export default {
         this.volume = updateVolume
       }
     },
+    sockets: {
+      onLobbyCreated: function(data){
+        this.gamePin = data;
+        this.currentView = "lobby";
+      }
+    }
 
   /*mounted()
   {
