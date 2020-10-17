@@ -91,7 +91,7 @@ export default {
     onLobbyExit(code)
     {
       this.currentView = "index"
-
+      
       // TODO: Tell websocket lobby has been quit
 
       this.players = []
@@ -268,16 +268,8 @@ export default {
         this.currentView = "lobby"
       }
     }
-
-  /*mounted()
-  {
-    let evntHand = this.eventhandler;
-    evntHand = new ClientEventHandler(true);
-    evntHand.connectToChannel('private-channel');
-    evntHand.listenForEvent(0,'test', function(){console.log(evntHand);console.log('Old handler:');console.log(this.eventhandler);});
-    this.eventhandler = evntHand;
-  },*/
 };
+  };
 </script>
 
 <style>
