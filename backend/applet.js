@@ -108,9 +108,9 @@ class Lobby
 }
 
 // Logs new connections to the server.
-io.on('connection', (conn) =>
+io.on('connection', () =>
 {
-	console.log('New player detected:');
+	console.log('New player detected!');
 });
 
 // Helps to run tests.
