@@ -18,23 +18,43 @@ class CranehootServer
 	{
 		this.lobbies = {};
 
+		this.start()
+	}
+
+	start() {
 		io.on('connect', socket =>
 		{
-			// TODO: Remove following line that makes a temporary lobby.
-			this.newLobby('MrTest');
-			socket.on('onCreateLobby', (host) =>
-			{
-				socket.emit('onLobbyCreated', this.newLobby(host));
-			});
+			socket.on('onCreateLobby', (username) => {
+				var newLobby = this.newLobby();
+				var player = new Player(socket.id, username)
 
-			socket.on('serverJoinLobby', (username, gamePin) =>
+				newLobby.addPlayer(player)
+
+				console.log(this.lobbies)
+
+		        socket.emit('onLobbyCreated', newLobby);
+		     });
+
+			socket.on('onJoinLobby', (username, gamePin) =>
 			{
 				// Validate game pin
 				if(gamePin in this.lobbies)
 				{
-					this.joinLobby(gamePin, username);
-					console.log(this.lobbies[gamePin]);
-					socket.emit('onJoinLobby', this.lobbies[gamePin]);
+					var lobby = this.lobbies[gamePin];
+
+					// New player object
+					var newPlayer = new Player(socket.id, username)
+					lobby.addPlayer(newPlayer)
+
+					// Tell all the other players that someone has joined
+					lobby.players.forEach(function(player){
+						if(newPlayer == player) return
+
+						io.sockets.sockets[player.socket].emit('onPlayerJoin', newPlayer)
+					});
+
+					// Tell client they have successfully joined
+					socket.emit('onLobbyJoined', lobby)
 				}
 				else
 				{
@@ -44,66 +64,56 @@ class CranehootServer
 		});
 	}
 
-	newLobby(host)
+	newLobby()
 	{
-		const lobby = new Lobby(new Player(host));
-		this.lobbies[lobby.code] = lobby;
-		return lobby;
+	    var pin = Math.random().toString(36).substring(7);
+
+		this.lobbies[pin] = new Lobby(pin);
+
+		console.log(this.lobbies)
+
+		return this.lobbies[pin];
 	}
 
-	joinLobby(code, username)
-	{
-		const newPlayer = new Player(username);
-		this.lobbies[code].players[newPlayer.id] = newPlayer;
+	generateLobbyPin() {
+
 	}
 
-	lobbyExists(pin)
+	/*joinLobby(code, socket, username)
 	{
-		console.log('pin: ' + pin);
-		console.log(this.lobbies);
-		return (this.lobbies.find(x => x.gamePin === pin) === undefined ? false : true);
+		this.lobbies[gamePin].players.push(new Player(socket.id, username))
 	}
-}
-
-// represents a player.
-class Player
-{
-	constructor(username)
-	{
-		this.name = username;
-		this.id = this.generateID();
-		this.score = 0;
-		this.streak = 0;
-	}
-
-	generateID()
-	{
-		return Math.floor(Math.random() * 10000 + 1000);
-	}
+	*/
 }
 
 // Represents a lobby
 class Lobby
 {
-	constructor(host)
+	constructor(pin)
 	{
-		this.players = {};
-		this.players[host.id] = host;
-		this.code = this.generateCode();
-		this.hostID = host.id;
+		this.gamePin = pin
+		this.players = []
 	}
 
-	generateCode()
-	{
-		// TODO: Uncomment the following.
-		return 'abcd'; // crypto.randomBytes(6).toString('hex').slice(0, 4);
+	addPlayer(player) {
+		this.players.push(player)
 	}
 
-	getLobbyMembers()
+	get host(){
+    	return this.players[0]
+  	}
+}
+
+// represents a player.
+class Player
+{
+	constructor(socket, username)
 	{
-		let playersInLobby = '';
-		this.players.forEach(player => playersInLobby += player.name + ',');
-		return playersInLobby;
+		this.username = username;
+		this.socket = socket;
+
+		this.score = 0;
+		this.streak = 0;
 	}
 }
 
