@@ -71,7 +71,7 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     onJoinLobby(name, pin) {
-      this.$socket.emit('serverJoinLobby', name, pin);
+      this.$socket.emit('onJoinLobby', name, pin);
     },
     // eslint-disable-next-line no-unused-vars
     onFindLobby(username) {
@@ -122,25 +122,23 @@ export default {
       //TODO: Proper error messages
       alert(data)
     },
-    onLobbyCreated: function(data){
+    onLobbyCreated: function(data) {
+      console.log("hu")
       console.log(data)
 
       this.players = data.players;
-      this.gamePin = data.code;
+      this.gamePin = data.gamePin;
+
       this.currentView = "lobby";
     },
-    onJoinLobby: function(data)
-    {
-      console.log(data);
+    onLobbyJoined: function(data) {
       this.players = data.players;
-      this.gamePin = data.code;
-      this.currentView = 'lobby';
-      // Updates the list of players for everyone.
-      this.$socket.emit('updateClientLobbies', this.players);
+      this.gamePin = data.gamePin;
+
+      this.currentView = "lobby";
     },
-    updateClientLobbies: function(data)
-    {
-      this.players = data;
+    onPlayerJoin: function(data) {
+      this.players.push(data);
     },
     startGame: function()
     {
