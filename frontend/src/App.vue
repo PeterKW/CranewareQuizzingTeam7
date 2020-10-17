@@ -79,7 +79,7 @@ export default {
       // TODO: Find lobby view shown here
     },
     onCreateLobby(name) {
-        this.$socket.emit('onCreateLobby', {username: name})
+        this.$socket.emit('onCreateLobby', name)
     },
       // eslint-disable-next-line no-unused-vars
       onLobbyStart(code)
@@ -258,8 +258,11 @@ export default {
     },
     sockets: {
       onLobbyCreated: function(data){
-        this.gamePin = data;
-        this.currentView = "lobby";
+        console.log(data)
+
+        this.players = data.players
+        this.gamePin = data.gamePin
+        this.currentView = "lobby"
       }
     }
 
