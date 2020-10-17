@@ -70,9 +70,8 @@ export default {
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
-    onJoinLobby(username, gamePin) {
-      // TODO: Validate username and game pin and display lobby view
-      //this.$socket.emit('onJoinLobby', {})
+    onJoinLobby(name, pin) {
+      this.$socket.emit('onJoinLobby', name, pin);
     },
     // eslint-disable-next-line no-unused-vars
     onFindLobby(username) {
@@ -81,31 +80,31 @@ export default {
     onCreateLobby(name) {
         this.$socket.emit('onCreateLobby', name)
     },
-      // eslint-disable-next-line no-unused-vars
-      onLobbyStart(code)
-      {
-        // TODO: Tell websocket to start and wait for response
-        // For now: just start
-        this.currentView = "quiz"
-      },
-      // eslint-disable-next-line no-unused-vars
-      onLobbyExit(code)
-      {
-        this.currentView = "index"
+    // eslint-disable-next-line no-unused-vars
+    onLobbyStart(code)
+    {
+      // TODO: Tell websocket to start and wait for response
+      // For now: just start
+      this.currentView = "quiz"
+    },
+    // eslint-disable-next-line no-unused-vars
+    onLobbyExit(code)
+    {
+      this.currentView = "index"
 
-        // TODO: Tell websocket lobby has been quit
+      // TODO: Tell websocket lobby has been quit
 
-        this.players = []
-      },
+      this.players = []
+    },
 
-      onQuizFinish()
-      {
-        this.currentView = "leaderboard"
-      },
-      onExitLeaderboard()
-      {
-        this.currentView = "index"
-      },
+    onQuizFinish()
+    {
+      this.currentView = "leaderboard"
+    },
+    onExitLeaderboard()
+    {
+      this.currentView = "index"
+    },
       // Will subscribe to a channel and add it to the list of channels.
       // channel is a string
       // isAnnouncementChan is a boolean. When false means events can only be read.
@@ -257,6 +256,10 @@ export default {
       }
     },
     sockets: {
+      onError: function(data){
+        //TODO: Proper error messages
+        alert(data)
+      },
       onLobbyCreated: function(data){
         console.log(data)
 
