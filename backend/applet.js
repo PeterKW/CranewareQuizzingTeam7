@@ -1,36 +1,30 @@
-// Import Pusher dependancy
+// Setup for utilizing socket.io
 const express = require('express');
-// Serves as handler for routing
 const webapp = express();
-const bodyparser = require('body-parser');
 const cors = require('cors');
-// Enable CORS to prevent errors when accessing
 webapp.use(cors());
-
-// Port server runs on
 const port = 5000;
-
-// Listening to port 5000
 const listener = webapp.listen(port);
-
 const io = require('socket.io').listen(listener, () =>
 {
+	// Informs that the server is running.
 	console.log('Server running on port ' + port);
 });
 
-// Using bodyparser to enforce json rules
-// Refer to https://www.npmjs.com/package/body-parser
-webapp.use(bodyparser.json());
-webapp.use(bodyparser.urlencoded({ extended: false }));
-
+// represents a player.
 class Player
 {
 	constructor(data)
 	{
 		this.name = data.name;
-		this.id = data.user_id;
+		this.id = this.generateID();
 		this.score = 0;
 		this.streak = 0;
+	}
+
+	generateID()
+	{
+		return Math.floor(Math.random() * 10000 + 1000);
 	}
 
 	// Should send lobbyCode to server
@@ -46,14 +40,19 @@ class Player
 	}*/
 }
 
+// Represents a lobby
 class Lobby
 {
-	constructor(code, lobbyName, host)
+	constructor(host)
 	{
-		this.players = [];
-		this.name = lobbyName;
-		this.code = code; // this.generateCode();
-		this.host = host;
+		this.players[host.id] = host;
+		this.code = this.generateCode();
+		this.hostID = host.id;
+	}
+
+	generateCode()
+	{
+		return 'abcd'; // crypto.randomBytes(6).toString('hex').slice(0, 4);
 	}
 
 	getLobbyMembers()
@@ -132,9 +131,25 @@ webapp.post('/hook', (req, res) =>
 
 const lobbies = {};
 
+// Event fired when a client makes a connection to the server host(this is where multiple lobbies can exist)
 io.on('connection', (conn) =>
 {
 	console.log('User connected successfully:	\n' + conn);
+});
+
+// When a user requests to create a lobby
+io.on('createLobby', (user) =>
+{
+	if(user != null)
+	{
+		const host = new Player(user);
+		const newLobby = new Lobby(host);
+		io.emit('lobbyCreated', true);
+	}
+	else
+	{
+		console.log('ERROR: Host data not sent in correct format.');
+	}
 });
 
 function joinLobby(code, data)
@@ -172,11 +187,6 @@ function createLobby(data)
 
 	lobbies[code] = newLobby;
 	evntManager.sendMsg('private-lobby-manager', 'lobby-created', newLobby.code, true);
-}
-
-function generateCode()
-{
-	return 'abcd'; // crypto.randomBytes(6).toString('hex').slice(0, 4);
 }
 
 /* class ClientEventHandler
