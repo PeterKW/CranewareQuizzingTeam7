@@ -18,12 +18,9 @@
   import { BootstrapVue } from "bootstrap-vue";
   import "bootstrap/dist/css/bootstrap.css";
   import "bootstrap-vue/dist/bootstrap-vue.css";
-  Vue.use(BootstrapVue);
+
 
   // eslint-disable-next-line no-unused-vars
-
-  // Pusher included for event system
-  import Pusher from "pusher-js";
 
   // Views
   import Index from "./components/Index.vue";
@@ -34,7 +31,12 @@
   // Components
   import GradientContainer from "./components/GradientContainer.vue";
 
+  import socketio from 'socket.io-client';
+  import VueSocketIO from 'vue-socket.io';
 
+  export const SocketInstance = socketio('http://localhost:5000');
+
+  Vue.use(BootstrapVue, VueSocketIO, SocketInstance);
 
   export default
   {
@@ -47,14 +49,6 @@
         // Vars for passing into Lobby
         players: [],
         gamePin: "",
-
-        // Instantiates a Pusher connection.
-        pusher: new Pusher('072127b07acd646fc5ec',
-        {
-          cluster: 'eu',
-          useTLS: true,
-          authEndpoint: 'http://localhost:5000/pusher/auth'
-        }),
         eventhandler: null,
         player: {
           name: null,
@@ -63,7 +57,19 @@
           streak: 0,
         },
         channels: [],
+        socket: SocketInstance,
       };
+      /*sockets:{
+
+      }*/
+    },
+    created()
+    {
+
+    },
+    mounted()
+    {
+
     },
     components: {
       Index,
@@ -85,7 +91,7 @@
         // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
         // TODO: This block is temporary and a test
         // Logs all network communication information to console
-        Pusher.logToConsole = true;
+        // Pusher.logToConsole = true;
 
         // Run the tests on lobby creation.
         this.runTests();
@@ -260,18 +266,6 @@
         console.log(tests);
       }
     },
-  /*mounted()
-  {
-    let evntHand = this.eventhandler;
-    evntHand = new ClientEventHandler(true);
-    evntHand.connectToChannel('private-channel');
-    evntHand.listenForEvent(0,'test', function(){console.log(evntHand);console.log('Old handler:');console.log(this.eventhandler);});
-    this.eventhandler = evntHand;*/
-
-    /*let externalScript = document.createElement('script')
-    externalScript.setAttribute('src', 'C:/Users/adidu/Desktop/Assignments/CranewareQuizzingTeam7/frontend/src/classes.js')
-    document.head.appendChild(externalScript)
-  }*/
   };
 </script>
 
