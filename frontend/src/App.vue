@@ -81,11 +81,12 @@ export default {
         this.$socket.emit('onCreateLobby', name)
     },
     // eslint-disable-next-line no-unused-vars
-    onLobbyStart(code)
+    onLobbyStart()
     {
       // TODO: Tell websocket to start and wait for response
       // For now: just start
-      this.currentView = "quiz"
+      // TODO: Only show this button to the host.
+      this.$socket.emit('startGame')
     },
     // eslint-disable-next-line no-unused-vars
     onLobbyExit(code)
@@ -138,6 +139,10 @@ export default {
     },
     onPlayerJoin: function(data) {
       this.players.push(data);
+    },
+    startGame: function()
+    {
+      this.currentView = "quiz"
     }
   }
 };
