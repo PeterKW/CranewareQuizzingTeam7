@@ -1,5 +1,4 @@
 // Setup for utilizing socket.io
-const crypto = require('crypto');
 const express = require('express');
 const webapp = express();
 const cors = require('cors');
@@ -63,18 +62,30 @@ class CranehootServer
 			});
 
 			// Starts the game for all users.
-			socket.on('startGame', (code) =>
+			socket.on('startGame', (code, event) =>
 			{
-				if(code in this.lobbies)
-				{
-					const lobby = this.lobbies[code];
-					lobby.players.forEach((player) =>
-					{
-						io.sockets.sockets[player.socket].emit('beginGame');
-					});
-				}
+				this.sendUpdateEventToLobby(code, event, null);
+			});
+
+			socket.on('calculatePoints', (code, points) =>
+			{
+				console.log(points);
+				this.lobbies[code];
 			});
 		});
+	}
+
+	// Will allow all users to be updated when an event occurs.
+	sendUpdateEventToLobby(code, event, data)
+	{
+		if(code in this.lobbies)
+		{
+			const lobby = this.lobbies[code];
+			lobby.players.forEach((player) =>
+			{
+				io.sockets.sockets[player.socket].emit(event, data);
+			});
+		}
 	}
 
 	newLobby()

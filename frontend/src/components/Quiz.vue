@@ -148,6 +148,8 @@ export default {
           this.questionScore = this.questionScore + (100 * this.scoreStreak)
         }
         this.players[0].score += this.questionScore;
+        // TODO: Send correct data at this point.
+        // this.$emit('calculatePoints', this.gamePin, this.questionScore);
 
         if(this.options != null){
           if(this.options.includes("vibration")){

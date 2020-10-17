@@ -48,8 +48,6 @@ export default {
       gamePin: "",
       sliderValue: '',
       settings: '',
-
-      // Instantiates a Pusher connection.
       player: {
           name: null,
           id: 0,
@@ -86,7 +84,7 @@ export default {
       // TODO: Tell websocket to start and wait for response
       // For now: just start
       // TODO: Only show this button to the host.
-      this.$socket.emit('startGame', this.gamePin)
+      this.$socket.emit('startGame', this.gamePin, 'beginGame')
     },
     // eslint-disable-next-line no-unused-vars
     onLobbyExit(code)
