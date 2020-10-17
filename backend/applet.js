@@ -61,6 +61,19 @@ class CranehootServer
 					socket.emit('onError', 'Invalid game pin');
 				}
 			});
+
+			// Starts the game for all users.
+			socket.on('startGame', (code) =>
+			{
+				if(code in this.lobbies)
+				{
+					const lobby = this.lobbies[code];
+					lobby.players.forEach((player) =>
+					{
+						io.sockets.sockets[player.socket].emit('beginGame');
+					});
+				}
+			});
 		});
 	}
 
