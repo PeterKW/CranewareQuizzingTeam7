@@ -63,7 +63,7 @@ export default {
         volume: ''
     };
   },
-  
+
   components: {
     Index,
     Lobby,
@@ -80,7 +80,7 @@ export default {
     onFindLobby(username) {
       // TODO: Find lobby view shown here
     },
-    onCreateLobby() {
+    onCreateLobby(name) {
         // TODO: Tell websocket we want a new lobby and get a pin back from the websocket
         // TODO: This block is temporary and a test
         // Logs all network communication information to console
@@ -89,6 +89,8 @@ export default {
         // Run the tests on lobby creation.
         this.runTests();
 
+
+        this.players[0] = { username : name, score : 0 };
         this.gamePin = "ABCDEF"
         this.currentView = "lobby";
 
