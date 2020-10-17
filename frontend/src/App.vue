@@ -71,7 +71,7 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     onJoinLobby(name, pin) {
-      this.$socket.emit('onJoinLobby', name, pin);
+      this.$socket.emit('serverJoinLobby', name, pin);
     },
     // eslint-disable-next-line no-unused-vars
     onFindLobby(username) {
@@ -91,7 +91,7 @@ export default {
     onLobbyExit(code)
     {
       this.currentView = "index"
-      
+
       // TODO: Tell websocket lobby has been quit
 
       this.players = []
@@ -105,171 +105,44 @@ export default {
     {
       this.currentView = "index"
     },
-      // Will subscribe to a channel and add it to the list of channels.
-      // channel is a string
-      // isAnnouncementChan is a boolean. When false means events can only be read.
-      /*subToChannel(channel, isAnnouncementChan)
-      {
-        // Helps track if channel connection succeeded
-        let subscriptionSuccess = false;
-        let newChannel;
-
-        if(isAnnouncementChan)
-        {
-          // Create or grab an announcement channel.
-          newChannel = this.pusher.subscribe(channel);
-        }
-        else
-        {
-          // Create or grab a private channel.
-          newChannel = this.pusher.subscribe('private-' + channel);
-        }
-
-        // Listens for the event that informs us that the channel was subscribed to.
-        newChannel.bind('pusher:subscription_succeeded', function()
-        {
-          subscriptionSuccess = true;
-        })
-
-        this.channels.push(newChannel);
-
-        return subscriptionSuccess;
-      },*/
-      // TODO: implement search function below
-      /*findChannel()
-      {
-
-      },*/
-
-      // Listens to special events that can be found at https://pusher.com/docs/channels/using_channels/connection#connection-states
-      // Runs the callback function when the event occurs.
-      /*listenToPusherEvnts(event, callback)
-      {
-        this.pusher.connection.bind(event, callback);
-      },
-      listenToEvent(channel, event, callback)
-      {
-        // Will listen to an event on a channel, and run the callback function on the event's occurence
-        // Only needs to be run once to read the specified events.
-        this.pusher.subscribe(channel).bind(event, callback);
-      },
-      // Sends a json file through pusher on the specific channel as the specified event.
-      // Channel is a channel object
-      // Event is a string
-      // jsonData is a json file/object
-      sendData(channel, event, jsonData)
-      {
-        return channel.trigger(event, jsonData);
-      },
-      // Works like sendData but sends only a string as a message.
-      sendMsg(channel, event, msg)
-      {
-        console.log(this.pusher);
-        this.pusher.trigger(channel, event, { 'message': msg });
-      },
-      runTests()
-      {
-        const testChannel = 'tester';
-        const testEvnt = 'client-test';
-        const testMsg = 'This is a test';
-        const jsonTest = { name: "abd", type: "water" };
-        // Tests are stored in an array in the format string 'TestName':bool pass/fail
-        const tests = [];
-
-        // Create a channel instance
-        if(this.subToChannel(testChannel, false))
-        {
-          // Test to see if channels can be subscribed to has passed
-          tests.push({'ChannelConnectable':true});
-          console.log('Successfully Connected to Channel: ' + testChannel);
-          // If data is sent through the channel
-          if(this.sendData(this.channels[0], testEvnt, jsonTest))
-          {
-            // The data file was sent successfully
-            tests.push({'JSONDelivery':true});
-          }
-          else
-          {
-            // The file failed to be sent.
-            tests.push({'JSONDelivery':false})
-          }
-        }
-        else
-        {
-          // Channel failed to be subscribed to.
-          tests.push({'ChannelConnectable':false});
-          tests.push({'JSONDelivery':false})
-        }
-
-        /*if(this.pusher != null)
-        {
-          //this.sendMsg(testChannel, testEvnt, testMsg);
-          this.sendData(testChannel, testEvnt, jsonF);
-        }
-
-
-        // Tests if the connection to the API was successful
-        this.listenToPusherEvnts('connected', (conn) =>
-        {
-          console.log('Connected to Pusher API successfully.');
-          console.log(conn);
-          tests.push({'APIConnTest':true});
-        });
-        this.listenToPusherEvnts('failed', function(conn)
-        {
-          console.log('Failed Connected to Pusher API successfully.');
-          console.log(conn);
-          tests.push({'APIConnTest':false});
-        });
-
-        // Tests if data is being sent and recieved to and from the server. Sends the same data to server to ensure data is sent back and forth correctly.
-        // this.sendMsg(testChannel, testEvnt, testMsg);
-
-        this.listenToEvent(testChannel, testEvnt, function(data){
-          console.log("Recieved the following data:");
-          console.log(data);
-
-          if(data.message == testMsg)
-          {
-            tests.push({'RecievingData':true});
-          }
-          else
-          {
-            tests.push({'RecievingData':false})
-          }
-
-          return tests;
-        });
-
-        console.log(tests);
-      },
-      */
-      updateBackground(sliderValue) {
-        this.sliderValue = sliderValue
-        this.$forceUpdate();
-      },
-      updateSettings(updateSettings){
-        this.settings = updateSettings
-      },
-      updateVolume(updateVolume){
-        this.volume = updateVolume
-      }
+    updateBackground(sliderValue) {
+      this.sliderValue = sliderValue
+      this.$forceUpdate();
     },
-    sockets: {
-      onError: function(data){
-        //TODO: Proper error messages
-        alert(data)
-      },
-      onLobbyCreated: function(data){
-        console.log(data)
-
-        this.players = data.players
-        this.gamePin = data.gamePin
-        this.currentView = "lobby"
-      }
+    updateSettings(updateSettings){
+      this.settings = updateSettings
+    },
+    updateVolume(updateVolume){
+      this.volume = updateVolume
     }
+  },
+  sockets: {
+    onError: function(data){
+      //TODO: Proper error messages
+      alert(data)
+    },
+    onLobbyCreated: function(data){
+      console.log(data)
+
+      this.players = data.players;
+      this.gamePin = data.code;
+      this.currentView = "lobby";
+    },
+    onJoinLobby: function(data)
+    {
+      console.log(data);
+      this.players = data.players;
+      this.gamePin = data.code;
+      this.currentView = 'lobby';
+      // Updates the list of players for everyone.
+      this.$socket.emit('updateClientLobbies', this.players);
+    },
+    updateClientLobbies: function(data)
+    {
+      this.players = data;
+    }
+  }
 };
-  };
 </script>
 
 <style>
