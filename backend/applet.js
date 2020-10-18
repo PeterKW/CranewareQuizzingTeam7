@@ -76,6 +76,9 @@ class CranehootServer
 	}
 
 	// Will allow all users to be updated when an event occurs.
+	// code is the game lobby join string
+	// event is a string one wants to send
+	// data is a json object or a single data type
 	sendUpdateEventToLobby(code, event, data)
 	{
 		if(code in this.lobbies)
