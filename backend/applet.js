@@ -62,9 +62,9 @@ class CranehootServer
 			});
 
 			// Starts the game for all users.
-			socket.on('startGame', (code, event) =>
+			socket.on('onLobbyStart', (code) =>
 			{
-				this.sendUpdateEventToLobby(code, event, null);
+				this.sendUpdateEventToLobby(code, "onLobbyStarted", null);
 			});
 
 			socket.on('calculatePoints', (code, points) =>

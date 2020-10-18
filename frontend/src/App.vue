@@ -84,7 +84,7 @@ export default {
       // TODO: Tell websocket to start and wait for response
       // For now: just start
       // TODO: Only show this button to the host.
-      this.$socket.emit('startGame', this.gamePin, 'beginGame')
+      this.$socket.emit('onLobbyStart', this.gamePin)
     },
     // eslint-disable-next-line no-unused-vars
     onLobbyExit(code)
@@ -138,7 +138,7 @@ export default {
     onPlayerJoin: function(data) {
       this.players.push(data);
     },
-    beginGame: function()
+    onLobbyStarted: function()
     {
       this.currentView = "quiz";
     }
