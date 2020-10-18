@@ -21,11 +21,11 @@
 <script>
 import QuizQuestion from "./QuizQuestion.vue";
 import QuizScore from "./QuizScore.vue";
+import PowerBar from "./PowerBar.vue";
+
 const correct = require("../assets/correct.mp3");
 const incorrect = require("../assets/incorrect.mp3");
 const music = require("../assets/music.mp3");
-import PowerBar from "./PowerBar.vue";
-
 
 export default {
   name: 'Quiz',
