@@ -45,12 +45,11 @@ class CranehootServer
 					var newPlayer = new Player(socket.id, username)
 					lobby.addPlayer(newPlayer)
 
-					// Tell all the other players that someone has joined
-					lobby.players.forEach(function(player){
-						if(newPlayer == player) return
-
-						io.sockets.sockets[player.socket].emit('onPlayerJoin', newPlayer)
-					});
+					for(const playerID in lobby.players){
+						if(newPlayer == lobby.players[playerID]) continue;
+						
+						io.sockets.sockets[playerID].emit('onPlayerJoin', newPlayer)
+					}
 
 					// Tell client they have successfully joined
 					socket.emit('onLobbyJoined', lobby)
@@ -84,10 +83,9 @@ class CranehootServer
 		if(code in this.lobbies)
 		{
 			const lobby = this.lobbies[code];
-			lobby.players.forEach((player) =>
-			{
-				io.sockets.sockets[player.socket].emit(event, data);
-			});
+			for(const playerID in lobby.players) {
+				io.sockets.sockets[playerID].emit(event, data);
+			}
 		}
 	}
 
@@ -119,11 +117,11 @@ class Lobby
 	constructor(pin)
 	{
 		this.gamePin = pin
-		this.players = []
+		this.players = {}
 	}
 
 	addPlayer(player) {
-		this.players.push(player)
+		this.players[player.socket] = player;
 	}
 
 	get host(){
