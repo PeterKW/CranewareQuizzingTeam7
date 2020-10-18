@@ -125,6 +125,8 @@ export default {
       alert(data)
     },
     onLobbyCreated: function(data) {
+      console.log(data);
+
       this.players = data.players;
       this.gamePin = data.gamePin;
 
@@ -139,7 +141,6 @@ export default {
     onPlayerJoin: function(data) {
       Vue.set(this.players, data.socket, data)
     },
-    onLobbyStarted: function()
 
     onLobbyStarted: function(question)
     {
