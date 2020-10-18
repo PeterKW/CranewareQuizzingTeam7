@@ -56,11 +56,12 @@ class CranehootServer
 		{
 			socket.on('onCreateLobby', (username) => {
 				var newLobby = this.newLobby();
-				var player = new Player(socket.id, username)
+				var player = new Player(socket.id, username, newLobby.gamePin)
 
 				newLobby.addPlayer(player)
 
-				console.log(this.lobbies)
+				// Store reference to player on the socket
+				socket.player = player;
 
 		        socket.emit('onLobbyCreated', newLobby);
 		     });
@@ -73,8 +74,11 @@ class CranehootServer
 					var lobby = this.lobbies[gamePin];
 
 					// New player object
-					var newPlayer = new Player(socket.id, username)
+					var newPlayer = new Player(socket.id, username, lobby.gamePin)
 					lobby.addPlayer(newPlayer)
+
+					// Store reference to player on the socket
+					socket.player = newPlayer;
 
 					for(const playerID in lobby.players){
 						if(newPlayer == lobby.players[playerID]) continue;
@@ -97,10 +101,62 @@ class CranehootServer
 				this.lobbies[code].start();
 			});
 
-			socket.on('calculatePoints', (code, points) =>
+
+			socket.on('onAnswer', (answer) =>
 			{
-				console.log(points);
-				this.lobbies[code];
+
+				var player = socket.player;
+				var lobby = this.lobbies[socket.player.lobby]
+
+				// Verify their answer
+				if(lobby.currentQuestion["@correct_answer"] == lobby.currentQuestion["@answer" + answer]) {
+					//var score = * 100;
+				}
+				else {
+					//console.log("incorrect")
+				}
+
+		      /*
+		      // TODO: This will go server side in the future
+		      if(this.quiz[this.currQuestion]["answer"] == answer){
+		        this.verdict = "Correct!"
+
+		        if (this.doublePoints) {
+		          this.questionScore = this.timer * 100 * 2
+		        } else {
+		          this.questionScore = this.timer * 100
+		        }
+		        this.scoreStreak = this.scoreStreak + 1
+
+		        if(this.scoreStreak > 1){
+		          this.questionScore = this.questionScore + (100 * this.scoreStreak)
+		        }
+		        this.players[0].score += this.questionScore;
+
+		        // TODO: Send correct data at this point.
+		        // this.$emit('calculatePoints', this.gamePin, this.questionScore);
+
+		        if(this.options != null){
+		          if(this.options.includes("vibration")){
+		            if (navigator.vibrate) {
+		              // vibration API supported
+		              window.navigator.vibrate(500);
+		            }
+		          }
+		          if(this.options.includes("effect")){
+		            this.playSound(correct)
+		          }
+		        }
+		      }
+		      else {
+		        if(this.options != null)
+		          if(this.options.includes("effect"))
+		            this.playSound(incorrect)
+		        this.verdict = "Incorrect!"
+		        this.questionScore = 0;
+		        this.scoreStreak = 0;
+		      }
+		      */
 			});
 		});
 	}
@@ -173,10 +229,11 @@ class Lobby
 // represents a player.
 class Player
 {
-	constructor(socket, username)
+	constructor(socket, username, lobby)
 	{
 		this.username = username;
 		this.socket = socket;
+		this.lobby = lobby;
 
 		this.score = 0;
 		this.streak = 0;
