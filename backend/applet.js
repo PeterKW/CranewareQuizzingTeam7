@@ -5,16 +5,47 @@ const cors = require('cors');
 webapp.use(cors());
 const port = 5000;
 const listener = webapp.listen(port);
+
+var mysql = require('mysql');
+var db = require('./db'); // Database info JSON
+
 const io = require('socket.io').listen(listener, () =>
 {
 	// Informs that the server is running.
 	console.log('Server running on port ' + port);
 });
 
+class Database {
+	constructor() {
+		this.database = mysql.createConnection({
+		  host: db.host,
+		  user: db.user,
+		  password: db.password,
+		  database: db.database,
+		  multipleStatements: true
+		});
+	}
+
+	getRandomQuestion (callback) {
+		var id = Math.floor(Math.random() * 100) + 1;
+		// gets question and answers and sends back in JSON form
+		this.database.query("CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [id], function(err, localResult) { // Send query
+			if (err && err.length != 0) throw err;
+			var result = localResult[1];
+			let question = {
+			  result
+			}
+			return callback(question.result[0]); // Pass back info
+		});
+	}
+}
+const database = new Database();
+
 class CranehootServer
 {
 	constructor()
 	{
+
 		this.lobbies = {};
 
 		this.start()
@@ -63,7 +94,7 @@ class CranehootServer
 			// Starts the game for all users.
 			socket.on('onLobbyStart', (code) =>
 			{
-				this.sendUpdateEventToLobby(code, "onLobbyStarted", null);
+				this.lobbies[code].start();
 			});
 
 			socket.on('calculatePoints', (code, points) =>
@@ -74,41 +105,13 @@ class CranehootServer
 		});
 	}
 
-	// Will allow all users to be updated when an event occurs.
-	// code is the game lobby join string
-	// event is a string one wants to send
-	// data is a json object or a single data type
-	sendUpdateEventToLobby(code, event, data)
-	{
-		if(code in this.lobbies)
-		{
-			const lobby = this.lobbies[code];
-			for(const playerID in lobby.players) {
-				io.sockets.sockets[playerID].emit(event, data);
-			}
-		}
-	}
-
 	newLobby()
 	{
 	    var pin = Math.random().toString(36).substring(7);
 
 		this.lobbies[pin] = new Lobby(pin);
-
-		console.log(this.lobbies)
-
 		return this.lobbies[pin];
 	}
-
-	generateLobbyPin() {
-
-	}
-
-	/*joinLobby(code, socket, username)
-	{
-		this.lobbies[gamePin].players.push(new Player(socket.id, username))
-	}
-	*/
 }
 
 // Represents a lobby
@@ -118,7 +121,45 @@ class Lobby
 	{
 		this.gamePin = pin
 		this.players = {}
+
+		this.currentQuestion = {}
+		this.pastQuestions = []
+
+		this.timer = 10
 	}
+
+	start() {
+		this.nextQuestion("onLobbyStarted")
+		this.loop()
+	}
+
+	loop() {
+		this.internalTimerInstance = setInterval(() => {
+	      if(this.timer-- == 1) {
+	        this.nextQuestion("onNextQuestion")
+	        this.timer = 10;
+	      }
+	    }, 1000)
+	}
+
+	nextQuestion(e) {
+		var that = this;
+		database.getRandomQuestion(function(question) {
+			that.currentQuestion = question;
+			that.notifyAll(e, question);
+		});
+	}
+
+	// Will allow all users to be updated when an event occurs.
+	// event is a string one wants to send
+	// data is a json object or a single data type
+	notifyAll(event, data)
+	{
+		for(const playerID in this.players) {
+			io.sockets.sockets[playerID].emit(event, data);
+		}
+	}
+
 
 	addPlayer(player) {
 		this.players[player.socket] = player;
