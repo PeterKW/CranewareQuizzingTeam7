@@ -44,7 +44,8 @@ export default {
       currentView: "index",
 
       // Vars for passing into Lobby
-      players: [],
+      players: {},
+
       gamePin: "",
       sliderValue: '',
       settings: '',
@@ -133,7 +134,7 @@ export default {
       this.currentView = "lobby";
     },
     onPlayerJoin: function(data) {
-      this.players.push(data);
+      Vue.set(this.players, data.socket, data)
     },
     onLobbyStarted: function()
     {
