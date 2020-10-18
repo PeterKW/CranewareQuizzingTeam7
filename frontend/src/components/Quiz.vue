@@ -7,7 +7,7 @@
           </b-row>
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
 
-          <div v-if="answered" class="cont">
+          <div v-if="answered && !results" class="cont">
             <b-row class="text-center w-100">
               <h1 class="question w-100" style="padding-top:60px">Waiting for results...</h1>
             </b-row>
@@ -69,8 +69,34 @@ export default {
 
     // Handles click of an answer
     onAnswerQuestion(answer) {
-      //this.answered = true
+      this.answered = true
       this.$socket.emit('onAnswer', answer);
+
+       /*
+        // TODO: Send correct data at this point.
+        // this.$emit('calculatePoints', this.gamePin, this.questionScore);
+
+        if(this.options != null){
+          if(this.options.includes("vibration")){
+            if (navigator.vibrate) {
+              // vibration API supported
+              window.navigator.vibrate(500);
+            }
+          }
+          if(this.options.includes("effect")){
+            this.playSound(correct)
+          }
+        }
+      }
+      else {
+        if(this.options != null)
+          if(this.options.includes("effect"))
+            this.playSound(incorrect)
+          this.verdict = "Incorrect!"
+          this.questionScore = 0;
+          this.scoreStreak = 0;
+      }
+      */
     },
 
     // This function is responsible for Handling the power abilities
@@ -107,13 +133,6 @@ export default {
         this.currQuestion++
       }
     },
-    endQuiz() {
-      if(this.options.includes("music")){
-        this.musicAudio.pause()
-      }
-      clearInterval(this.timerInstance)
-      this.$emit('done')
-    },
     playSound (src) {
       if(src == music){
           this.musicAudio = new Audio();
@@ -136,29 +155,45 @@ export default {
           console.log  (error);
           });
         }
-      },
-      startTimer() {
-        clearInterval(this.timerInstance)
-        
-        this.timerInstance = window.setInterval(() => {
-          if(this.timer-- == 1) {
-            this.answered = true;
-            clearInterval(this.timerInstance)
-          }
-        }, 1000)
       }
-  },
-  mounted() {
-    this.startTimer()
   },
   sockets: {
     onNextQuestion: function(question){
-      this.currentQuestion = question
-      this.timer = 10;
       this.answered = false;
+      this.results = false;
 
-      this.startTimer()
+      this.currentQuestion = question
+      this.timer = 15;
     },
+    onResults: function(results){
+      this.results = true
+
+      this.verdict = results.verdict
+      this.questionScore = results.score
+      this.scoreStreak = results.streak
+    },
+    onTimerTick(time) {
+      this.timer = time
+
+      if(this.timer == 0) {
+        this.answered = true;
+      }
+    },
+    onTimerTick2(time) {
+      this.timer = time
+
+      if(this.timer == 0) {
+        this.answered = false;
+        this.results = false;
+      }
+    },
+    end: function(){
+      if(this.options.includes("music")){
+        this.musicAudio.pause()
+      }
+      clearInterval(this.timerInstance)
+      this.$emit('done')
+    }
   }
   /*
   mounted() {

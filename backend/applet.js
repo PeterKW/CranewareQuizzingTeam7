@@ -104,59 +104,35 @@ class CranehootServer
 
 			socket.on('onAnswer', (answer) =>
 			{
-
 				var player = socket.player;
 				var lobby = this.lobbies[socket.player.lobby]
 
 				// Verify their answer
 				if(lobby.currentQuestion["@correct_answer"] == lobby.currentQuestion["@answer" + answer]) {
-					//var score = * 100;
+					//TODO: Add double points back
+					var tempScore = lobby.timer * 100
+			        
+			        player.streak++
+
+			        if(player.streak > 1){
+			          tempScore += (100 * player.streak)
+			        }
+
+			        player.score += tempScore;
+
+			        player.questionResults = {
+			        	verdict : "Correct!",
+			        	score : tempScore
+			        }
 				}
 				else {
-					//console.log("incorrect")
+					player.streak = 0
+
+					player.questionResults = {
+			        	verdict : "Incorrect!",
+			        	score : 0
+			        }
 				}
-
-		      /*
-		      // TODO: This will go server side in the future
-		      if(this.quiz[this.currQuestion]["answer"] == answer){
-		        this.verdict = "Correct!"
-
-		        if (this.doublePoints) {
-		          this.questionScore = this.timer * 100 * 2
-		        } else {
-		          this.questionScore = this.timer * 100
-		        }
-		        this.scoreStreak = this.scoreStreak + 1
-
-		        if(this.scoreStreak > 1){
-		          this.questionScore = this.questionScore + (100 * this.scoreStreak)
-		        }
-		        this.players[0].score += this.questionScore;
-
-		        // TODO: Send correct data at this point.
-		        // this.$emit('calculatePoints', this.gamePin, this.questionScore);
-
-		        if(this.options != null){
-		          if(this.options.includes("vibration")){
-		            if (navigator.vibrate) {
-		              // vibration API supported
-		              window.navigator.vibrate(500);
-		            }
-		          }
-		          if(this.options.includes("effect")){
-		            this.playSound(correct)
-		          }
-		        }
-		      }
-		      else {
-		        if(this.options != null)
-		          if(this.options.includes("effect"))
-		            this.playSound(incorrect)
-		        this.verdict = "Incorrect!"
-		        this.questionScore = 0;
-		        this.scoreStreak = 0;
-		      }
-		      */
 			});
 		});
 	}
@@ -179,9 +155,18 @@ class Lobby
 		this.players = {}
 
 		this.currentQuestion = {}
-		this.pastQuestions = []
+		this.qCount = 0;
 
-		this.timer = 10
+		this.timer = 15
+		this.timerInstance = null
+
+		// TODO: Customisable in the future?
+		this.timePerQuestion = 15;
+		this.noOfQuestions = 5;
+
+		// Im lazy
+		this.timer2 = 5
+		this.timerInstance2 = null
 	}
 
 	start() {
@@ -190,15 +175,52 @@ class Lobby
 	}
 
 	loop() {
-		this.internalTimerInstance = setInterval(() => {
-	      if(this.timer-- == 1) {
-	        this.nextQuestion("onNextQuestion")
-	        this.timer = 10;
-	      }
+		this.nextQuestion("onNextQuestion")
+		this.timer = this.timePerQuestion
+
+		this.timerInstance = setInterval(() => {
+			this.notifyAll("onTimerTick", this.timer)
+
+	    	if(this.timer-- <= 0) {
+	    		if(this.qCount == this.noOfQuestions){
+	    		 	this.notifyAll("end")
+	    		 }
+
+	    		 clearInterval(this.timerInstance)
+	    		 this.sendQuestionResults();
+	      	}
+	    }, 1000)
+	}
+
+	sendQuestionResults() {
+		for(const playerID in this.players) {
+			var player = this.players[playerID]
+
+			io.sockets.sockets[playerID].emit(
+				"onResults",
+				{
+					"verdict" : player.questionResults.verdict,
+					"score"   : player.questionResults.score,
+					"streak"  : player.streak
+				}
+			);
+
+			player.questionResults = {}
+		}
+
+		this.timer2=5;
+		this.timerInstance2 = setInterval(() => {
+			this.notifyAll("onTimerTick2", this.timer2)
+
+	    	if(this.timer2-- <= 0) {
+	    		 clearInterval(this.timerInstance2)
+	    		 this.loop();
+	      	}
 	    }, 1000)
 	}
 
 	nextQuestion(e) {
+		this.qCount++;
 		var that = this;
 		database.getRandomQuestion(function(question) {
 			that.currentQuestion = question;
@@ -215,7 +237,6 @@ class Lobby
 			io.sockets.sockets[playerID].emit(event, data);
 		}
 	}
-
 
 	addPlayer(player) {
 		this.players[player.socket] = player;
@@ -237,6 +258,8 @@ class Player
 
 		this.score = 0;
 		this.streak = 0;
+
+		this.questionResults = {}
 	}
 }
 
