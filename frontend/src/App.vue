@@ -121,9 +121,6 @@ export default {
       alert(data)
     },
     onLobbyCreated: function(data) {
-      console.log("hu")
-      console.log(data)
-
       this.players = data.players;
       this.gamePin = data.gamePin;
 
