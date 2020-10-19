@@ -137,7 +137,7 @@ export default {
           });
         }
       },
-    playSoundTest(){
+    soundAndVibrations(){
       if(this.verdict == "Correct!"){
         if(this.options != null){
           if(this.options.includes("vibration")){
@@ -168,9 +168,10 @@ export default {
     },
     onResults: function(results){
       this.results = true
-
       this.verdict = results.verdict
-      this.playSoundTest()
+      
+      this.soundAndVibrations()
+
       this.questionScore = results.score
       this.scoreStreak = results.streak
     },
