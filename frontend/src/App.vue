@@ -150,9 +150,6 @@ export default {
     {
       this.currentView = "quiz";
       this.currentQuestion = question
-    },
-    onPlayerDisconnected: function() {
-      console.log('Player disconnected');
     }
   }
 };
