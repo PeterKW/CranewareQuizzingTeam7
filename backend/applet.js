@@ -80,11 +80,13 @@ class CranehootServer
 					// Store reference to player on the socket
 					socket.player = newPlayer;
 
-					for(const playerID in lobby.players){
+					lobby.notifyAll("onPlayerJoin", newPlayer)
+					
+					/*for(const playerID in lobby.players){
 						if(newPlayer == lobby.players[playerID]) continue;
 						
 						io.sockets.sockets[playerID].emit('onPlayerJoin', newPlayer)
-					}
+					}*/
 
 					// Tell client they have successfully joined
 					socket.emit('onLobbyJoined', lobby)
@@ -195,17 +197,21 @@ class Lobby
 	sendQuestionResults() {
 		for(const playerID in this.players) {
 			var player = this.players[playerID]
+			try {
+				io.sockets.sockets[playerID].emit(
+					"onResults",
+					{
+						"verdict" : player.questionResults.verdict,
+						"score"   : player.questionResults.score,
+						"streak"  : player.streak
+					}
+				);
 
-			io.sockets.sockets[playerID].emit(
-				"onResults",
-				{
-					"verdict" : player.questionResults.verdict,
-					"score"   : player.questionResults.score,
-					"streak"  : player.streak
-				}
-			);
-
-			player.questionResults = {}
+				player.questionResults = {}
+			}
+			catch(e) { 
+				// Disconnected
+			}
 		}
 
 		this.timer2=5;
@@ -234,7 +240,12 @@ class Lobby
 	notifyAll(event, data)
 	{
 		for(const playerID in this.players) {
-			io.sockets.sockets[playerID].emit(event, data);
+			try {
+				io.sockets.sockets[playerID].emit(event, data);
+			}
+			catch(e) {
+				// They've disconnected 
+			}
 		}
 	}
 
