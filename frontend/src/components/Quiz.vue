@@ -76,26 +76,7 @@ export default {
         // TODO: Send correct data at this point.
         // this.$emit('calculatePoints', this.gamePin, this.questionScore);
 
-        if(this.options != null){
-          if(this.options.includes("vibration")){
-            if (navigator.vibrate) {
-              // vibration API supported
-              window.navigator.vibrate(500);
-            }
-          }
-          if(this.options.includes("effect")){
-            this.playSound(correct)
-          }
-        }
-      }
-      else {
-        if(this.options != null)
-          if(this.options.includes("effect"))
-            this.playSound(incorrect)
-          this.verdict = "Incorrect!"
-          this.questionScore = 0;
-          this.scoreStreak = 0;
-      }
+
       */
     },
 
@@ -155,7 +136,27 @@ export default {
           console.log  (error);
           });
         }
+      },
+    playSoundTest(){
+      if(this.verdict == "Correct!"){
+        if(this.options != null){
+          if(this.options.includes("vibration")){
+            if (navigator.vibrate) {
+              // vibration API supported
+              window.navigator.vibrate(500);
+            }
+          }
+          if(this.options.includes("effect")){
+            this.playSound(correct)
+          }
+        }
       }
+      else {
+        if(this.options != null)
+          if(this.options.includes("effect"))
+            this.playSound(incorrect)
+      }
+    }
   },
   sockets: {
     onNextQuestion: function(question){
@@ -169,6 +170,7 @@ export default {
       this.results = true
 
       this.verdict = results.verdict
+      this.playSoundTest()
       this.questionScore = results.score
       this.scoreStreak = results.streak
     },
