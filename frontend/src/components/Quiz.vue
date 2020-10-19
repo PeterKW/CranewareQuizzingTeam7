@@ -78,26 +78,7 @@ export default {
         // TODO: Send correct data at this point.
         // this.$emit('calculatePoints', this.gamePin, this.questionScore);
 
-        if(this.options != null){
-          if(this.options.includes("vibration")){
-            if (navigator.vibrate) {
-              // vibration API supported
-              window.navigator.vibrate(500);
-            }
-          }
-          if(this.options.includes("effect")){
-            this.playSound(correct)
-          }
-        }
-      }
-      else {
-        if(this.options != null)
-          if(this.options.includes("effect"))
-            this.playSound(incorrect)
-          this.verdict = "Incorrect!"
-          this.questionScore = 0;
-          this.scoreStreak = 0;
-      }
+
       */
     },
 
@@ -157,7 +138,27 @@ export default {
           console.log  (error);
           });
         }
+      },
+    soundAndVibrations(){
+      if(this.verdict == "Correct!"){
+        if(this.options != null){
+          if(this.options.includes("vibration")){
+            if (navigator.vibrate) {
+              // vibration API supported
+              window.navigator.vibrate(500);
+            }
+          }
+          if(this.options.includes("effect")){
+            this.playSound(correct)
+          }
+        }
       }
+      else {
+        if(this.options != null)
+          if(this.options.includes("effect"))
+            this.playSound(incorrect)
+      }
+    }
   },
   sockets: {
     onNextQuestion: function(question){
@@ -169,8 +170,10 @@ export default {
     },
     onResults: function(results){
       this.results = true
-
       this.verdict = results.verdict
+      
+      this.soundAndVibrations()
+
       this.questionScore = results.score
       this.scoreStreak = results.streak
       this.leaderboard = results.playerScores
@@ -197,8 +200,8 @@ export default {
       clearInterval(this.timerInstance)
       this.$emit('done')
     }
-  }
-  /*
+  },
+  
   mounted() {
     // TODO: Populate quiz questions from DB
     //reset all the powers
@@ -207,18 +210,7 @@ export default {
     if(this.options.includes("music")){
       this.playSound(music)
     }
-    this.timerInstance = window.setInterval(() => {
-      if(this.timer-- == 0) {
-        this.nextQuestion()
-        this.doublePoints = false
-        this.timer = this.timePerQ
-        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
-          this.$children[0].resetButtons()
-          this.resetNeeded = false
-        }
-      }
-    }, 1000000)
-  }*/
+  }
 }
 </script>
 
