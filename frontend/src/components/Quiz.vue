@@ -163,7 +163,7 @@ export default {
       this.results = false;
 
       this.currentQuestion = question
-      this.timer = 15;
+      this.timer = 10;
     },
     onResults: function(results){
       this.results = true

@@ -27,7 +27,7 @@ class Database {
 	}
 
 	getRandomQuestion (callback) {
-		var id = Math.floor(Math.random() * 100) + 1;
+		var id = Math.floor(Math.random() * 1000) + 1;
 		// gets question and answers and sends back in JSON form
 		this.database.query("CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [id], function(err, localResult) { // Send query
 			if (err && err.length != 0) throw err;
@@ -157,11 +157,11 @@ class Lobby
 		this.currentQuestion = {}
 		this.qCount = 0;
 
-		this.timer = 15
+		this.timer = 10
 		this.timerInstance = null
 
 		// TODO: Customisable in the future?
-		this.timePerQuestion = 15;
+		this.timePerQuestion = 10;
 		this.noOfQuestions = 5;
 
 		// Im lazy
