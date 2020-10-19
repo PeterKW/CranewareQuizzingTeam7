@@ -12,11 +12,11 @@
     title: "Buddy Works Activated by $BUDDY_EXECUTION_CHANGELOG"
     content: "[#$BUDDY_EXECUTION_ID] $BUDDY_PIPELINE_NAME execution by [$BUDDY_INVOKER_NAME]($BUDDY_INVOKER_URL)\r\n\r\n$BUDDY_PIPELINE_TRIGGER_MODE start from $BUDDY_SCM_PROVIDER on $BUDDY_SCM_URL\r\nExecution started at $BUDDY_EXECUTION_START_DATE\r\n\r\n$BUDDY_EXECUTION_COMMENT"
     recipients: "b987391a.dmail.onmicrosoft.com@emea.teams.ms"
-    trigger_condition: "ON_CHANGE"
+    trigger_condition: "ALWAYS"
     ignore_errors: true
     retry_delay: 2
     retry_count: 10
-  - action: "Execute: npm test"
+  - action: "Execute: npm install/test"
     type: "BUILD"
     working_directory: "/buddy/cranewarequizzingteam7"
     docker_image_name: "library/node"
@@ -60,6 +60,8 @@
     content: "[#$BUDDY_EXECUTION_ID] $BUDDY_PIPELINE_NAME execution by [$BUDDY_INVOKER_NAME]($BUDDY_INVOKER_URL)\r\n\r\n[#$BUDDY_EXECUTION_ID] $BUDDY_PIPELINE_NAME execution by [$BUDDY_INVOKER_NAME]($BUDDY_INVOKER_URL)\\r\\n\\r\\n$BUDDY_PIPELINE_TRIGGER_MODE start from $BUDDY_SCM_PROVIDER on $BUDDY_SCM_URL\\r\\nExecution started at $BUDDY_EXECUTION_START_DATE\\r\\n\\r\\n$BUDDY_EXECUTION_COMMENT\r\nPushed to server successfully"
     recipients: "b987391a.dmail.onmicrosoft.com@emea.teams.ms"
     trigger_condition: "ALWAYS"
+    ignore_errors: true
+    run_next_parallel: true
   - action: "Send notification to MS Teams"
     type: "MICROSOFT_TEAMS"
     trigger_time: "ON_FAILURE"
@@ -74,3 +76,38 @@
     content: "[#$BUDDY_EXECUTION_ID] $BUDDY_PIPELINE_NAME execution by [$BUDDY_INVOKER_NAME]($BUDDY_INVOKER_URL)\\r\\n\\r\\n$BUDDY_PIPELINE_TRIGGER_MODE start from $BUDDY_SCM_PROVIDER on $BUDDY_SCM_URL\\r\\nExecution started at $BUDDY_EXECUTION_START_DATE\\r\\n\\r\\n$BUDDY_EXECUTION_COMMENT\r\nPushed to server successfully"
     recipients: "b987391a.dmail.onmicrosoft.com@emea.teams.ms"
     trigger_condition: "ALWAYS"
+- pipeline: "Push Craneware Developer Pull Request?"
+  trigger_mode: "MANUAL"
+  ref_type: "NONE"
+  target_site_url: "http://18.134.93.210/"
+  fetch_all_refs: true
+  fail_on_prepare_env_warning: true
+  trigger_condition: "ALWAYS"
+  actions:
+  - action: "Execute: npm test"
+    type: "BUILD"
+    working_directory: "/buddy/cranewarequizzingteam7"
+    docker_image_name: "library/node"
+    docker_image_tag: "12"
+    execute_commands:
+    - "# yarn install"
+    - "npm install"
+    - "npm test"
+    volume_mappings:
+    - "/frontend:/buddy/cranewarequizzingteam7"
+    trigger_condition: "ALWAYS"
+    shell: "BASH"
+  - action: "Upload files to 18.134.93.210"
+    type: "SFTP"
+    trigger_time: "ON_BACK_TO_SUCCESS"
+    input_type: "SCM_REPOSITORY"
+    local_path: "frontend"
+    remote_path: "/home/bitnami/projects/CranewareQuizzingTeam7/frontend"
+    login: "bitnami"
+    host: "18.134.93.210"
+    port: "22"
+    authentication_mode: "WORKSPACE_KEY"
+    use_temporary_files: true
+    deployment_excludes:
+    - "node_modules/"
+    - "buddy.yml"
