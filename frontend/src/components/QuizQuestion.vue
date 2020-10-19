@@ -4,12 +4,12 @@
       <h2 class="question w-100">{{question}}</h2>
     </b-row>
     <b-row style="margin-bottom:10px">
-      <b-col style="margin-right:10px;"><b-button v-if=!disableA @click="onAnswer('A')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
-      <b-col><b-button v-if=!disableB @click="onAnswer('B')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button v-if=!disableA @click="onAnswer('1')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
+      <b-col><b-button v-if=!disableB @click="onAnswer('2')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col style="margin-right:10px;"><b-button v-if=!disableC @click="onAnswer('C')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
-      <b-col><b-button v-if=!disableD @click="onAnswer('D')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button v-if=!disableC @click="onAnswer('3')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
+      <b-col><b-button v-if=!disableD @click="onAnswer('4')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
     </b-row>
   </div>
 </template>

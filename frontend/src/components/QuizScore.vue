@@ -4,7 +4,21 @@
       <h1 class="question w-100">{{verdict}}</h1>
       <h2 class="w-100">You scored {{score}} points.</h2>
       <h3 v-if="scoreStreak > 1" class="w-100">Score Streak: {{scoreStreak}} {{scoreBonus}}</h3>
-      <h3 class="w-100">Waiting for next question...</h3>
+
+     <table class="table table-hover ">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Points</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="player in leaderboard" :key="player.socket">
+            <td>{{player.username}}</td>
+            <td>{{player.score}}</td>
+          </tr>
+        </tbody>
+      </table>
     </b-row>
   </div>
 </template>
@@ -13,7 +27,7 @@
 export default {
   name: 'QuizScore',
   props: [
-      "verdict","score", "scoreStreak"
+      "verdict","score", "scoreStreak", "leaderboard"
   ],
   data: function () {
      return {

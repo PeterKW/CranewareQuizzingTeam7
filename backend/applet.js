@@ -1,232 +1,305 @@
-// Import Pusher dependancy
-const Pusher = require('pusher');
+// Setup for utilizing socket.io
 const express = require('express');
-const bodyparser = require('body-parser');
-const cors = require('cors');
-const crypto = require('crypto');
-// TODO: potentially remove following module and input command set up after.
-/* const readline = require('readline');
-
-const userInputReader = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
-});*/
-
-// Serves as handler for routing
 const webapp = express();
-
-// Using bodyparser to enforce json rules
-// Refer to https://www.npmjs.com/package/body-parser
-webapp.use(bodyparser.json());
-webapp.use(bodyparser.urlencoded({ extended: false }));
-
-// Enable CORS to prevent errors when accessing
+const cors = require('cors');
 webapp.use(cors());
+const port = 5000;
+const listener = webapp.listen(port);
 
-// Index API route for the Express app
-webapp.get('/', function(req, res)
+var mysql = require('mysql');
+var db = require('./db'); // Database info JSON
+
+const io = require('socket.io').listen(listener, () =>
 {
-	res.send('Welcome');
+	// Informs that the server is running.
+	console.log('Server running on port ' + port);
 });
 
-// Instantiates the connection to the Pusher API
-const pusher = new Pusher({
-	appId: '1085899',
-	key: '072127b07acd646fc5ec',
-	secret: '48f388a42b3a7991bbc5',
-	cluster: 'eu',
-	useTLS: true,
-});
-
-// Authenticates users
-webapp.post('/pusher/auth', function(req, res)
-{
-	const presence = { user_id: crypto.randomBytes(16).toString('hex') };
-	const socketId = req.body.socket_id;
-	const channel = req.body.channel_name;
-	const auth = pusher.authenticate(socketId, channel, presence);
-	res.send(auth);
-});
-
-class Player
-{
-	constructor(data)
-	{
-		const name = data.name;
-		const id = data.user_id;
-		const score = 0;
-		const streak = 0 ;
-	}
-
-	// Should send lobbyCode to server
-	/* function connectToLobby(lobbyCode)
-	{
-
-	}
-
-	// Sends the answer selected to the server
-	function sendAnswerChoice(option)
-	{
-
-	}*/
-}
-
-class Lobby
-{
-	constructor(code, lobbyName, host)
-	{
-		this.players = [];
-		this.name = lobbyName;
-		this.code = code; // this.generateCode();
-		this.host = host;
-	}
-}
-
-// This class handles events to and from the client and server.
-class EventHandler
-{
-	// Sends a json file through pusher on the specific channel as the specified event.
-	// channel & event are strings
-	// jsonData is a json file/object
-	// isTestingOn is a bool which determines if the code should be tested.
-	async sendData(channel, event, jsonData, isTestingOn)
-	{
-		pusher.trigger(channel, event, jsonData, function(err, req, res)
-		{
-			if(isTestingOn)
-			{
-				return testerInstance.evalResponse(err, req, res);
-			}
+class Database {
+	constructor() {
+		this.database = mysql.createConnection({
+		  host: db.host,
+		  user: db.user,
+		  password: db.password,
+		  database: db.database,
+		  multipleStatements: true
 		});
 	}
 
-	// Works like sendData but sends only a string as a message.
-	sendMsg(channel, event, msg, isTestingOn)
-	{
-		this.sendData(channel, event, { 'message': msg }, isTestingOn);
+	getRandomQuestion (callback) {
+		var id = Math.floor(Math.random() * 1000) + 1;
+		// gets question and answers and sends back in JSON form
+		this.database.query("CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [id], function(err, localResult) { // Send query
+			if (err && err.length != 0) throw err;
+			var result = localResult[1];
+			let question = {
+			  result
+			}
+			return callback(question.result[0]); // Pass back info
+		});
 	}
-
-	// Will listen to an event and run the callback function on the event's occurence
-	/* listenToEvent(channel, event, callback)
-	{
-		pusher.bind(channel, event, callback);
-	}*/
-
-	// Listens to all events and uses the callback function for all of them. The function can take a variable which is the incoming data.
-	/* listenToAllEvents(callback)
-	{
-		pusher.bind_global(callback);
-	}*/
 }
+const database = new Database();
 
-// This is a global EventHandler
-const evntManager = new EventHandler();
-
-// Recieve data from clients
-webapp.post('/hook', (req, res) =>
+class CranehootServer
 {
-	console.log(req.body);
-	const firstEvent = req.body.events[0];
-	const data = JSON.parse(firstEvent.data);
-	const code = firstEvent.channel.replace('private-', '');
-	switch(firstEvent.event)
-	{
-	case 'client-new-lobby':
-		createLobby(data);
-		break;
-	case 'client-join':
-		joinLobby(code, data);
-		break;
-	}
-
-	// if(firstEvent.startsWith())
-
-	res.sendStatus(200);
-});
-
-const lobbies = {};
-// Rmove This
-// createLobby({ name: 'Dancho lobby', host: 'zyq' });
-
-function joinLobby(code, data)
-{
-	if(lobbies[code] == null)
-	{
-		console.log('\nPlayer failed to join lobby due to lobby not existing.\n');
-		return;
-	}
-
-	const newPlayer = new Player(data);
-
-	if (lobbies[code].players.length == 0)
-	{
-		lobbies[code].host = newPlayer.id;
-	}
-	lobbies[code].players.push(newPlayer);
-	getLobbySize(lobbies[code]);
-	evntManager.sendMsg('private-' + data.user_id, 'approved', '', true);
-}
-
-function getLobbySize(lobby)
-{
-	console.log(lobby.players.length);
-}
-
-function createLobby(data)
-{
-	const code = generateCode();
-	const newLobby = new Lobby(code, data.name, data.host);
-
-
-	lobbies[code] = newLobby;
-	evntManager.sendMsg('private-lobby-manager', 'lobby-created', newLobby.code, true);
-}
-
-function generateCode()
-{
-	return 'abcd'; // crypto.randomBytes(6).toString('hex').slice(0, 4);
-}
-
-/* class ClientEventHandler
-{
-	const isLoggingOn = false;
-	const connectedChannels = [];
-
-	constructor(logging)
-	{
-		setLogging(logging);
-	}
 	constructor()
 	{
-		this.isLoggingOn = false;
+
+		this.lobbies = {};
+
+		this.start()
 	}
 
-	// Allows logs to be turned on or off
-	function setLogging(onOff)
+	start() {
+		io.on('connect', socket =>
+		{
+			socket.on('onCreateLobby', (username) => {
+				var newLobby = this.newLobby();
+				var player = new Player(socket.id, username, newLobby.gamePin)
+
+				newLobby.addPlayer(player)
+
+				// Store reference to player on the socket
+				socket.player = player;
+
+		        socket.emit('onLobbyCreated', newLobby);
+		     });
+
+			socket.on('onJoinLobby', (username, gamePin) =>
+			{
+				// Validate game pin
+				if(gamePin in this.lobbies)
+				{
+					var lobby = this.lobbies[gamePin];
+
+					// New player object
+					var newPlayer = new Player(socket.id, username, lobby.gamePin)
+					lobby.addPlayer(newPlayer)
+
+					// Store reference to player on the socket
+					socket.player = newPlayer;
+
+					lobby.notifyAll("onPlayerJoin", newPlayer)
+					
+					/*for(const playerID in lobby.players){
+						if(newPlayer == lobby.players[playerID]) continue;
+						
+						io.sockets.sockets[playerID].emit('onPlayerJoin', newPlayer)
+					}*/
+
+					// Tell client they have successfully joined
+					socket.emit('onLobbyJoined', lobby)
+				}
+				else
+				{
+					socket.emit('onError', 'Invalid game pin');
+				}
+			});
+
+			// Starts the game for all users.
+			socket.on('onLobbyStart', (code) =>
+			{
+				this.lobbies[code].start();
+			});
+
+
+			socket.on('onAnswer', (answer) =>
+			{
+				var player = socket.player;
+				var lobby = this.lobbies[socket.player.lobby]
+
+				lobby.onPlayerAnswer(player, answer)
+			});
+		});
+	}
+
+	newLobby()
 	{
-		// Logs all network communication information to console
-		this.isLoggingOn = onOff;
-		Pusher.logToConsole = onOff;
-	}
+	    var pin = Math.random().toString(36).substring(7);
 
-	// Channels are streams over which events can be sent. All channels should private-
-	function connectToChannel(channel)
+		this.lobbies[pin] = new Lobby(pin);
+		return this.lobbies[pin];
+	}
+}
+
+// Represents a lobby
+class Lobby
+{
+	constructor(pin)
 	{
-		connectedChannels.push(pusher.subscribe(channel));
+		this.gamePin = pin
+		this.players = {}
+
+		this.leaderboard = [];
+
+		this.currentQuestion = {}
+		this.qCount = 0;
+
+		this.timer = 10
+		this.timerInstance = null
+
+		// TODO: Customisable in the future?
+		this.timePerQuestion = 10;
+		this.noOfQuestions = 5;
+
+		// Im lazy
+		this.timer2 = 5
+		this.timerInstance2 = null
 	}
 
-	// Will listen for a particular event on a single channel
-	function listenForEvent(channelNo, event, callback)
+	start() {
+		this.nextQuestion("onLobbyStarted")
+		this.loop()
+	}
+
+	loop() {
+	   	if(this.qCount > this.noOfQuestions){
+		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
+		 	return
+		 }
+
+		this.nextQuestion("onNextQuestion")
+		this.timer = this.timePerQuestion
+
+		this.timerInstance = setInterval(() => {
+			this.notifyAll("onTimerTick", this.timer)
+
+	    	if(this.timer-- <= 0) {
+	    		clearInterval(this.timerInstance)
+
+	    		this.sendQuestionResults();
+	      	}
+	    }, 1000)
+	}
+
+	onPlayerAnswer(player, answer) {
+		// Verify their answer
+		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
+			//TODO: Add double points back
+			var tempScore = this.timer * 100
+	        
+	        player.streak++
+
+	        if(player.streak > 1){
+	          tempScore += (100 * player.streak)
+	        }
+
+	        player.score += tempScore;
+
+	        player.questionResults = {
+	        	verdict : "Correct!",
+	        	score : tempScore
+	       }
+		}
+		else {
+			player.streak = 0
+
+			player.questionResults = {
+	        	verdict : "Incorrect!",
+	        	score : 0
+	        }
+		}
+	}
+
+	sendQuestionResults() {
+		var leaderboard = this.getLeaderboard()
+
+
+		for(const playerID in this.players) {
+			var player = this.players[playerID]
+
+			try {
+				io.sockets.sockets[playerID].emit(
+					"onResults",
+					{
+						"verdict" : player.questionResults.verdict,
+						"score"   : player.questionResults.score,
+						"streak"  : player.streak,
+						"playerScores" : leaderboard
+					}
+				);
+
+				player.questionResults = {}
+			}
+			catch(e) { 
+				// Disconnected
+			}
+		}
+
+		
+		this.timer2=5;
+		this.timerInstance2 = setInterval(() => {
+			this.notifyAll("onTimerTick2", this.timer2)
+
+	    	if(this.timer2-- <= 0) {
+	    		 clearInterval(this.timerInstance2)
+	    		 this.loop();
+	      	}
+	    }, 1000)
+	}
+
+	getLeaderboard(){
+		var leaderboard = Object.values(this.players)
+		leaderboard.sort((a, b) => b.score - a.score)
+
+		return leaderboard
+	}
+
+	nextQuestion(e) {
+		this.qCount++;
+		var that = this;
+		database.getRandomQuestion(function(question) {
+			that.currentQuestion = question;
+			that.notifyAll(e, question);
+		});
+	}
+
+	// Will allow all users to be updated when an event occurs.
+	// event is a string one wants to send
+	// data is a json object or a single data type
+	notifyAll(event, data)
 	{
-		connectedCHannels[channelNo].bind(event, callback);
+		for(const playerID in this.players) {
+			try {
+				io.sockets.sockets[playerID].emit(event, data);
+			}
+			catch(e) {
+				// They've disconnected 
+			}
+		}
 	}
 
+	addPlayer(player) {
+		this.players[player.socket] = player;
+	}
 
-	function findChannelNo(channelName)
+	get host(){
+    	return this.players[0]
+  	}
+}
+
+// represents a player.
+class Player
+{
+	constructor(socket, username, lobby)
 	{
+		this.username = username;
+		this.socket = socket;
+		this.lobby = lobby;
 
+		this.score = 0;
+		this.streak = 0;
+
+		this.questionResults = {}
 	}
-}*/
+}
+
+// Logs new connections to the server.
+io.on('connection', () =>
+{
+	console.log('New player detected!');
+});
 
 // Helps to run tests.
 class Tester
@@ -281,11 +354,11 @@ class Tester
 const testerInstance = new Tester();
 
 
-
 // Is the main method that runs the usual server operation.
 function main()
 {
-	tests();
+	// tests();
+	const craneHoot = new CranehootServer();
 }
 
 // The test cases
@@ -297,8 +370,8 @@ function tests()
 	const JSONTest = { 'message':'Let\'s go', 'test':'tested' };
 
 	// TODO: Fix broken test. The code is working but the test jumps the gun. Will require async and await keywords to solve.
-	testerInstance.testBoolFunction('isSendMessageWorking', evntManager.sendMsg(testChannel, testEvnt, testMsg, true));
-	testerInstance.testBoolFunction('isSendDataWorking', evntManager.sendData(testChannel, testEvnt, JSONTest, true));
+	// testerInstance.testBoolFunction('isSendMessageWorking', evntManager.sendMsg(testChannel, testEvnt, testMsg, true));
+	// testerInstance.testBoolFunction('isSendDataWorking', evntManager.sendData(testChannel, testEvnt, JSONTest, true));
 
 	// Currently using readline to halt test until tester ensures a client instance is running.
 	/* userInputReader.question('Press enter when ready to trigger event to run test', (ans) =>
@@ -325,8 +398,5 @@ function tests()
 	});*/
 
 }
-
-// Listening to port 5000
-webapp.listen(5000);
 
 main();

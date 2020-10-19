@@ -5,9 +5,17 @@
           <b-row class="w-100" style="margin-bottom: 5px;">
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
-          <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="quiz[currQuestion].question" :a="quiz[currQuestion].A" :b="quiz[currQuestion].B" :c="quiz[currQuestion].C" :d="quiz[currQuestion].D"/>
-          <QuizScore v-if="answered" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak"/>
-          <PowerBar  class= "powers" v-if="!answered" v-on:power="onPower"/>
+          <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
+
+          <div v-if="answered && !results" class="cont">
+            <b-row class="text-center w-100">
+              <h1 class="question w-100" style="padding-top:60px">Waiting for results...</h1>
+            </b-row>
+          </div>
+
+          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard"/>
+
+          <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>
       </b-col>
       <b-button v-b-tooltip.hover title="Sound effects & music obtained from www.zapsplat.com" size="lg" variant="primary" class="mb-2 license">
         <b-icon icon="info-circle-fill" aria-label="Help"></b-icon>
@@ -21,11 +29,13 @@
 <script>
 import QuizQuestion from "./QuizQuestion.vue";
 import QuizScore from "./QuizScore.vue";
-const correct = require("../assets/correct.mp3");
-const incorrect = require("../assets/incorrect.mp3");
-const music = require("../assets/music.mp3");
 import PowerBar from "./PowerBar.vue";
 
+// eslint-disable-next-line no-unused-vars
+const correct = require("../assets/correct.mp3");
+// eslint-disable-next-line no-unused-vars
+const incorrect = require("../assets/incorrect.mp3");
+const music = require("../assets/music.mp3");
 
 export default {
   name: 'Quiz',
@@ -34,68 +44,61 @@ export default {
     PowerBar,
     QuizScore,
   },
-  props: ["players", "options", "volume"],
+  props: ["players", "options", "volume", "currentQuestion"],
   data() {
     return {
       timePerQ: 10,
       timer: 10,
       timerInstance: null,
+
+      leaderboard: [],
+
       currQuestion: 0,
       answered: false,
       doublePoints: false,
       resetNeeded: false,
 
+      results: null,
+
       //QuizScore
       verdict: "",
       questionScore: 0,
-      scoreStreak: 0,
-
-      // TODO: This will be recieved from the websocket per question later on
-      quiz: [
-        {
-          "question":"How many teeth does an adult human have?",
-          "answer": "A",
-          "A": "32",
-          "B": "30",
-          "C": "25",
-          "D": "20"
-        },
-        {
-          "question":"What is the largest bird of prey in the world?",
-          "answer": "B",
-          "A": "Golden Eagle",
-          "B": "Andean Condor",
-          "C": "Sparrow Hawk",
-          "D": "Peregrine Falcon"
-        },
-        {
-          "question":"In which sport would you use a shuttlecock?",
-          "answer": "C",
-          "A": "Hockey",
-          "B": "Tennis",
-          "C": "Badminton",
-          "D": "Football"
-        },
-        {
-          "question":"What is the biggest state in America?",
-          "answer": "B",
-          "A": "North Carolina",
-          "B": "Alaska",
-          "C": "Colarado",
-          "D": "Washington"
-        },
-        {
-          "question":"What is a group of lions called?",
-          "answer": "A",
-          "A": "Pride",
-          "B": "Gaggle",
-          "C": "Murder",
-          "D": "Herd"
-        },
-      ]
+      scoreStreak: 0,      
     }
   },
   methods: {
+    // Event handlers //
+
+    // Handles click of an answer
+    onAnswerQuestion(answer) {
+      this.answered = true
+      this.$socket.emit('onAnswer', answer);
+
+       /*
+        // TODO: Send correct data at this point.
+        // this.$emit('calculatePoints', this.gamePin, this.questionScore);
+
+
+      */
+    },
+
+    // This function is responsible for Handling the power abilities
+    onPower(power) {
+
+      switch (power) {
+        case 'doublep':
+          this.doublePoints = true
+          break;
+
+        case '50/50':
+          //call the first childs (which is the QuizQuestion.vue file) disableButtons method
+          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
+          this.resetNeeded = true
+          break;
+      }
+    },
+
+    // Normal methods
     nextQuestion(){
       if(this.answered == false){
         this.scoreStreak = 0
@@ -113,83 +116,6 @@ export default {
         this.currQuestion++
       }
     },
-
-    endQuiz() {
-      if(this.options.includes("music")){
-        this.musicAudio.pause()
-      }
-      clearInterval(this.timerInstance)
-      this.$emit('done')
-    },
-
-    onAnswerQuestion(answer) {
-      this.answered = true
-
-      /*
-      // Send answer to Pusher
-      eventReader.trigger('client-choose answer',
-      {
-        'message': answer,
-      });*/
-
-
-      // TODO: This will go server side in the future
-      if(this.quiz[this.currQuestion]["answer"] == answer){
-        this.verdict = "Correct!"
-
-        if (this.doublePoints) {
-          this.questionScore = this.timer * 100 * 2
-        } else {
-          this.questionScore = this.timer * 100
-        }
-        this.scoreStreak = this.scoreStreak + 1
-
-        if(this.scoreStreak > 1){
-          this.questionScore = this.questionScore + (100 * this.scoreStreak)
-        }
-        this.players[0].score += this.questionScore;
-
-        if(this.options != null){
-          if(this.options.includes("vibration")){
-            if (navigator.vibrate) {
-              // vibration API supported
-              window.navigator.vibrate(500);
-            }
-          }
-          if(this.options.includes("effect")){
-            this.playSound(correct)
-          }
-        }
-
-
-
-      }
-      else {
-        if(this.options != null)
-          if(this.options.includes("effect"))
-            this.playSound(incorrect)
-        this.verdict = "Incorrect!"
-        this.questionScore = 0;
-        this.scoreStreak = 0;
-      }
-    },
-
-    //Function is responsible for Handling the power abilities
-    onPower(power) {
-
-      switch (power) {
-        case 'doublep':
-          this.doublePoints = true
-          break;
-
-        case '50/50':
-          //call the first childs (which is the QuizQuestion.vue file) disableButtons method
-          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
-          this.resetNeeded = true
-          break;
-      }
-    },
-
     playSound (src) {
       if(src == music){
           this.musicAudio = new Audio();
@@ -212,9 +138,70 @@ export default {
           console.log  (error);
           });
         }
+      },
+    soundAndVibrations(){
+      if(this.verdict == "Correct!"){
+        if(this.options != null){
+          if(this.options.includes("vibration")){
+            if (navigator.vibrate) {
+              // vibration API supported
+              window.navigator.vibrate(500);
+            }
+          }
+          if(this.options.includes("effect")){
+            this.playSound(correct)
+          }
+        }
       }
-
+      else {
+        if(this.options != null)
+          if(this.options.includes("effect"))
+            this.playSound(incorrect)
+      }
+    }
   },
+  sockets: {
+    onNextQuestion: function(question){
+      this.answered = false;
+      this.results = false;
+
+      this.currentQuestion = question
+      this.timer = 10;
+    },
+    onResults: function(results){
+      this.results = true
+      this.verdict = results.verdict
+      
+      this.soundAndVibrations()
+
+      this.questionScore = results.score
+      this.scoreStreak = results.streak
+      this.leaderboard = results.playerScores
+    },
+    onTimerTick(time) {
+      this.timer = time
+
+      if(this.timer == 0) {
+        this.answered = true;
+      }
+    },
+    onTimerTick2(time) {
+      this.timer = time
+
+      if(this.timer == 0) {
+        this.answered = false;
+        this.results = false;
+      }
+    },
+    onQuizEnd: function(leaderboard){
+      if(this.options.includes("music")){
+        this.musicAudio.pause()
+      }
+      
+      this.$emit('done', leaderboard)
+    }
+  },
+  
   mounted() {
     // TODO: Populate quiz questions from DB
     //reset all the powers
@@ -223,17 +210,6 @@ export default {
     if(this.options.includes("music")){
       this.playSound(music)
     }
-    this.timerInstance = window.setInterval(() => {
-      if(this.timer-- == 0) {
-        this.nextQuestion()
-        this.doublePoints = false
-        this.timer = this.timePerQ
-        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
-          this.$children[0].resetButtons()
-          this.resetNeeded = false
-        }
-      }
-    }, 1000)
   }
 }
 </script>
