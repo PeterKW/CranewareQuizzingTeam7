@@ -58,6 +58,7 @@ export default {
       answered: false,
       doublePoints: false,
       resetNeeded: false,
+      quizRef: null,
 
       currPlayers: 0,
 
@@ -75,7 +76,6 @@ export default {
     // Handles click of an answer
     onAnswerQuestion(answer) {
       this.answered = true
-      console.log("plesase");
       this.$socket.emit('onAnswer', answer, this.doublePoints);
       this.doublePoints = false;
 
@@ -97,7 +97,7 @@ export default {
 
         case '50/50':
           //call the first childs (which is the QuizQuestion.vue file) disableButtons method
-          this.$children[0].disableButtons(this.currentQuestion['@correct_answer']);
+          this.quizRef.disableButtons(this.currentQuestion['@correct_answer']);
           this.resetNeeded = true
           break;
       }
@@ -171,6 +171,13 @@ export default {
       this.results = false;
 
       this.currentQuestion = question
+
+      for (var i = 0; i < this.$children.length; i++) {
+        if (this.$children[i].ID == 'QuizQuestion') {
+            this.quizRef = this.$children[i];
+        }
+      }
+
       this.timer = 10;
       // this.$socket.emit('currPlayers', {});
     },
@@ -217,7 +224,9 @@ export default {
   mounted() {
     // TODO: Populate quiz questions from DB
     //reset all the powers
-    this.$children[1].resetButtons()
+    this.$children[1].resetButtons();
+    this.quizRef = this.$children[0];
+    console.log(this.quizRef);
 
     this.$socket.emit('getCurrPlayers', {});
 
