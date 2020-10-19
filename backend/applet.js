@@ -154,6 +154,11 @@ class Lobby
 	}
 
 	loop() {
+	   	if(this.qCount > this.noOfQuestions){
+		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
+		 	return
+		 }
+
 		this.nextQuestion("onNextQuestion")
 		this.timer = this.timePerQuestion
 
@@ -161,12 +166,9 @@ class Lobby
 			this.notifyAll("onTimerTick", this.timer)
 
 	    	if(this.timer-- <= 0) {
-	    		if(this.qCount == this.noOfQuestions){
-	    		 	this.notifyAll("end")
-	    		 }
+	    		clearInterval(this.timerInstance)
 
-	    		 clearInterval(this.timerInstance)
-	    		 this.sendQuestionResults();
+	    		this.sendQuestionResults();
 	      	}
 	    }, 1000)
 	}
@@ -201,10 +203,7 @@ class Lobby
 	}
 
 	sendQuestionResults() {
-		var leaderboard = Object.values(this.players)
-
-		// Taken and modified from https://stackoverflow.com/a/1129270
-		leaderboard.sort((a, b) => b.score - a.score)
+		var leaderboard = this.getLeaderboard()
 
 
 		for(const playerID in this.players) {
@@ -238,6 +237,13 @@ class Lobby
 	    		 this.loop();
 	      	}
 	    }, 1000)
+	}
+
+	getLeaderboard(){
+		var leaderboard = Object.values(this.players)
+		leaderboard.sort((a, b) => b.score - a.score)
+
+		return leaderboard
 	}
 
 	nextQuestion(e) {

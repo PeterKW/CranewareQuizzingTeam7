@@ -8,14 +8,12 @@
         <table class="table table-hover ">
           <thead>
             <tr>
-              <th scope="col">#</th>
               <th scope="col">Username</th>
               <th scope="col">Points</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="player in players" :key="player.id">
-              <th scope="row">{{ player.id }}</th>
+            <tr v-for="player in players" :key="player.socket">
               <td>{{player.username}}</td>
               <td>{{player.score}}</td>
             </tr>

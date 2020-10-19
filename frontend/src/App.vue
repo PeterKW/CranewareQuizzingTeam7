@@ -6,7 +6,7 @@
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
          <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
         <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :currentQuestion="currentQuestion" :options="settings" :volume="volume"></Quiz>
-        <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="players"></Leaderboard>
+        <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="lb"></Leaderboard>
       </transition>
     </GradientContainer>
   </div>
@@ -48,6 +48,9 @@ export default {
 
       // Vars for passing into Quiz
       currentQuestion: {},
+
+      //
+      lb: [],
 
       gamePin: "",
       sliderValue: '',
@@ -100,8 +103,9 @@ export default {
       this.players = []
     },
 
-    onQuizFinish()
+    onQuizFinish(lb)
     {
+      this.lb = lb
       this.currentView = "leaderboard"
     },
     onExitLeaderboard()

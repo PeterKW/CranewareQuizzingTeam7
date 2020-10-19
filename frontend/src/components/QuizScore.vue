@@ -19,8 +19,6 @@
           </tr>
         </tbody>
       </table>
-
-      <h3 class="w-100">Waiting for next question...</h3>
     </b-row>
   </div>
 </template>

@@ -193,12 +193,12 @@ export default {
         this.results = false;
       }
     },
-    end: function(){
+    onQuizEnd: function(leaderboard){
       if(this.options.includes("music")){
         this.musicAudio.pause()
       }
-      clearInterval(this.timerInstance)
-      this.$emit('done')
+      
+      this.$emit('done', leaderboard)
     }
   },
   
