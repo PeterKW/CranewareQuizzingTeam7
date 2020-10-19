@@ -194,8 +194,8 @@ export default {
       clearInterval(this.timerInstance)
       this.$emit('done')
     }
-  }
-  /*
+  },
+  
   mounted() {
     // TODO: Populate quiz questions from DB
     //reset all the powers
@@ -204,18 +204,7 @@ export default {
     if(this.options.includes("music")){
       this.playSound(music)
     }
-    this.timerInstance = window.setInterval(() => {
-      if(this.timer-- == 0) {
-        this.nextQuestion()
-        this.doublePoints = false
-        this.timer = this.timePerQ
-        if (this.resetNeeded) { // If the user hasn't answered but used the 50/50
-          this.$children[0].resetButtons()
-          this.resetNeeded = false
-        }
-      }
-    }, 1000000)
-  }*/
+  }
 }
 </script>
 
