@@ -72,7 +72,9 @@ export default {
     // Handles click of an answer
     onAnswerQuestion(answer) {
       this.answered = true
-      this.$socket.emit('onAnswer', answer);
+      console.log("plesase");
+      this.$socket.emit('onAnswer', answer, this.doublePoints);
+      this.doublePoints = false;
 
        /*
         // TODO: Send correct data at this point.
