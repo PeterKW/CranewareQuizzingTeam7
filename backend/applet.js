@@ -73,6 +73,11 @@ class CranehootServer
 				{
 					var lobby = this.lobbies[gamePin];
 
+					if (lobby.hasGameStarted) {
+						socket.emit('onError', 'Game has already started');
+						return;
+					}
+
 					// New player object
 					var newPlayer = new Player(socket.id, username, lobby.gamePin)
 					lobby.addPlayer(newPlayer)
@@ -111,6 +116,13 @@ class CranehootServer
 
 				lobby.onPlayerAnswer(player, answer, doublePoints)
 			});
+
+			socket.on('getCurrPlayers', () =>
+			{
+				var player = socket.player;
+				var lobby = this.lobbies[socket.player.lobby];
+				socket.emit('onCurrentPlayers', Object.keys(lobby.players).length);
+			});
 		});
 	}
 
@@ -146,9 +158,12 @@ class Lobby
 		// Im lazy
 		this.timer2 = 5
 		this.timerInstance2 = null
+
+		this.hasGameStarted = false;
 	}
 
 	start() {
+		this.hasGameStarted = true;
 		this.nextQuestion("onLobbyStarted")
 		this.loop()
 	}
@@ -232,6 +247,8 @@ class Lobby
 			}
 			catch(e) {
 				// Disconnected
+				delete this.players[playerID];
+				this.notifyAll("onPlayerDisconnected", {});
 			}
 		}
 
@@ -274,6 +291,8 @@ class Lobby
 			}
 			catch(e) {
 				// They've disconnected
+				delete this.players[playerID];
+				this.notifyAll("onPlayerDisconnected", {});
 			}
 		}
 	}
