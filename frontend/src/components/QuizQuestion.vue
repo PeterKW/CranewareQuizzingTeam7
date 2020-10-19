@@ -24,6 +24,7 @@ export default {
       disableB: false,
       disableC: false,
       disableD: false,
+      ID: 'QuizQuestion'
     };
   },
 
@@ -55,8 +56,11 @@ export default {
       //console.log("correct answer");
       //console.log(answer);
 
+      //find which letter the answer corresponds to
+      answer = this.findLetter(answer);
+
       //remove real answer from array of letters to remove
-      var index = this.letterToNum(answer);
+      var index = -1 * this.letterToNum(answer);
       var answerArray = ['A', 'B', 'C', 'D'];
       answerArray.splice(index, 1);
 
@@ -81,6 +85,19 @@ export default {
 
       //console.log("array after splicing");
       //console.log(answerArray);
+    },
+
+    findLetter(answer) {
+      switch (answer) {
+        case this.a:
+          return "A";
+        case this.b:
+          return "B";
+        case this.c:
+          return "C";
+        case this.d:
+          return "D";
+      }
     },
 
     //Converts letter into ASCII and take it away from 65, 65 is the code for

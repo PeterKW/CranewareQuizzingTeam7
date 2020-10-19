@@ -3,6 +3,7 @@
      <b-row class="h-100 align-items-center">
         <b-col cols="10" class="mx-auto text-center p4">
           <b-row class="w-100" style="margin-bottom: 5px;">
+            <p class="currPlayers mr-auto">Players: {{currPlayers}}</p>
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
@@ -57,13 +58,16 @@ export default {
       answered: false,
       doublePoints: false,
       resetNeeded: false,
+      quizRef: null,
+
+      currPlayers: 0,
 
       results: null,
 
       //QuizScore
       verdict: "",
       questionScore: 0,
-      scoreStreak: 0,      
+      scoreStreak: 0,
     }
   },
   methods: {
@@ -72,7 +76,8 @@ export default {
     // Handles click of an answer
     onAnswerQuestion(answer) {
       this.answered = true
-      this.$socket.emit('onAnswer', answer);
+      this.$socket.emit('onAnswer', answer, this.doublePoints);
+      this.doublePoints = false;
 
        /*
         // TODO: Send correct data at this point.
@@ -92,7 +97,7 @@ export default {
 
         case '50/50':
           //call the first childs (which is the QuizQuestion.vue file) disableButtons method
-          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
+          this.quizRef.disableButtons(this.currentQuestion['@correct_answer']);
           this.resetNeeded = true
           break;
       }
@@ -166,12 +171,20 @@ export default {
       this.results = false;
 
       this.currentQuestion = question
+
+      for (var i = 0; i < this.$children.length; i++) {
+        if (this.$children[i].ID == 'QuizQuestion') {
+            this.quizRef = this.$children[i];
+        }
+      }
+
       this.timer = 10;
+      // this.$socket.emit('currPlayers', {});
     },
     onResults: function(results){
       this.results = true
       this.verdict = results.verdict
-      
+
       this.soundAndVibrations()
 
       this.questionScore = results.score
@@ -197,15 +210,25 @@ export default {
       if(this.options.includes("music")){
         this.musicAudio.pause()
       }
-      
+
       this.$emit('done', leaderboard)
+    },
+    onPlayerDisconnected: function () {
+      this.currPlayers -= 1;
+    },
+    onCurrentPlayers: function (num){
+      this.currPlayers = num;
     }
   },
-  
+
   mounted() {
     // TODO: Populate quiz questions from DB
     //reset all the powers
-    this.$children[1].resetButtons()
+    this.$children[1].resetButtons();
+    this.quizRef = this.$children[0];
+    console.log(this.quizRef);
+
+    this.$socket.emit('getCurrPlayers', {});
 
     if(this.options.includes("music")){
       this.playSound(music)
@@ -229,6 +252,15 @@ export default {
 }
 
 .timer {
+  background-color: #fff;
+  border-radius:10px;
+  padding:10px;
+  font-size:220%;
+  min-width: 10vh;
+  margin-bottom:0;
+}
+
+.currPlayers {
   background-color: #fff;
   border-radius:10px;
   padding:10px;
