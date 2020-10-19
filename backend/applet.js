@@ -109,32 +109,7 @@ class CranehootServer
 				var player = socket.player;
 				var lobby = this.lobbies[socket.player.lobby]
 
-				// Verify their answer
-				if(lobby.currentQuestion["@correct_answer"] == lobby.currentQuestion["@answer" + answer]) {
-					//TODO: Add double points back
-					var tempScore = lobby.timer * 100
-			        
-			        player.streak++
-
-			        if(player.streak > 1){
-			          tempScore += (100 * player.streak)
-			        }
-
-			        player.score += tempScore;
-
-			        player.questionResults = {
-			        	verdict : "Correct!",
-			        	score : tempScore
-			        }
-				}
-				else {
-					player.streak = 0
-
-					player.questionResults = {
-			        	verdict : "Incorrect!",
-			        	score : 0
-			        }
-				}
+				lobby.onPlayerAnswer(player, answer)
 			});
 		});
 	}
@@ -155,6 +130,8 @@ class Lobby
 	{
 		this.gamePin = pin
 		this.players = {}
+
+		this.leaderboard = [];
 
 		this.currentQuestion = {}
 		this.qCount = 0;
@@ -194,16 +171,53 @@ class Lobby
 	    }, 1000)
 	}
 
+	onPlayerAnswer(player, answer) {
+		// Verify their answer
+		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
+			//TODO: Add double points back
+			var tempScore = this.timer * 100
+	        
+	        player.streak++
+
+	        if(player.streak > 1){
+	          tempScore += (100 * player.streak)
+	        }
+
+	        player.score += tempScore;
+
+	        player.questionResults = {
+	        	verdict : "Correct!",
+	        	score : tempScore
+	       }
+		}
+		else {
+			player.streak = 0
+
+			player.questionResults = {
+	        	verdict : "Incorrect!",
+	        	score : 0
+	        }
+		}
+	}
+
 	sendQuestionResults() {
+		var leaderboard = Object.values(this.players)
+
+		// Taken and modified from https://stackoverflow.com/a/1129270
+		leaderboard.sort((a, b) => b.score - a.score)
+
+
 		for(const playerID in this.players) {
 			var player = this.players[playerID]
+
 			try {
 				io.sockets.sockets[playerID].emit(
 					"onResults",
 					{
 						"verdict" : player.questionResults.verdict,
 						"score"   : player.questionResults.score,
-						"streak"  : player.streak
+						"streak"  : player.streak,
+						"playerScores" : leaderboard
 					}
 				);
 
@@ -214,6 +228,7 @@ class Lobby
 			}
 		}
 
+		
 		this.timer2=5;
 		this.timerInstance2 = setInterval(() => {
 			this.notifyAll("onTimerTick2", this.timer2)

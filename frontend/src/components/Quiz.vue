@@ -13,7 +13,7 @@
             </b-row>
           </div>
 
-          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak"/>
+          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard"/>
 
           <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>
       </b-col>
@@ -50,6 +50,8 @@ export default {
       timePerQ: 10,
       timer: 10,
       timerInstance: null,
+
+      leaderboard: [],
 
       currQuestion: 0,
       answered: false,
@@ -171,6 +173,7 @@ export default {
       this.verdict = results.verdict
       this.questionScore = results.score
       this.scoreStreak = results.streak
+      this.leaderboard = results.playerScores
     },
     onTimerTick(time) {
       this.timer = time
