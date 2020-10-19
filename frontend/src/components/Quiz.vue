@@ -63,7 +63,7 @@ export default {
       //QuizScore
       verdict: "",
       questionScore: 0,
-      scoreStreak: 0,      
+      scoreStreak: 0,
     }
   },
   methods: {
@@ -92,7 +92,7 @@ export default {
 
         case '50/50':
           //call the first childs (which is the QuizQuestion.vue file) disableButtons method
-          this.$children[0].disableButtons(this.quiz[this.currQuestion]["answer"]);
+          this.$children[0].disableButtons(this.currentQuestion['@correct_answer']);
           this.resetNeeded = true
           break;
       }
@@ -171,7 +171,7 @@ export default {
     onResults: function(results){
       this.results = true
       this.verdict = results.verdict
-      
+
       this.soundAndVibrations()
 
       this.questionScore = results.score
@@ -197,11 +197,11 @@ export default {
       if(this.options.includes("music")){
         this.musicAudio.pause()
       }
-      
+
       this.$emit('done', leaderboard)
     }
   },
-  
+
   mounted() {
     // TODO: Populate quiz questions from DB
     //reset all the powers
