@@ -73,6 +73,11 @@ class CranehootServer
 				{
 					var lobby = this.lobbies[gamePin];
 
+					if (lobby.hasGameStarted) {
+						socket.emit('onError', 'Game has already started');
+						return;
+					}
+
 					// New player object
 					var newPlayer = new Player(socket.id, username, lobby.gamePin)
 					lobby.addPlayer(newPlayer)
@@ -81,10 +86,10 @@ class CranehootServer
 					socket.player = newPlayer;
 
 					lobby.notifyAll("onPlayerJoin", newPlayer)
-					
+
 					/*for(const playerID in lobby.players){
 						if(newPlayer == lobby.players[playerID]) continue;
-						
+
 						io.sockets.sockets[playerID].emit('onPlayerJoin', newPlayer)
 					}*/
 
@@ -104,12 +109,19 @@ class CranehootServer
 			});
 
 
-			socket.on('onAnswer', (answer) =>
+			socket.on('onAnswer', (answer, doublePoints) =>
 			{
 				var player = socket.player;
 				var lobby = this.lobbies[socket.player.lobby]
 
-				lobby.onPlayerAnswer(player, answer)
+				lobby.onPlayerAnswer(player, answer, doublePoints)
+			});
+
+			socket.on('getCurrPlayers', () =>
+			{
+				var player = socket.player;
+				var lobby = this.lobbies[socket.player.lobby];
+				socket.emit('onCurrentPlayers', Object.keys(lobby.players).length);
 			});
 		});
 	}
@@ -146,9 +158,12 @@ class Lobby
 		// Im lazy
 		this.timer2 = 5
 		this.timerInstance2 = null
+
+		this.hasGameStarted = false;
 	}
 
 	start() {
+		this.hasGameStarted = true;
 		this.nextQuestion("onLobbyStarted")
 		this.loop()
 	}
@@ -173,12 +188,20 @@ class Lobby
 	    }, 1000)
 	}
 
-	onPlayerAnswer(player, answer) {
+	onPlayerAnswer(player, answer, doublePoints) {
 		// Verify their answer
+		// TODO: fix a bug where the first answer might be wrong even when it's right
+		//console.log("HERE");
+		//console.log(answer);
+		//console.log(this.currentQuestion["@correct_answer"]);
 		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
-			//TODO: Add double points back
-			var tempScore = this.timer * 100
-	        
+
+			if (doublePoints) {
+				var tempScore = this.timer * 100 * 2
+			} else {
+				var tempScore = this.timer * 100
+			}
+
 	        player.streak++
 
 	        if(player.streak > 1){
@@ -222,12 +245,14 @@ class Lobby
 
 				player.questionResults = {}
 			}
-			catch(e) { 
+			catch(e) {
 				// Disconnected
+				delete this.players[playerID];
+				this.notifyAll("onPlayerDisconnected", {});
 			}
 		}
 
-		
+
 		this.timer2=5;
 		this.timerInstance2 = setInterval(() => {
 			this.notifyAll("onTimerTick2", this.timer2)
@@ -265,7 +290,9 @@ class Lobby
 				io.sockets.sockets[playerID].emit(event, data);
 			}
 			catch(e) {
-				// They've disconnected 
+				// They've disconnected
+				delete this.players[playerID];
+				this.notifyAll("onPlayerDisconnected", {});
 			}
 		}
 	}
