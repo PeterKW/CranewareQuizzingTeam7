@@ -32,7 +32,6 @@ class Database {
 		this.database.query("CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [id], function(err, localResult) { // Send query
 			if (err && err.length != 0) throw err;
 			var result = localResult[1];
-			console.log(localResult[1]);
 			let question = {
 			  result
 			}
@@ -171,6 +170,7 @@ class Lobby
 
 		this.currentQuestion = {}
 		this.qCount = 0;
+		this.categoryChosen = false;
 		this.catagories = "brain-treasers";
 
 		this.timer = 10
@@ -242,10 +242,20 @@ class Lobby
 	nextQuestion(e) {
 		this.qCount++;
 		var that = this;
-		database.getQuestionFromCat(function(question) {
-			that.currentQuestion = question;
-			that.notifyAll(e, question);
-		},this.catagories);
+		if(this.categoryChosen)
+		{
+			database.getQuestionFromCat(function(question) {
+				that.currentQuestion = question;
+				that.notifyAll(e, question);
+			},this.catagories);
+		}
+		else
+		{
+			database.getRandomQuestion(function(question) {
+				that.currentQuestion = question;
+				that.notifyAll(e, question);
+			});
+		}
 	}
 
 	// Will allow all users to be updated when an event occurs.
