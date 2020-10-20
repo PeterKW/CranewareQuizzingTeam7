@@ -45,7 +45,6 @@ class Database {
 		this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [category], function(err, localResult) { // Send query
 			if (err && err.length != 0) throw err;
 			var result = localResult[1];
-			console.log(localResult[1]);
 			let question = {
 			  result
 			}
