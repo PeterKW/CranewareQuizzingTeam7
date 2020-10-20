@@ -1,9 +1,9 @@
 <template>
   <div class="cont">
-    <b-row class="text-center">
+    <b-row class="justify-content-center">
       <h2 class="question w-100">{{question}}</h2>
-    </b-row>
-    <b-row style="margin-bottom:10px">
+
+    <b-row style="margin-bottom:10px" class="justify-content-center">
       <b-col style="margin-right:10px;"><b-button v-if=!disableA @click="onAnswer('1')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
       <b-col><b-button v-if=!disableB @click="onAnswer('2')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
     </b-row>
@@ -11,6 +11,7 @@
       <b-col style="margin-right:10px;"><b-button v-if=!disableC @click="onAnswer('3')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
       <b-col><b-button v-if=!disableD @click="onAnswer('4')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
     </b-row>
+   </b-row>
   </div>
 </template>
 
@@ -163,8 +164,6 @@ $btns: (
 .fancy-btn {
   font-family: 'Source Sans Pro', sans-serif;
   font-weight: 900;
-  padding: 1.25rem 2rem;
-  font-size: 1rem;
   border-radius: 3.5rem / 100%;
   position: relative;
   min-width: 15rem;
@@ -181,7 +180,6 @@ $btns: (
   padding: 3vh 5vw;
   font-size: 250%;
 
-  overflow: hidden;
   text-overflow: ellipsis;
   word-wrap: break-word;
   display: block;
@@ -243,7 +241,8 @@ $btns: (
   text-align: center;
   top:150px;
   color: #000;
-  padding:50px;
+  padding-top: 5%;
+  padding-bottom: 5%;
 }
 
 .quizButtons{
@@ -252,5 +251,19 @@ $btns: (
   padding: 3vh 5vw;
   font-size: 250%;
   background: -webkit-linear-gradient(#4b6cb7 0%, #182848 100%);
+  margin: 0px;
+}
+
+@media (max-width: 768px) {
+  .question{
+    font-size: 25px;
+  }
+
+  .fancy-btn{
+    font-size: 100%;
+    min-width: 12rem;
+    max-width: 12rem;
+  }
+  
 }
 </style>

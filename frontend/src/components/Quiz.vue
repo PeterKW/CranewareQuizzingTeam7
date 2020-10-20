@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-     <b-row class="h-100 align-items-center">
+     <b-row class="h-100">
         <b-col cols="10" class="mx-auto text-center p4">
           <b-row class="w-100" style="margin-bottom: 5px;">
             <p class="currPlayers mr-auto">Players: {{currPlayers}}</p>
@@ -9,8 +9,8 @@
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
           <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>  
           <div v-if="answered && !results" class="cont">
-            <b-row class="text-center w-100">
-              <h1 class="question w-100" style="padding-top:60px">Waiting for results...</h1>
+            <b-row class="justify-content-center w-100">
+              <h1 class="text-center question w-100" style="padding-top:60px">Waiting for results...</h1>
             </b-row>
           </div>
 
@@ -246,7 +246,7 @@ export default {
 
 .cont {
   background:#fff;
-  padding:100px;
+  padding:50px;
   padding-top:0;
   border-radius:10px;
 }
@@ -273,7 +273,7 @@ export default {
   background-color: #fff;
   border-radius:10px;
   padding:5px;
-  min-width: 10vh;
+  min-width: 10vw;
   margin-bottom:0;
 }
 
@@ -284,6 +284,27 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .timer{
+    font-size: 175%;
+  }
+
+  .currPlayers{
+    font-size: 175%;
+  }
+
+  .question{
+    font-size: 175%;
+  }
+
+  .cont {
+    padding-bottom: 20px;
+  }
+
+  .powers{
+    padding: 0px;
+    min-width: 20%;
+    max-height: 10%;
+  }
 
 }
 

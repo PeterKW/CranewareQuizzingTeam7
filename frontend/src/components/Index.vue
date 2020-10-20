@@ -210,4 +210,10 @@ h1 {
   text-align: center;
   font-size: calc(100% + 4vw + 4vh);
 }
+
+@media (max-width: 768px) {
+  .cont{
+    padding:10px;
+  }
+}
 </style>
