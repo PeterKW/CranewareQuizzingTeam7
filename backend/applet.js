@@ -38,6 +38,18 @@ class Database {
 			return callback(question.result[0]); // Pass back info
 		});
 	}
+	getQuestionFromCat (callback,category) {
+		var id = Math.floor(Math.random() * 1000) + 1;
+		// gets question and answers and sends back in JSON form
+		this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [category], function(err, localResult) { // Send query
+			if (err && err.length != 0) throw err;
+			var result = localResult[1];
+			let question = {
+			  result
+			}
+			return callback(question.result[0]); // Pass back info
+		});
+	}
 }
 const database = new Database();
 
@@ -161,6 +173,8 @@ class Lobby
 
 		this.currentQuestion = {}
 		this.qCount = 0;
+		this.categoryChosen = true;
+		this.catagories= ["brain-treasers", "animals"];
 
 		this.timer = 10
 		this.timerInstance = null
@@ -232,10 +246,24 @@ class Lobby
 	nextQuestion(e) {
 		this.qCount++;
 		var that = this;
-		database.getRandomQuestion(function(question) {
-			that.currentQuestion = question;
-			that.notifyAll(e, question);
-		});
+		if(this.categoryChosen)
+		{
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			let cat = Math.floor(Math.random() * this.catagories.length);
+			console.log(cat)
+			database.getQuestionFromCat(function(question) {
+				that.currentQuestion = question;
+				that.notifyAll(e, question);
+				//console.log(question);
+			},this.catagories[cat]);
+		}
+		else
+		{
+			database.getRandomQuestion(function(question) {
+				that.currentQuestion = question;
+				that.notifyAll(e, question);
+			});
+		}
 	}
 
 	// Will allow all users to be updated when an event occurs.
