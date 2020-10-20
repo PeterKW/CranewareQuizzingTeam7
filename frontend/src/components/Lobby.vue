@@ -29,6 +29,41 @@
         Exit Lobby
       </b-button>
     </b-row>
+    <b-row align-h="center">
+      <b-button  
+        id="show-btn" 
+        variant="warning" 
+        class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3" 
+        style="bottom:120px"
+        @click="$bvModal.show('bv-modal')"
+      >
+        Game Settings
+      </b-button>
+
+      <!--Settings Modal-->
+      <b-modal id="bv-modal" hide-footer>
+        <template v-slot:modal-title>
+          <code>Game Settings</code>
+        </template>
+        
+        <div>
+          <label for="cat">Question Category</label>
+          <b-form-select id="cat" v-model="selectedCategory" :options="categories"></b-form-select>
+        </div> 
+
+        <div>
+          <label for="time" class="mt-3">Time per Question</label>
+          <b-form-spinbutton id="time" v-model="questionTime" min="5" max="60"></b-form-spinbutton>
+        </div>
+
+        <div>
+          <label for="number" class="mt-3">Number of Questions</label>
+          <b-form-spinbutton id="number" v-model="questionNumber" min="1" max="100"></b-form-spinbutton>
+        </div>
+
+        <b-button class="mt-4" variant="danger" block @click="$bvModal.hide('bv-modal')">Close</b-button>
+      </b-modal>
+    </b-row>
   </b-container>
 </template>
 
@@ -36,9 +71,18 @@
 export default {
   name: "Lobby",
   props: ["players", "gamePin"],
+  data: function() 
+  {
+    return {
+      questionTime: 10,
+      questionNumber: 10,
+      selectedCategory: "all",
+      categories: ["all", "animals", "brain-treasers"]
+    }
+  },
   methods: {
     onLobbyStart(){
-      this.$emit('onLobbyStart', this.gamePin);
+      this.$emit('onLobbyStart', this.gamePin, this.selectedCategory, this.questionTime, this.questionNumber);
     },
     onLobbyExit(){
       this.$emit('onLobbyExit', this.gamePin);

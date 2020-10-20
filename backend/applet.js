@@ -98,8 +98,11 @@ class CranehootServer
 			});
 
 			// Starts the game for all users.
-			socket.on('onLobbyStart', (code) =>
+			socket.on('onLobbyStart', (code, category, questionTime, questionNumber) =>
 			{
+				this.lobbies[code].category = category;
+				this.lobbies[code].timePerQuestion = questionTime;
+				this.lobbies[code].noOfQuestions = questionNumber;
 				this.lobbies[code].start();
 			});
 
@@ -163,7 +166,8 @@ class Lobby
 		this.timerInstance = null
 
 		// TODO: Customisable in the future?
-		this.timePerQuestion = 10;
+		this.category = "all";
+		this.timePerQuestion = 15;
 		this.noOfQuestions = 5;
 
 		// Im lazy
