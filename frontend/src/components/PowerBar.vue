@@ -4,7 +4,12 @@
       <b-row style="margin-bottom:10px">
         <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
         <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
-        <b-col><b-button @click="onPower('C')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Half other Players score</span></b-button></b-col>
+        <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Half other Players score</span></b-button></b-col>
+        <div class = 'scrollBox'>
+          <button type="button" class="btn btn-primary btn-block" style="margin-top: 0px; border-radius: 0;" v-for="player in players" :key="player.socket">
+            {{player.username}}
+          </button>
+      </div>
       </b-row>
     </div>
   </div>
@@ -15,6 +20,7 @@
 var used = [false, false, true]
 export default {
   name: 'PowerBar',
+  props: ["players"],
   data: function () {
     return {
       doubleUsed : used[0],
@@ -25,7 +31,7 @@ export default {
 
   methods: {
     onPower(power) {
-
+      console.log(this.players);
       switch (power) {
         case 'doublep':
           this.doubleUsed = true
@@ -82,6 +88,19 @@ $btns: (
     tend: #ffffff
   )
 );
+
+.scrollBox {
+  outline:none;
+  height:120px;
+  width:120px;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  overflow:auto;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 125%;
+}
 
 .fancy-btn {
   font-family: 'Source Sans Pro', sans-serif;

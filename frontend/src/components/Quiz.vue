@@ -16,7 +16,8 @@
 
           <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard"/>
 
-          <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>
+          <PowerBar class="powers" v-if="!answered" v-on:power="onPower" :players="players"/>
+
       </b-col>
       <b-button v-b-tooltip.hover title="Sound effects & music obtained from www.zapsplat.com" size="lg" variant="primary" class="mb-2 license">
         <b-icon icon="info-circle-fill" aria-label="Help"></b-icon>

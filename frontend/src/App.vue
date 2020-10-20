@@ -106,7 +106,7 @@ export default {
     onQuizFinish(lb)
     {
       this.lb = lb
-      this.currentView = "leaderboard"
+      //this.currentView = "leaderboard"
     },
     onExitLeaderboard()
     {
