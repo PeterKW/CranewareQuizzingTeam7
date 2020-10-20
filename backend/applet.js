@@ -170,8 +170,8 @@ class Lobby
 
 		this.currentQuestion = {}
 		this.qCount = 0;
-		this.categoryChosen = false;
-		this.catagories = "brain-treasers";
+		this.categoryChosen = true;
+		this.catagories= ["brain-treasers", "animals"];
 
 		this.timer = 10
 		this.timerInstance = null
@@ -244,10 +244,14 @@ class Lobby
 		var that = this;
 		if(this.categoryChosen)
 		{
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			let cat = Math.floor(Math.random() * this.catagories.length);
+			console.log(cat)
 			database.getQuestionFromCat(function(question) {
 				that.currentQuestion = question;
 				that.notifyAll(e, question);
-			},this.catagories);
+				//console.log(question);
+			},this.catagories[cat]);
 		}
 		else
 		{
