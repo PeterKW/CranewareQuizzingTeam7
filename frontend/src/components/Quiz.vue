@@ -7,7 +7,7 @@
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
-
+          <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>  
           <div v-if="answered && !results" class="cont">
             <b-row class="text-center w-100">
               <h1 class="question w-100" style="padding-top:60px">Waiting for results...</h1>
@@ -16,7 +16,7 @@
 
           <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard"/>
 
-          <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>
+          
       </b-col>
       <b-button v-b-tooltip.hover title="Sound effects & music obtained from www.zapsplat.com" size="lg" variant="primary" class="mb-2 license">
         <b-icon icon="info-circle-fill" aria-label="Help"></b-icon>
