@@ -8,8 +8,8 @@
       <b-col><b-button v-if=!disableB @click="onAnswer('2')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
     </b-row>
     <b-row>
-      <b-col style="margin-right:10px;"><b-button v-if=!disableC @click="onAnswer('3')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
-      <b-col><b-button v-if=!disableD @click="onAnswer('4')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
+      <b-col style="margin-right:10px;"><b-button v-if="!disableC  && d != ''" @click="onAnswer('3')" class="fancy-btn btn--gamma"><span>{{c}}</span></b-button></b-col>
+      <b-col><b-button v-if="!disableD && d != ''" @click="onAnswer('4')" class="fancy-btn btn--delta"><span>{{d}}</span></b-button></b-col>
     </b-row>
    </b-row>
   </div>
@@ -264,6 +264,6 @@ $btns: (
     min-width: 12rem;
     max-width: 12rem;
   }
-  
+
 }
 </style>
