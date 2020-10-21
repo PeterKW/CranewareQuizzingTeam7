@@ -66,6 +66,7 @@ class CranehootServer
 	start() {
 		io.on('connect', socket =>
 		{
+			console.log(socket);
 			socket.on('onCreateLobby', (username) => {
 				var newLobby = this.newLobby();
 				var player = new Player(socket.id, username, newLobby.gamePin)
@@ -75,20 +76,22 @@ class CranehootServer
 				// Store reference to player on the socket
 				socket.player = player;
 
-		        socket.emit('onLobbyCreated', newLobby);
-		     });
+				socket.emit('onLobbyCreated', newLobby);
+			});
 
-			socket.on('attackPlayer', (target, aggrevator) =>
+			socket.on('attackPlayer', (gamePin, target, aggrevator) =>
 			{
-					var lobby = this.lobbies[socket.player.lobby].players;
+				const lobby = this.lobbies[gamePin];
+				const lobbyPlayers = lobby.players;
 
-					for (var socket in lobby) {
-						if (lobby[socket].username == target) {
-							console.log(socket);
-							console.log(lobby[socket].socket);
-							io.sockets.sockets[lobby[socket].socket].emit(event, data)
-						}
+				for (const player in lobbyPlayers)
+				{
+					if (player.username == target)
+					{
+						console.log('Found player: ' + target);
+						// io.sockets.sockets[lobby[socket].socket].emit(event, data)
 					}
+				}
 			});
 
 			socket.on('onJoinLobby', (username, gamePin) =>
@@ -197,11 +200,13 @@ class Lobby
 		this.loop()
 	}
 
-	loop() {
-	   	if(this.qCount > this.noOfQuestions){
-		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
-		 	return
-		 }
+	loop()
+	{
+		if(this.qCount > this.noOfQuestions)
+		{
+			this.notifyAll("onQuizEnd", this.getLeaderboard())
+			return;
+		}
 
 		this.nextQuestion("onNextQuestion")
 		this.timer = this.timePerQuestion
