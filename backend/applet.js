@@ -38,6 +38,18 @@ class Database {
 			return callback(question.result[0]); // Pass back info
 		});
 	}
+	getQuestionFromCat (callback,category) {
+			this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [category], function(err, localResult) { // Send query
+				if (err && err.length != 0) throw err;
+				var result = localResult[1];
+				let question = {
+				  result
+				}
+				return callback(question.result[0]); // Pass back info
+			});
+	//	});
+		
+	}
 }
 const database = new Database();
 
@@ -103,8 +115,11 @@ class CranehootServer
 			});
 
 			// Starts the game for all users.
-			socket.on('onLobbyStart', (code) =>
+			socket.on('onLobbyStart', (code, category, questionTime, questionNumber) =>
 			{
+				this.lobbies[code].category = category;
+				this.lobbies[code].timePerQuestion = questionTime;
+				this.lobbies[code].noOfQuestions = questionNumber;
 				this.lobbies[code].start();
 			});
 
@@ -152,7 +167,8 @@ class Lobby
 		this.timerInstance = null
 
 		// TODO: Customisable in the future?
-		this.timePerQuestion = 10;
+		this.category = ["all"];
+		this.timePerQuestion = 15;
 		this.noOfQuestions = 5;
 
 		// Im lazy
@@ -274,10 +290,24 @@ class Lobby
 	nextQuestion(e) {
 		this.qCount++;
 		var that = this;
-		database.getRandomQuestion(function(question) {
-			that.currentQuestion = question;
-			that.notifyAll(e, question);
-		});
+		//checks if a category has been selcted 
+		if(this.category.length!=0)
+		{
+			//picks random category from list of categories chosen 
+			let cat = Math.floor(Math.random() * this.category.length);
+			database.getQuestionFromCat(function(question) {
+				that.currentQuestion = question;
+				that.notifyAll(e, question);
+			},this.category[cat]);
+		}
+		else
+		{
+			//gets random question if no category is selected
+			database.getRandomQuestion(function(question) {
+				that.currentQuestion = question;
+				that.notifyAll(e, question);
+			});
+		}
 	}
 
 	// Will allow all users to be updated when an event occurs.
