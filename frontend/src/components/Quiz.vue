@@ -275,7 +275,7 @@ export default {
   background-color: #fff;
   border-radius:10px;
   padding:5px;
-  min-width: 10vw;
+  min-width: 20vw;
   margin-bottom:0;
 }
 
@@ -305,7 +305,7 @@ export default {
   .powers{
     padding: 0px;
     min-width: 20%;
-    max-height: 10%;
+    max-height: 0vh;
   }
 
 }
