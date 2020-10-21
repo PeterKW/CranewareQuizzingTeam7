@@ -60,6 +60,7 @@ export default {
       doublePoints: false,
       resetNeeded: false,
       quizRef: null,
+      target: null,
 
       currPlayers: 0,
 
@@ -98,6 +99,17 @@ export default {
 
         case '50/50':
           //call the first childs (which is the QuizQuestion.vue file) disableButtons method
+          this.quizRef.disableButtons(this.currentQuestion['@correct_answer']);
+          this.resetNeeded = true
+          break;
+
+        case 'half':
+          this.target = this.quizRef.playerChoice[0];
+          console.log(this.target);
+          this.resetNeeded = true
+          break;
+
+        case 'counter':
           this.quizRef.disableButtons(this.currentQuestion['@correct_answer']);
           this.resetNeeded = true
           break;

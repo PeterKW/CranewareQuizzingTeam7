@@ -4,20 +4,16 @@
       <b-row style="margin-bottom:10px">
         <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
         <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
-        <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Half Score</span></b-button></b-col>
+      </b-row>
+      <b-row>
+        <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.halfUsed'><span>Half Score</span></b-button></b-col>
+        <b-col><b-button @click="onPower('counter')" class="fancy-btn btn--delta" :disabled='this.counterUsed'><span>Counter</span></b-button></b-col>
         <b-col style="position: absolute"><b-dropdown :text="playerChoice.username" class="m-md-2">
-                <b-dropdown-item v-for="player in players" :key="player.socket" :value="player"
-                 @click="playerChoice = player">
-                  {{player.username}}
-                </b-dropdown-item>
+          <b-dropdown-item v-for="player in players" :key="player.socket" :value="player"
+            @click="target(player)">
+            {{player.username}}
+          </b-dropdown-item>
         </b-dropdown></b-col>
-          <!--
-          <div class="radio-toolbar">
-
-            <input type="radio" id="one" value="One" v-model="picked" v-for="player in players" :key="player.socket">
-            <label for="one">{{player.username}}</label>
-          </div>-->
-
       </b-row>
     </div>
   </div>
@@ -25,7 +21,7 @@
 
 <script>
 
-var used = [false, false, true]
+var used = [false, false, false, false]
 export default {
   name: 'PowerBar',
   props: ["players"],
@@ -33,14 +29,18 @@ export default {
     return {
       doubleUsed : used[0],
       fiftyUsed : used[1],
-      disable : used[2],
-      playerChoice : '',
+      halfUsed: used[2],
+      counterUsed : used[3],
+      playerChoice : [''],
     }
 },
 
   methods: {
+    target(player) {
+      this.playerChoice[0] = player;
+    },
     onPower(power) {
-      console.log(this.players);
+      console.log(this.players[0]);
       switch (power) {
         case 'doublep':
           this.doubleUsed = true
@@ -50,18 +50,28 @@ export default {
           this.fiftyUsed = true
           used[1] = true
           break;
+        case 'half':
+          this.halfUsed = true
+          used[2] = true
+          break;
+        case 'counter':
+          this.counterUsed = true
+          used[3] = true
+          break;
         default:
-
       }
-
       this.$emit('power', power);
     },
 
     resetButtons() {
       used[0] = false;
       used[1] = false;
+      used[2] = false;
+      used[3] = false;
       this.doubleUsed  = used[0];
       this.fiftyUsed = used[1];
+      this.halfUsed = used[2];
+      this.counterUsed = used[3];
     }
   },
 }
