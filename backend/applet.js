@@ -87,8 +87,9 @@ class CranehootServer
 				{
 					if (lobbyPlayers[key].username == target)
 					{
+						console.log(key);
 						console.log('Found player: ' + target);
-						io.sockets.sockets[lobby[gamePin].socket].emit('test');
+						io.sockets.sockets[key].emit('test');
 					}
 				}
 			});
@@ -198,6 +199,8 @@ class Lobby
 		this.nextQuestion("onLobbyStarted")
 		this.loop()
 	}
+
+
 
 	loop()
 	{
