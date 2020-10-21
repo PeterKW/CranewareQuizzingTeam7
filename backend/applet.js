@@ -31,6 +31,8 @@ class Database {
 		// gets question and answers and sends back in JSON form
 		this.database.query("CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [id], function(err, localResult) { // Send query
 			if (err && err.length != 0) throw err;
+			console.log(id);
+			console.log(localResult[1]);
 			var result = localResult[1];
 			let question = {
 			  result
@@ -180,7 +182,8 @@ class Lobby
 
 	start() {
 		this.hasGameStarted = true;
-		this.nextQuestion("onLobbyStarted")
+		//this.nextQuestion("onLobbyStarted")
+		//this.notifyAll("onLobbyStarted")
 		this.loop()
 	}
 
@@ -189,8 +192,14 @@ class Lobby
 		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
 		 	return
 		 }
-
-		this.nextQuestion("onNextQuestion")
+		if (this.qCount ==0)
+		{
+			this.nextQuestion("onLobbyStarted")
+		}
+		else
+		{
+			this.nextQuestion("onNextQuestion");
+		}
 		this.timer = this.timePerQuestion
 
 		this.timerInstance = setInterval(() => {
@@ -211,7 +220,11 @@ class Lobby
 		//console.log(answer);
 		//console.log(this.currentQuestion["@correct_answer"]);
 		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
-
+			console.log(this.timer);
+			if(this.timer==0)
+			{
+				this.timer++;
+			}
 			if (doublePoints) {
 				var tempScore = this.timer * 100 * 2
 			} else {
