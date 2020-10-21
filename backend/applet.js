@@ -66,7 +66,6 @@ class CranehootServer
 	start() {
 		io.on('connect', socket =>
 		{
-			console.log(socket);
 			socket.on('onCreateLobby', (username) => {
 				var newLobby = this.newLobby();
 				var player = new Player(socket.id, username, newLobby.gamePin)
@@ -84,9 +83,9 @@ class CranehootServer
 				const lobby = this.lobbies[gamePin];
 				const lobbyPlayers = lobby.players;
 
-				for (const player in lobbyPlayers)
+				for (const key in lobbyPlayers)
 				{
-					if (player.username == target)
+					if (lobbyPlayers[key].username == target)
 					{
 						console.log('Found player: ' + target);
 						io.sockets.sockets[lobby[gamePin].socket].emit('test');
@@ -159,7 +158,7 @@ class CranehootServer
 
 	newLobby()
 	{
-	    var pin = Math.random().toString(36).substring(7);
+	  var pin = Math.random().toString(36).substring(7);
 
 		this.lobbies[pin] = new Lobby(pin);
 		return this.lobbies[pin];
