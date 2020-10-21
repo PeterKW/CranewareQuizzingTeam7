@@ -46,7 +46,7 @@ export default {
     PowerBar,
     QuizScore,
   },
-  props: ["players", "options", "volume", "currentQuestion", "currentPlayer"],
+  props: ["players", "options", "volume", "currentQuestion", "currentPlayer", "gamePin"],
   data() {
     return {
       timePerQ: 10,
@@ -112,7 +112,7 @@ export default {
           }
           console.log(this.currentPlayer);
           console.log(target);
-          this.$socket.emit('attackPlayer', target, this.currentPlayer);
+          this.$socket.emit('attackPlayer', this.gamePin, target, this.currentPlayer);
           break;
 
         case 'counter':

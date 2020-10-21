@@ -89,7 +89,7 @@ class CranehootServer
 					if (player.username == target)
 					{
 						console.log('Found player: ' + target);
-						// io.sockets.sockets[lobby[socket].socket].emit(event, data)
+						io.sockets.sockets[lobby[gamePin].socket].emit('test');
 					}
 				}
 			});
