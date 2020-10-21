@@ -39,10 +39,7 @@ class Database {
 		});
 	}
 	getQuestionFromCat (callback,category) {
-		var id = Math.floor(Math.random() * 1000) + 1;
-		// gets question and answers and sends back in JSON form
-		category.forEach(element => {
-			this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [element], function(err, localResult) { // Send query
+			this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [category], function(err, localResult) { // Send query
 				if (err && err.length != 0) throw err;
 				var result = localResult[1];
 				let question = {
@@ -50,7 +47,7 @@ class Database {
 				}
 				return callback(question.result[0]); // Pass back info
 			});
-		});
+	//	});
 		
 	}
 }
@@ -181,7 +178,7 @@ class Lobby
 		this.timerInstance = null
 
 		// TODO: Customisable in the future?
-		this.category = "all";
+		this.category = ["all"];
 		this.timePerQuestion = 15;
 		this.noOfQuestions = 5;
 
@@ -247,17 +244,19 @@ class Lobby
 	nextQuestion(e) {
 		this.qCount++;
 		var that = this;
-		if(this.category != "all")
+		//checks if a category has been selcted 
+		if(this.category.length!=0)
 		{
-			//let cat = Math.floor(Math.random() * this.catagories.length);
-			//console.log(cat)
+			//picks random category from list of categories chosen 
+			let cat = Math.floor(Math.random() * this.category.length);
 			database.getQuestionFromCat(function(question) {
 				that.currentQuestion = question;
 				that.notifyAll(e, question);
-			},this.category);
+			},this.category[cat]);
 		}
 		else
 		{
+			//gets random question if no category is selected
 			database.getRandomQuestion(function(question) {
 				that.currentQuestion = question;
 				that.notifyAll(e, question);
