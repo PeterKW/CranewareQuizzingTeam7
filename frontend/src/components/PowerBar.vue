@@ -163,4 +163,10 @@ $btns: (
     }
   }
 }
+
+@media (max-width: 768px) {
+  .fancy-btn {
+    min-width: 8rem;
+  }
+}
 </style>
