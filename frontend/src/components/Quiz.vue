@@ -7,7 +7,7 @@
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
-          <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>  
+          <PowerBar class="powers" v-if="!answered" v-on:power="onPower" :round="round"/>  
           <div v-if="answered && !results" class="cont">
             <b-row class="justify-content-center w-100">
               <h1 class="text-center question w-100" style="padding-top:60px">Waiting for results...</h1>
@@ -53,7 +53,7 @@ export default {
       timerInstance: null,
 
       leaderboard: [],
-
+      round: 0,
       currQuestion: 0,
       answered: false,
       doublePoints: false,
@@ -180,6 +180,8 @@ export default {
 
       this.timer = 10;
       // this.$socket.emit('currPlayers', {});
+
+      this.round++
     },
     onResults: function(results){
       this.results = true
