@@ -86,12 +86,13 @@ export default {
         this.$socket.emit('onCreateLobby', name)
     },
     // eslint-disable-next-line no-unused-vars
-    onLobbyStart()
+    onLobbyStart(gamePin, category, questionTime, questionNumber)
     {
       // TODO: Tell websocket to start and wait for response
       // For now: just start
       // TODO: Only show this button to the host.
-      this.$socket.emit('onLobbyStart', this.gamePin)
+      console.log(category);
+      this.$socket.emit('onLobbyStart', this.gamePin, category, questionTime, questionNumber);
     },
     // eslint-disable-next-line no-unused-vars
     onLobbyExit(code)
