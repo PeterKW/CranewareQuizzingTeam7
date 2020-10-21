@@ -41,14 +41,17 @@ class Database {
 	getQuestionFromCat (callback,category) {
 		var id = Math.floor(Math.random() * 1000) + 1;
 		// gets question and answers and sends back in JSON form
-		this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [category], function(err, localResult) { // Send query
-			if (err && err.length != 0) throw err;
-			var result = localResult[1];
-			let question = {
-			  result
-			}
-			return callback(question.result[0]); // Pass back info
+		category.forEach(element => {
+			this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [element], function(err, localResult) { // Send query
+				if (err && err.length != 0) throw err;
+				var result = localResult[1];
+				let question = {
+				  result
+				}
+				return callback(question.result[0]); // Pass back info
+			});
 		});
+		
 	}
 }
 const database = new Database();

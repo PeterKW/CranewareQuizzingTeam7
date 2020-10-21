@@ -47,9 +47,19 @@
         </template>
         
         <div>
-          <label for="cat">Question Category</label>
-          <b-form-select id="cat" v-model="selectedCategory" :options="categories"></b-form-select>
-        </div> 
+          <label for="category" class="mt-3">Selected Categories</label>
+          <b-dropdown id="category" text="Add or Remove" variant="outline-dark" block>
+            <b-dropdown-item v-for="item in categories" :key="item" @click.native="itemClicked(item)">
+              {{ item }}
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+
+        <div>
+          <b-badge v-for="badge in selectedCategory" :key="badge" class="mr-2 mt-2" pill variant="dark" size="lg" @click.native="removeItem(item)">
+            {{ badge }}
+          </b-badge>
+        </div>
 
         <div>
           <label for="time" class="mt-3">Time per Question</label>
@@ -76,8 +86,17 @@ export default {
     return {
       questionTime: 10,
       questionNumber: 10,
-      selectedCategory: "all",
-      categories: ["all", "animals", "brain-treasers"]
+      selectedCategory: [],
+      categories: [
+        "animals",
+        "brain-treasers",
+        "celebrities",
+        "entertainment",
+        "for-kids",
+        "science-technology",
+        "sports",
+        "video-games"
+      ]
     }
   },
   methods: {
@@ -86,6 +105,20 @@ export default {
     },
     onLobbyExit(){
       this.$emit('onLobbyExit', this.gamePin);
+    },
+    itemClicked(item){
+      if (!this.selectedCategory.includes(item))
+        this.selectedCategory.push(item);
+      else
+        this.removeItem(item);
+      console.log("clicked", this.selectedCategory);
+    },
+    removeItem(item){
+      for( var i = 0; i < this.selectedCategory.length; i++){ 
+        if ( this.selectedCategory[i] === item) { 
+          this.selectedCategory.splice(i, 1); 
+        }
+      }
     }
   }
 };
