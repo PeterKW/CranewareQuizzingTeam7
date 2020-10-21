@@ -48,7 +48,7 @@ class Database {
 				return callback(question.result[0]); // Pass back info
 			});
 	//	});
-		
+
 	}
 }
 const database = new Database();
@@ -77,6 +77,19 @@ class CranehootServer
 
 		        socket.emit('onLobbyCreated', newLobby);
 		     });
+
+			socket.on('attackPlayer', (target, aggrevator) =>
+			{
+					var lobby = this.lobbies[socket.player.lobby].players;
+
+					for (var socket in lobby) {
+						if (lobby[socket].username == target) {
+							console.log(socket);
+							console.log(lobby[socket].socket);
+							io.sockets.sockets[lobby[socket].socket].emit(event, data)
+						}
+					}
+			});
 
 			socket.on('onJoinLobby', (username, gamePin) =>
 			{
@@ -290,10 +303,10 @@ class Lobby
 	nextQuestion(e) {
 		this.qCount++;
 		var that = this;
-		//checks if a category has been selcted 
+		//checks if a category has been selcted
 		if(this.category.length!=0)
 		{
-			//picks random category from list of categories chosen 
+			//picks random category from list of categories chosen
 			let cat = Math.floor(Math.random() * this.category.length);
 			database.getQuestionFromCat(function(question) {
 				that.currentQuestion = question;

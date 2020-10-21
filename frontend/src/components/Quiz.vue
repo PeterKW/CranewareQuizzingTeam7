@@ -46,7 +46,7 @@ export default {
     PowerBar,
     QuizScore,
   },
-  props: ["players", "options", "volume", "currentQuestion"],
+  props: ["players", "options", "volume", "currentQuestion", "currentPlayer"],
   data() {
     return {
       timePerQ: 10,
@@ -61,6 +61,9 @@ export default {
       resetNeeded: false,
       quizRef: null,
       target: null,
+      targetted: false,
+      halfNextAnswer: false,
+      countering: false,
 
       currPlayers: 0,
 
@@ -84,8 +87,6 @@ export default {
        /*
         // TODO: Send correct data at this point.
         // this.$emit('calculatePoints', this.gamePin, this.questionScore);
-
-
       */
     },
 
@@ -98,15 +99,20 @@ export default {
           break;
 
         case '50/50':
-          //call the first childs (which is the QuizQuestion.vue file) disableButtons method
+          //call the QuizQuestion.vue files disableButtons method
           this.quizRef.disableButtons(this.currentQuestion['@correct_answer']);
-          this.resetNeeded = true
+          this.resetNeeded = true;
           break;
 
         case 'half':
-          this.target = this.quizRef.playerChoice[0];
-          console.log(this.target);
-          this.resetNeeded = true
+          for (var i = 0; i < this.$children.length; i++) {
+            if (this.$children[i].ID == 'PowerBar') {
+              var target = this.$children[i].playerChoice[0];
+            }
+          }
+          console.log(this.currentPlayer);
+          console.log(target);
+          this.$socket.emit('attackPlayer', target, this.currentPlayer);
           break;
 
         case 'counter':
@@ -179,6 +185,17 @@ export default {
     }
   },
   sockets: {
+
+    //TODO impliment these two methods server side
+    playerIncorrectlyHalved: function() {
+      this.halfNextAnswer = true;
+    },
+
+    playerTargetted: function() {
+      this.targetted = true;
+      this.halfNextAnswer = true;
+    },
+
     onNextQuestion: function(question){
       this.answered = false;
       this.results = false;
@@ -193,6 +210,9 @@ export default {
 
       this.timer = 10;
       // this.$socket.emit('currPlayers', {});
+    },
+    test: function() {
+      console.log("SUCCESS");
     },
     onResults: function(results){
       this.results = true
@@ -239,7 +259,6 @@ export default {
     //reset all the powers
     this.$children[1].resetButtons();
     this.quizRef = this.$children[0];
-    console.log(this.quizRef);
 
     this.$socket.emit('getCurrPlayers', {});
 

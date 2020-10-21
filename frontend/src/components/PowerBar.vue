@@ -22,6 +22,7 @@
 <script>
 
 var used = [false, false, false, false]
+var temp = ['']
 export default {
   name: 'PowerBar',
   props: ["players"],
@@ -31,16 +32,16 @@ export default {
       fiftyUsed : used[1],
       halfUsed: used[2],
       counterUsed : used[3],
-      playerChoice : [''],
+      playerChoice : temp,
+      ID: "PowerBar",
     }
 },
 
   methods: {
     target(player) {
-      this.playerChoice[0] = player;
+      this.playerChoice = [player.username]
     },
     onPower(power) {
-      console.log(this.players[0]);
       switch (power) {
         case 'doublep':
           this.doubleUsed = true
