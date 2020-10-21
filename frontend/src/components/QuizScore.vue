@@ -47,6 +47,6 @@ h2{font-size: 200%;}
 
 @media (max-width: 768px) {
   h2{font-size: 150%;}
-  h3{font-size: 100;}
+  h3{font-size: 100%;}
 }
 </style>
