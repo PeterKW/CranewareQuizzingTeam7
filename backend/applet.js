@@ -78,15 +78,18 @@ class CranehootServer
 		        socket.emit('onLobbyCreated', newLobby);
 		     });
 
-			socket.on('attackPlayer', (target, aggrevator) =>
+			socket.on('attackPlayer', (target, aggrevator, gamePin) =>
 			{
+				console.log(gamePin);
+				console.log(target);
+				console.log(aggrevator);
 					var lobby = this.lobbies[socket.player.lobby].players;
 
 					for (var socket in lobby) {
 						if (lobby[socket].username == target) {
 							console.log(socket);
 							console.log(lobby[socket].socket);
-							io.sockets.sockets[lobby[socket].socket].emit(event, data)
+							io.sockets.sockets[lobby[socket].socket].emit('test')
 						}
 					}
 			});
