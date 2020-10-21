@@ -4,11 +4,23 @@
       <b-row style="margin-bottom:10px">
         <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
         <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
-        <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Half other Players score</span></b-button></b-col>
+        <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Half Score</span></b-button></b-col>
         <div class = 'scrollBox'>
+          <button type="button" class="btn btn-primary btn-block" style="margin-top: 0px; border-radius: 0; font-size: 1rem;" v-for="player in players" :key="player.socket">
+            {{player.username}}
+          </button>
           <button type="button" class="btn btn-primary btn-block" style="margin-top: 0px; border-radius: 0;" v-for="player in players" :key="player.socket">
             {{player.username}}
           </button>
+          <button type="button" class="btn btn-primary btn-block" style="margin-top: 0px; border-radius: 0;" v-for="player in players" :key="player.socket">
+            {{player.username}}
+          </button>
+          <!--
+          <div class="radio-toolbar">
+
+            <input type="radio" id="one" value="One" v-model="picked" v-for="player in players" :key="player.socket">
+            <label for="one">{{player.username}}</label>
+          </div>-->
       </div>
       </b-row>
     </div>
@@ -89,18 +101,48 @@ $btns: (
   )
 );
 
+
+.radio-toolbar {
+  margin: 10px;
+}
+
+.radio-toolbar input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+
+.radio-toolbar label {
+    display: inline-block;
+    background-color: #ddd;
+    padding: 10px 20px;
+    font-family: sans-serif, Arial;
+    font-size: 16px;
+    border: 2px solid #444;
+    border-radius: 4px;
+}
+
+.radio-toolbar label:hover {
+  background-color: #dfd;
+}
+
+.radio-toolbar input[type="radio"]:focus + label {
+    border: 2px dashed #444;
+}
+
+.radio-toolbar input[type="radio"]:checked + label {
+    background-color: #bfb;
+    border-color: #4c4;
+}
+
+
 .scrollBox {
   outline:none;
-  height:120px;
-  width:120px;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
+  height:9vh;
+  width:6vw;
   overflow:auto;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 125%;
 }
+
 
 .fancy-btn {
   font-family: 'Source Sans Pro', sans-serif;
