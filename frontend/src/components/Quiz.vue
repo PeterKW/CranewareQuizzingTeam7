@@ -14,7 +14,7 @@
             </b-row>
           </div>
 
-          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard"/>
+          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard" :correctAnswer="correctAnswer"/>
 
           
       </b-col>
@@ -68,6 +68,7 @@ export default {
       verdict: "",
       questionScore: 0,
       scoreStreak: 0,
+      correctAnswer: ""
     }
   },
   methods: {
@@ -190,6 +191,7 @@ export default {
       this.questionScore = results.score
       this.scoreStreak = results.streak
       this.leaderboard = results.playerScores
+      this.correctAnswer = results.correctAnswer
     },
     onTimerTick(time) {
       this.timer = time
