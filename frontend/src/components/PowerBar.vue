@@ -5,23 +5,20 @@
         <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
         <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
         <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.disable'><span>Half Score</span></b-button></b-col>
-        <div class = 'scrollBox'>
-          <button type="button" class="btn btn-primary btn-block" style="margin-top: 0px; border-radius: 0; font-size: 1rem;" v-for="player in players" :key="player.socket">
-            {{player.username}}
-          </button>
-          <button type="button" class="btn btn-primary btn-block" style="margin-top: 0px; border-radius: 0;" v-for="player in players" :key="player.socket">
-            {{player.username}}
-          </button>
-          <button type="button" class="btn btn-primary btn-block" style="margin-top: 0px; border-radius: 0;" v-for="player in players" :key="player.socket">
-            {{player.username}}
-          </button>
+        
+        <b-col style="position: absolute"><b-dropdown :text="playerChoice.username" class="m-md-2">
+                <b-dropdown-item v-for="player in players" :key="player.socket" :value="player"
+                 @click="playerChoice = player">
+                  {{player.username}}
+                </b-dropdown-item>
+        </b-dropdown></b-col>
           <!--
           <div class="radio-toolbar">
 
             <input type="radio" id="one" value="One" v-model="picked" v-for="player in players" :key="player.socket">
             <label for="one">{{player.username}}</label>
           </div>-->
-      </div>
+
       </b-row>
     </div>
   </div>
@@ -38,6 +35,7 @@ export default {
       doubleUsed : used[0],
       fiftyUsed : used[1],
       disable : used[2],
+      playerChoice : '',  
     }
 },
 
