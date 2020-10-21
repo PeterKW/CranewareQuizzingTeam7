@@ -2,6 +2,7 @@
   <div class="cont">
     <b-row class="text-center w-100">
       <h1 class="question w-100">{{verdict}}</h1>
+      <h2 class="w-100">The correct answer was {{correctAnswer}}.</h2>
       <h2 class="w-100">You scored {{score}} points.</h2>
       <h3 v-if="scoreStreak > 1" class="w-100">Score Streak: {{scoreStreak}} {{scoreBonus}}</h3>
 
@@ -27,7 +28,7 @@
 export default {
   name: 'QuizScore',
   props: [
-      "verdict","score", "scoreStreak", "leaderboard"
+      "verdict","score", "scoreStreak", "leaderboard", "correctAnswer"
   ],
   data: function () {
      return {

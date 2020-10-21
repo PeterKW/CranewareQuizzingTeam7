@@ -255,7 +255,8 @@ class Lobby
 						"verdict" : player.questionResults.verdict,
 						"score"   : player.questionResults.score,
 						"streak"  : player.streak,
-						"playerScores" : leaderboard
+						"playerScores" : leaderboard,
+						"correctAnswer" : this.currentQuestion["@correct_answer"]
 					}
 				);
 
