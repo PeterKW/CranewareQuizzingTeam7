@@ -101,6 +101,8 @@ export default {
   },
   methods: {
     onLobbyStart(){
+      // Number of questions starts at 0 instead if 1
+      this.questionNumber--
       this.$emit('onLobbyStart', this.gamePin, this.selectedCategory, this.questionTime, this.questionNumber);
     },
     onLobbyExit(){
