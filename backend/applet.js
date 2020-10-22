@@ -270,7 +270,7 @@ class Lobby
 							"score"   : player.questionResults.score,
 							"streak"  : player.streak,
 							"playerScores" : leaderboard,
-              "correctAnswer" : this.currentQuestion["@correct_answer"]
+              				"correctAnswer" : this.currentQuestion["@correct_answer"]
 						}
 					);
 				}
@@ -281,7 +281,9 @@ class Lobby
 							"verdict" : "You did not select an answer.",
 							"score"   : "0",
 							"streak"  : player.streak,
-							"playerScores" : leaderboard
+							"playerScores" : leaderboard,
+							"correctAnswer" : this.currentQuestion["@correct_answer"]
+							
 						}
 					);
 				}
