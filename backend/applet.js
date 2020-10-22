@@ -87,8 +87,8 @@ class CranehootServer
 				}
 				else {
 
-					delete this.lobbies[socket.player.lobby].players[socket.id];
-					
+					//This might be needed still delete this.lobbies[socket.player.lobby].players[socket.id];
+
 					if (Object.keys(this.lobbies[socket.player.lobby].players).length < 1) {
 						this.lobbies[socket.player.lobby] = null;
 					}
@@ -181,7 +181,7 @@ class CranehootServer
 			});
 
 			socket.on('updateScore', (gamePin, playerName) => {
-				
+
 				var player = socket.player;
 				var playerSocket = player.socket;
 				var tempScore = 0.5 * player.questionResults.score

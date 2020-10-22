@@ -1,6 +1,6 @@
 <template>
   <div class="cont justify-content-center">
-    
+
     <b-row class="justify-content-center">
       <h1 class="question w-100">{{verdict}}</h1>
       <h2 class="w-100">The correct answer was {{correctAnswer}}.</h2>
@@ -41,7 +41,6 @@ export default {
   },
 
   methods: {
-
     add_message(message) {
       this.notifications.push(message)
     },
@@ -59,7 +58,7 @@ h2{font-size: 200%;}
 .cont{
   padding-bottom: 10px;
 }
-  
+
 
 @media (max-width: 768px) {
   h2{font-size: 150%;}

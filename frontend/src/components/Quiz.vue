@@ -211,17 +211,21 @@ export default {
     },
 
     playerIncorrectlyHalved: function() {
-      console.log("HERE");
-      this.add_message("You incorrectly halfed, and now your next correct answer will be halfed");
-      this.halfNextAnswer = true;
+      if (this.answered) {
+        this.$socket.emit('updateScore' ,this.gamePin, this.currentPlayer);
+      } else {
+        this.halfNextAnswer = true;
+      }
+      this.add_message("You incorrectly halfed, and now your score has been halfed");
     },
 
     playerTargetted: function(targetee) {
       this.targetees.push(targetee);
-      this.add_message("You were targetted by " + targetee + ", He halfed your score!");
-
-      if (this.answered) {
+      this.add_message("You were targetted, your score has been halfed!");
+      if (this.answered && this.answered == this.currentQuestion['@correct_answer']) {
         this.$socket.emit('updateScore' ,this.gamePin, this.currentPlayer);
+      } else if (this.answered) {
+        this.$socket.emit('punishPlayer', this.gamePin, targetee);
       } else {
         this.targetted = true;
         this.halfNextAnswer = true;
