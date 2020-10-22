@@ -77,15 +77,10 @@ class CranehootServer
 				// Store reference to player on the socket
 				socket.player = player;
 
-<<<<<<< Updated upstream
-		        socket.emit('onLobbyCreated', newLobby);
-		     });
-=======
 				socket.emit('onLobbyCreated', newLobby);
 			});
 
 			socket.on('disconnect', (reason) => {
-				console.log("disconnect: ", reason);
 				if (reason === 'io server disconnect') {
 				  	// the disconnection was initiated by the server, you need to reconnect manually
 				  	socket.connect();
@@ -97,8 +92,6 @@ class CranehootServer
 					if (Object.keys(this.lobbies[socket.player.lobby].players).length < 1) {
 						this.lobbies[socket.player.lobby] = null;
 					}
-
-					console.log(this.lobbies[socket.player.lobby]);
 				}
 				// else the socket will automatically try to reconnect
 			});
@@ -132,7 +125,6 @@ class CranehootServer
 					}
 				}
 			});
->>>>>>> Stashed changes
 
 			socket.on('onJoinLobby', (username, gamePin) =>
 			{
