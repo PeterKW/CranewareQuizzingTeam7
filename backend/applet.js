@@ -314,6 +314,7 @@ class Lobby
 				 if (halfPoints) {
 				 		io.sockets.sockets[playerSocket].emit('resetHalf');
 				 }
+
 		}
 		else {
 			player.streak = 0
@@ -325,6 +326,14 @@ class Lobby
 
 			if (halfPoints) {
 				io.sockets.sockets[playerSocket].emit('incorrectlyTargetted');
+			}
+			if (doublePoints) {
+				io.sockets.sockets[playerSocket].emit('incorrectlyDoubled');
+				player.score -= 500;
+				player.questionResults = {
+		        	verdict : "Incorrect!",
+		        	score : -500
+		        }
 			}
 		}
 	}

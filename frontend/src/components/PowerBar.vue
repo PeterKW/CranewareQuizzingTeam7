@@ -8,12 +8,13 @@
       <b-row style="margin-bottom:10px; margin-left: 10px;">
         <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.halfUsed'><span>Half Score</span></b-button></b-col>
         <!--b-col><b-button @click="onPower('counter')" class="fancy-btn btn--delta" :disabled='this.counterUsed'><span>Counter</span></b-button></b-col-->
-        <b-col style="position: absolute"><b-dropdown :text="playerChoice.username" class="m-md-2">
+        <b-dropdown :text="playerChoice.username" class="m-md-2">
           <b-dropdown-item v-for="player in players" :key="player.socket" :value="player"
             @click="target(player)">
             {{player.username}}
           </b-dropdown-item>
-        </b-dropdown></b-col>
+        </b-dropdown>
+        <b-col style="position: absolute"></b-col>
       </b-row>
     </div>
   </div>
@@ -91,8 +92,10 @@ export default {
           fifty[0] = 'Use in: ' + fifty[1] + ' rounds'
           break;
         case 'half':
-          this.halfUsed = true
-          used[2] = true
+          if (this.playerChoice != '') {
+            this.halfUsed = true
+            used[2] = true
+          }
           break;
         case 'counter':
           this.counterUsed = true

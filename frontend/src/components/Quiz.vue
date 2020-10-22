@@ -84,14 +84,6 @@ export default {
     onAnswerQuestion(answer) {
       this.answered = true
 
-      if (this.halfNextAnswer && this.countering) {
-        this.halfNextAnswer = false;
-        this.add_message("You successfully countered!")
-        for (var i = 0; i < this.targetees.length; i++) {
-          this.$socket.emit('punishPlayer', this.gamePin, this.targetees[i]);
-        }
-      }
-
       this.$socket.emit('onAnswer', answer, this.doublePoints, this.halfNextAnswer, this.gamePin);
       this.doublePoints = false;
 
@@ -230,6 +222,10 @@ export default {
         this.targetted = true;
         this.halfNextAnswer = true;
       }
+    },
+
+    incorrectlyDoubled: function () {
+      this.add_message("You failed after using the Double Points! -500 points for you.");
     },
 
     onNextQuestion: function(question){
