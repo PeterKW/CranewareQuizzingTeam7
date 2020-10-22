@@ -121,26 +121,26 @@ $time: 330ms;
 
 $btns: (
   alpha: (
-    gstart: #21D4FD,
-    gend: #B721FF,
+    gstart: #007FAA,
+    gend:#9B59B6,
     tstart: #ffffff,
     tend: #ffffff
   ),
   beta: (
-    gstart: #08AEEA,
-    gend: #2AF598,
+    gstart:  #008080,
+    gend:  #008000,
     tstart: #ffffff,
     tend: #ffffff
   ),
   gamma: (
-    gstart: #FEE140,
-    gend: #FA709A,
+    gstart: #9F6519,
+    gend: #b8496a,
     tstart: #ffffff,
     tend: #ffffff
   ),
   delta: (
-    gstart: #3EECAC,
-    gend: #EE74E1,
+    gstart: #D43900,
+    gend: #352125,
     tstart: #ffffff,
     tend: #ffffff
   )
@@ -228,7 +228,7 @@ $btns: (
 
   &:before {
     content: "";
-    background-color: #21D4FD;
+    background-color: #008080;
     position: absolute;
     top: 0;
     right: 0;

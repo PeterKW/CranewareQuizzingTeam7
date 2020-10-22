@@ -14,7 +14,7 @@
         @click="onLobbyStart"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
-        style="bottom:80px"
+        style="bottom:80px; background-color: #00688B !important"
       >
         Start Game
       </b-button>
@@ -89,7 +89,7 @@ export default {
       selectedCategory: [],
       categories: [
         "animals",
-        "brain-treasers",
+        "brain-teasers",
         "celebrities",
         "entertainment",
         "for-kids",

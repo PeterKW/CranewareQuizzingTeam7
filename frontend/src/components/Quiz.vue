@@ -347,8 +347,7 @@ export default {
 .powers {
   background-color: #fff;
   border-radius:10px;
-  padding:5px;
-  min-width: 20vw;
+  padding:15px;
   margin-bottom:0;
 }
 
