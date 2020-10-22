@@ -5,7 +5,7 @@
         <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-on:updateBackground="updateBackground" v-on:updateSettings="updateSettings" v-on:updateVolume="updateVolume" v-if="currentView == 'index'"> </Index>
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
          <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
-        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :currentQuestion="currentQuestion" :options="settings" :volume="volume"></Quiz>
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :currentQuestion="currentQuestion" :currentPlayer="currentPlayer" :gamePin="gamePin" :options="settings" :volume="volume"></Quiz>
         <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="lb"></Leaderboard>
       </transition>
     </GradientContainer>
@@ -49,6 +49,9 @@ export default {
       // Vars for passing into Quiz
       currentQuestion: {},
 
+      //used for the half points power in Quiz.vue
+      currentPlayer: "",
+
       //
       lb: [],
 
@@ -83,6 +86,7 @@ export default {
       // TODO: Find lobby view shown here
     },
     onCreateLobby(name) {
+        this.currentPlayer = name
         this.$socket.emit('onCreateLobby', name)
     },
     // eslint-disable-next-line no-unused-vars
