@@ -262,16 +262,29 @@ class Lobby
 			var player = this.players[playerID]
 
 			try {
-				io.sockets.sockets[playerID].emit(
-					"onResults",
-					{
-						"verdict" : player.questionResults.verdict,
-						"score"   : player.questionResults.score,
-						"streak"  : player.streak,
-						"playerScores" : leaderboard,
-						"correctAnswer" : this.currentQuestion["@correct_answer"]
-					}
-				);
+				if(Object.keys(player.questionResults).length > 0){
+					io.sockets.sockets[playerID].emit(
+						"onResults",
+						{
+							"verdict" : player.questionResults.verdict,
+							"score"   : player.questionResults.score,
+							"streak"  : player.streak,
+							"playerScores" : leaderboard,
+              "correctAnswer" : this.currentQuestion["@correct_answer"]
+						}
+					);
+				}
+				else {
+					io.sockets.sockets[playerID].emit(
+						"onResults",
+						{
+							"verdict" : "You did not select an answer.",
+							"score"   : "0",
+							"streak"  : player.streak,
+							"playerScores" : leaderboard
+						}
+					);
+				}
 
 				player.questionResults = {}
 			}
