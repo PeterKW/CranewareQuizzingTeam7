@@ -94,6 +94,8 @@ export default {
       fifty[0] = '50/50'
       double[1] = 0
       fifty[1] = 0
+      this.fiftyStr = fifty[0]
+      this.doubleStr = double[0]
     }
   },
 }
