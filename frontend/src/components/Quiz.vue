@@ -7,14 +7,14 @@
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
-          <PowerBar class="powers" v-if="!answered" v-on:power="onPower"/>  
+          <PowerBar class="powers" v-if="!answered" v-on:power="onPower" :round="round"/>  
           <div v-if="answered && !results" class="cont">
             <b-row class="justify-content-center w-100">
               <h1 class="text-center question w-100" style="padding-top:60px">Waiting for results...</h1>
             </b-row>
           </div>
 
-          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard"/>
+          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard" :correctAnswer="correctAnswer"/>
 
           
       </b-col>
@@ -53,7 +53,7 @@ export default {
       timerInstance: null,
 
       leaderboard: [],
-
+      round: 0,
       currQuestion: 0,
       answered: false,
       doublePoints: false,
@@ -68,6 +68,7 @@ export default {
       verdict: "",
       questionScore: 0,
       scoreStreak: 0,
+      correctAnswer: ""
     }
   },
   methods: {
@@ -180,6 +181,8 @@ export default {
 
       this.timer = 10;
       // this.$socket.emit('currPlayers', {});
+
+      this.round++
     },
     onResults: function(results){
       this.results = true
@@ -190,6 +193,7 @@ export default {
       this.questionScore = results.score
       this.scoreStreak = results.streak
       this.leaderboard = results.playerScores
+      this.correctAnswer = results.correctAnswer
     },
     onTimerTick(time) {
       this.timer = time
@@ -273,7 +277,7 @@ export default {
   background-color: #fff;
   border-radius:10px;
   padding:5px;
-  min-width: 10vw;
+  min-width: 20vw;
   margin-bottom:0;
 }
 
@@ -303,7 +307,7 @@ export default {
   .powers{
     padding: 0px;
     min-width: 20%;
-    max-height: 10%;
+    max-height: 0vh;
   }
 
 }
