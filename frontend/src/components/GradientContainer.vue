@@ -82,5 +82,13 @@ export default {
 </script>
 
 <style scoped>
-#gradient { height: 100% !important }
+#gradient { 
+  height: 200vh;
+  width: 100vw;
+  min-height: 100%;
+  top:0;
+  left:0;
+  overflow: auto;
+}
+
 </style>

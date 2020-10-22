@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <GradientContainer :slider="sliderValue">
+    <GradientContainer class="h-100" :slider="sliderValue">
       <transition name="fade" mode="out-in">
         <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-on:updateBackground="updateBackground" v-on:updateSettings="updateSettings" v-on:updateVolume="updateVolume" v-if="currentView == 'index'"> </Index>
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
@@ -111,7 +111,7 @@ export default {
     onQuizFinish(lb)
     {
       this.lb = lb
-      //this.currentView = "leaderboard"
+      this.currentView = "leaderboard"
     },
     onExitLeaderboard()
     {

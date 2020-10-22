@@ -27,10 +27,12 @@ class Database {
 	}
 
 	getRandomQuestion (callback) {
-		var id = Math.floor(Math.random() * 1000) + 1;
+		var id = Math.floor(Math.random() * 943) + 1;
 		// gets question and answers and sends back in JSON form
 		this.database.query("CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [id], function(err, localResult) { // Send query
 			if (err && err.length != 0) throw err;
+			console.log(id);
+			console.log(localResult[1]);
 			var result = localResult[1];
 			let question = {
 			  result
@@ -162,6 +164,19 @@ class CranehootServer
 				lobby.onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin)
 			});
 
+			socket.on('updateScore', (gamePin, playerName) => {
+				
+				var player = socket.player;
+				var playerSocket = player.socket;
+				var tempScore = 0.5 * player.questionResults.score
+				player.score -= tempScore;
+	      player.questionResults = {
+		    	verdict : "Correct!",
+ 	        score : tempScore
+				}
+				io.sockets.sockets[playerSocket].emit('resetHalf');
+			});
+
 			socket.on('getCurrPlayers', () =>
 			{
 				var player = socket.player;
@@ -210,21 +225,24 @@ class Lobby
 
 	start() {
 		this.hasGameStarted = true;
-		this.nextQuestion("onLobbyStarted")
+		//this.nextQuestion("onLobbyStarted")
+		//this.notifyAll("onLobbyStarted")
 		this.loop()
 	}
 
-
-
-	loop()
-	{
-		if(this.qCount > this.noOfQuestions)
+	loop() {
+	   	if(this.qCount > this.noOfQuestions){
+		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
+		 	return
+		 }
+		if (this.qCount ==0)
 		{
-			this.notifyAll("onQuizEnd", this.getLeaderboard())
-			return;
+			this.nextQuestion("onLobbyStarted")
 		}
-
-		this.nextQuestion("onNextQuestion")
+		else
+		{
+			this.nextQuestion("onNextQuestion");
+		}
 		this.timer = this.timePerQuestion
 
 		this.timerInstance = setInterval(() => {
@@ -245,13 +263,16 @@ class Lobby
 		//console.log(answer);
 		//console.log(this.currentQuestion["@correct_answer"]);
 		var playerSocket = player.socket;
-		console.log(playerSocket);
 		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
+			console.log(this.timer);
+			if(this.timer==0)
+			{
+				this.timer++;
+			}
 
 			if (halfPoints && doublePoints) {
 				var tempScore = this.timer * 100
 			} else if (halfPoints) {
-				console.log("HALVED");
 				var tempScore = this.timer * 50
 			} else if (doublePoints) {
 				var tempScore = this.timer * 100 * 2
@@ -296,15 +317,31 @@ class Lobby
 		for(const playerID in this.players) {
 			var player = this.players[playerID]
 			try {
-				io.sockets.sockets[playerID].emit(
-					"onResults",
-					{
-						"verdict" : player.questionResults.verdict,
-						"score"   : player.questionResults.score,
-						"streak"  : player.streak,
-						"playerScores" : leaderboard
-					}
-				);
+				if(Object.keys(player.questionResults).length > 0){
+					io.sockets.sockets[playerID].emit(
+						"onResults",
+						{
+							"verdict" : player.questionResults.verdict,
+							"score"   : player.questionResults.score,
+							"streak"  : player.streak,
+							"playerScores" : leaderboard,
+              				"correctAnswer" : this.currentQuestion["@correct_answer"]
+						}
+					);
+				}
+				else {
+					io.sockets.sockets[playerID].emit(
+						"onResults",
+						{
+							"verdict" : "You did not select an answer.",
+							"score"   : "0",
+							"streak"  : player.streak,
+							"playerScores" : leaderboard,
+							"correctAnswer" : this.currentQuestion["@correct_answer"]
+
+						}
+					);
+				}
 
 				player.questionResults = {}
 			}

@@ -1,22 +1,20 @@
 <template>
   <b-container fluid>
-     <b-row class="h-100 align-items-center">
+     <b-row class="h-100">
         <b-col cols="10" class="mx-auto text-center p4">
           <b-row class="w-100" style="margin-bottom: 5px;">
             <p class="currPlayers mr-auto">Players: {{currPlayers}}</p>
             <p class="timer ml-auto">{{timer}}</p>
           </b-row>
           <QuizQuestion v-if="!answered" v-on:answer="onAnswerQuestion" :question="currentQuestion['@question_content']" :a="currentQuestion['@answer1']" :b="currentQuestion['@answer2']" :c="currentQuestion['@answer3']" :d="currentQuestion['@answer4']"/>
-
+          <PowerBar class="powers" v-if="!answered" v-on:power="onPower" :round="round" :players="players"/>
           <div v-if="answered && !results" class="cont">
-            <b-row class="text-center w-100">
-              <h1 class="question w-100" style="padding-top:60px">Waiting for results...</h1>
+            <b-row class="justify-content-center w-100">
+              <h1 class="text-center question w-100" style="padding-top:60px">Waiting for results...</h1>
             </b-row>
           </div>
 
-          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard" :countered="countering" :target_message="target_message"/>
-
-          <PowerBar class="powers" v-if="!answered" v-on:power="onPower" :players="players"/>
+          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard" :correctAnswer="correctAnswer" :countered="countering" :target_message="target_message"/>
 
       </b-col>
       <b-button v-b-tooltip.hover title="Sound effects & music obtained from www.zapsplat.com" size="lg" variant="primary" class="mb-2 license">
@@ -54,7 +52,7 @@ export default {
       timerInstance: null,
 
       leaderboard: [],
-
+      round: 0,
       currQuestion: 0,
       answered: false,
       doublePoints: false,
@@ -76,6 +74,7 @@ export default {
       verdict: "",
       questionScore: 0,
       scoreStreak: 0,
+      correctAnswer: ""
     }
   },
   methods: {
@@ -87,6 +86,7 @@ export default {
 
       if (this.halfNextAnswer && this.countering) {
         this.halfNextAnswer = false;
+        this.add_message("You successfully countered!")
         for (var i = 0; i < this.targetees.length; i++) {
           this.$socket.emit('punishPlayer', this.gamePin, this.targetees[i]);
         }
@@ -204,23 +204,28 @@ export default {
 
     incorrectlyTargetted: function () {
       this.halfNextAnswer = false
+      this.reset_message();
       for (var i = 0; i < this.targetees.length; i++) {
-        console.log(this.targetees[i]);
         this.$socket.emit('punishPlayer' ,this.gamePin, this.targetees[i]);
       }
     },
 
-    //TODO impliment these two methods server side
     playerIncorrectlyHalved: function() {
+      console.log("HERE");
       this.add_message("You incorrectly halfed, and now your next correct answer will be halfed");
       this.halfNextAnswer = true;
     },
-    //DONE
+
     playerTargetted: function(targetee) {
       this.targetees.push(targetee);
-      this.add_message("You were targetted by " + targetee + ", Your next correct answer will be halfed");
-      this.targetted = true;
-      this.halfNextAnswer = true;
+      this.add_message("You were targetted by " + targetee + ", He halfed your score!");
+
+      if (this.answered) {
+        this.$socket.emit('updateScore' ,this.gamePin, this.currentPlayer);
+      } else {
+        this.targetted = true;
+        this.halfNextAnswer = true;
+      }
     },
 
     onNextQuestion: function(question){
@@ -241,6 +246,8 @@ export default {
 
       this.timer = 10;
       // this.$socket.emit('currPlayers', {});
+
+      this.round++
     },
     resetHalf: function() {
       this.halfNextAnswer = false;
@@ -254,6 +261,7 @@ export default {
       this.questionScore = results.score
       this.scoreStreak = results.streak
       this.leaderboard = results.playerScores
+      this.correctAnswer = results.correctAnswer
     },
     onTimerTick(time) {
       this.timer = time
@@ -313,7 +321,7 @@ export default {
 
 .cont {
   background:#fff;
-  padding:100px;
+  padding:50px;
   padding-top:0;
   border-radius:10px;
 }
@@ -340,7 +348,7 @@ export default {
   background-color: #fff;
   border-radius:10px;
   padding:5px;
-  min-width: 10vh;
+  min-width: 20vw;
   margin-bottom:0;
 }
 
@@ -351,6 +359,27 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .timer{
+    font-size: 175%;
+  }
+
+  .currPlayers{
+    font-size: 175%;
+  }
+
+  .question{
+    font-size: 175%;
+  }
+
+  .cont {
+    padding-bottom: 20px;
+  }
+
+  .powers{
+    padding: 0px;
+    min-width: 20%;
+    max-height: 0vh;
+  }
 
 }
 

@@ -2,12 +2,12 @@
   <div class="mx-auto" style="width: 40vw; margin-top: 15px; max-width: 456%">
     <div class="row justify-content-center align-self-center">
       <b-row style="margin-bottom:10px">
-        <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>Double Points</span></b-button></b-col>
-        <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>50/50</span></b-button></b-col>
+        <b-col><b-button @click="onPower('doublep')" class="fancy-btn btn--alpha" :disabled='this.doubleUsed'><span>{{doubleStr}}</span></b-button></b-col>
+        <b-col ><b-button @click="onPower('50/50')" class="fancy-btn btn--beta" :disabled='this.fiftyUsed'><span>{{fiftyStr}}</span></b-button></b-col>
       </b-row>
-      <b-row>
+      <b-row style="margin-bottom:10px; margin-left: 10px;">
         <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.halfUsed'><span>Half Score</span></b-button></b-col>
-        <b-col><b-button @click="onPower('counter')" class="fancy-btn btn--delta" :disabled='this.counterUsed'><span>Counter</span></b-button></b-col>
+        <!--b-col><b-button @click="onPower('counter')" class="fancy-btn btn--delta" :disabled='this.counterUsed'><span>Counter</span></b-button></b-col-->
         <b-col style="position: absolute"><b-dropdown :text="playerChoice.username" class="m-md-2">
           <b-dropdown-item v-for="player in players" :key="player.socket" :value="player"
             @click="target(player)">
@@ -22,9 +22,11 @@
 
 var used = [false, false, false, false]
 var temp = ['']
+var double = ['Double Points', 0]
+var fifty = ['50/50', 0]
 export default {
   name: 'PowerBar',
-  props: ["players"],
+  props: ['round' , 'players'],
   data: function () {
     return {
       doubleUsed : used[0],
@@ -33,22 +35,60 @@ export default {
       counterUsed : used[3],
       playerChoice : temp,
       ID: "PowerBar",
+      double: double[0],
+      fifty: fifty[0],
+      doubleRound: double[1],
+      fiftyRound: fifty[1],
+
+      fiftyStr: fifty[0],
+      doubleStr: double[0]
+
     }
-},
+  },
+
+  watch: {
+      'round': function() {
+
+        if(double[1] != 0)
+          double[1] = double[1] - 1
+          double[0] = 'Use in: ' + double[1] + ' rounds'
+        if(double[1] == 0){
+          used[0] = false
+          double[0] = 'Double Points'
+
+        }
+
+
+        if(fifty[1] != 0)
+          fifty[1] = fifty[1] - 1
+          fifty[0] = 'Use in: ' + fifty[1] + ' rounds'
+        if(fifty[1] == 0){
+          used[1] = false
+          fifty[0] = '50/50'
+
+        }
+
+    }
+  },
 
   methods: {
     target(player) {
       this.playerChoice = [player.username]
     },
     onPower(power) {
+
       switch (power) {
         case 'doublep':
           this.doubleUsed = true
           used[0] = true
+          double[1] = 3
+          double[0] = 'Use in: ' + double[1] + ' rounds'
           break;
         case '50/50':
           this.fiftyUsed = true
           used[1] = true
+          fifty[1] = 3
+          fifty[0] = 'Use in: ' + fifty[1] + ' rounds'
           break;
         case 'half':
           this.halfUsed = true
@@ -70,8 +110,6 @@ export default {
       used[3] = false;
       this.doubleUsed  = used[0];
       this.fiftyUsed = used[1];
-      this.halfUsed = used[2];
-      this.counterUsed = used[3];
     }
   },
 }
@@ -155,7 +193,7 @@ $btns: (
   font-family: 'Source Sans Pro', sans-serif;
   font-weight: 700;
   padding: 1.25rem 2rem;
-  font-size: 1rem;
+
   border-radius: 3.5rem / 100%;
   position: relative;
   min-width: 5rem;
@@ -170,7 +208,7 @@ $btns: (
   width:100%;
   height:100%;
   padding: 1vh 2vw;
-  font-size: 125%;
+  font-size: 100%;
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -226,6 +264,12 @@ $btns: (
     &:active {
       color: map-get($bcolors, tend);
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .fancy-btn {
+    min-width: 8rem;
   }
 }
 </style>
