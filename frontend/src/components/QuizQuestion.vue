@@ -148,8 +148,8 @@ $btns: (
     tend: #ffffff
   ),
   gamma: (
-    gstart: #9F6519,
-    gend: #b8496a,
+    gstart:#b8496a,
+    gend:  #9F6519,
     tstart: #ffffff,
     tend: #ffffff
   ),
