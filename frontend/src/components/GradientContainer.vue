@@ -22,12 +22,14 @@ export default {
       step: 0,
       colorIndices: [0,1,2,3],
       gradientSpeed: 0.001,
-      intervalID: null
+      intervalID: null,
+      contrastVue: false,
     }
   },
-  props: ["slider"],
+  props: ["slider", "options"],
   methods: {
     init(){
+
       this.step = 0
       this.istep = 0
            //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
@@ -68,16 +70,29 @@ export default {
     'slider': function(newVal) {
       window.clearInterval(this.intervalId);
       this.gradientSpeed = 0.00002   * newVal
+    },
+
+    'options': function(){
+      if(this.options.includes("contrast"))
+        this.contrastVue = true;
+      else
+        this.contrastVue = false;
     }
   },
   computed: {
     gradient() {
-      return { 'background': "-webkit-gradient(linear, left top, right top, from(" + this.color1 + "), to(" + this.color2 + "))"}
+        if(this.contrastVue == true)
+          return {'background' : "#000080"}
+
+        if(this.contrastVue == false)
+          return { 'background': "-webkit-gradient(linear, left top, right top, from(" + this.color1 + "), to(" + this.color2 + "))"}
+
+        return null;
     }
   },
   mounted() {
     this.init()
-    }
+  }
 }
 </script>
 

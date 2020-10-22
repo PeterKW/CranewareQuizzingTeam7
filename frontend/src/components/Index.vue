@@ -99,6 +99,7 @@ export default {
         { text: 'Music', value: 'music' },
         { text: 'Vibrations', value: 'vibration', disabled: !"vibrate" in navigator},
         { text: 'Sound Effects', value: 'effect' },
+        { text: 'High Contrast', value: 'contrast' }
       ],
     }
   },
