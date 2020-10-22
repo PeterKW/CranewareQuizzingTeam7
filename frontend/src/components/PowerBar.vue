@@ -18,7 +18,6 @@
     </div>
   </div>
 </template>
-
 <script>
 
 var used = [false, false, false, false]

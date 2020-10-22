@@ -87,9 +87,23 @@ class CranehootServer
 				{
 					if (lobbyPlayers[key].username == target)
 					{
+						io.sockets.sockets[key].emit('playerTargetted', aggrevator);
+					}
+				}
+			});
+
+			socket.on('punishPlayer', (gamePin, target) =>
+			{
+				const lobby = this.lobbies[gamePin];
+				const lobbyPlayers = lobby.players;
+
+				for (const key in lobbyPlayers)
+				{
+					if (lobbyPlayers[key].username == target)
+					{
 						console.log(key);
 						console.log('Found player: ' + target);
-						io.sockets.sockets[key].emit('test');
+						io.sockets.sockets[key].emit('playerIncorrectlyHalved');
 					}
 				}
 			});
@@ -140,12 +154,12 @@ class CranehootServer
 			});
 
 
-			socket.on('onAnswer', (answer, doublePoints) =>
+			socket.on('onAnswer', (answer, doublePoints, halfPoints, gamePin) =>
 			{
 				var player = socket.player;
 				var lobby = this.lobbies[socket.player.lobby]
 
-				lobby.onPlayerAnswer(player, answer, doublePoints)
+				lobby.onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin)
 			});
 
 			socket.on('getCurrPlayers', () =>
@@ -224,32 +238,42 @@ class Lobby
 	    }, 1000)
 	}
 
-	onPlayerAnswer(player, answer, doublePoints) {
+	onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin) {
 		// Verify their answer
 		// TODO: fix a bug where the first answer might be wrong even when it's right
 		//console.log("HERE");
 		//console.log(answer);
 		//console.log(this.currentQuestion["@correct_answer"]);
+		var playerSocket = player.socket;
+		console.log(playerSocket);
 		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
 
-			if (doublePoints) {
+			if (halfPoints && doublePoints) {
+				var tempScore = this.timer * 100
+			} else if (halfPoints) {
+				console.log("HALVED");
+				var tempScore = this.timer * 50
+			} else if (doublePoints) {
 				var tempScore = this.timer * 100 * 2
 			} else {
 				var tempScore = this.timer * 100
 			}
 
-	        player.streak++
+	    player.streak++
 
-	        if(player.streak > 1){
-	          tempScore += (100 * player.streak)
-	        }
+	    if(player.streak > 1){
+	      tempScore += (100 * player.streak)
+	     }
 
-	        player.score += tempScore;
+	     player.score += tempScore;
 
-	        player.questionResults = {
-	        	verdict : "Correct!",
-	        	score : tempScore
+	     player.questionResults = {
+	     		verdict : "Correct!",
+	        score : tempScore
 	       }
+				 if (halfPoints) {
+				 		io.sockets.sockets[playerSocket].emit('resetHalf');
+				 }
 		}
 		else {
 			player.streak = 0
@@ -258,6 +282,10 @@ class Lobby
 	        	verdict : "Incorrect!",
 	        	score : 0
 	        }
+
+			if (halfPoints) {
+				io.sockets.sockets[playerSocket].emit('incorrectlyTargetted');
+			}
 		}
 	}
 
@@ -267,7 +295,6 @@ class Lobby
 
 		for(const playerID in this.players) {
 			var player = this.players[playerID]
-
 			try {
 				io.sockets.sockets[playerID].emit(
 					"onResults",

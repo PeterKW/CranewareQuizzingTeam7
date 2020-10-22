@@ -14,7 +14,7 @@
             </b-row>
           </div>
 
-          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard"/>
+          <QuizScore v-if="results" :verdict="verdict" :score="questionScore" :scoreStreak="scoreStreak" :leaderboard="leaderboard" :countered="countering" :target_message="target_message"/>
 
           <PowerBar class="powers" v-if="!answered" v-on:power="onPower" :players="players"/>
 
@@ -60,8 +60,11 @@ export default {
       doublePoints: false,
       resetNeeded: false,
       quizRef: null,
+      quizScore: null,
       target: null,
       targetted: false,
+      targetees: [],
+      target_message: [],
       halfNextAnswer: false,
       countering: false,
 
@@ -81,7 +84,15 @@ export default {
     // Handles click of an answer
     onAnswerQuestion(answer) {
       this.answered = true
-      this.$socket.emit('onAnswer', answer, this.doublePoints);
+
+      if (this.halfNextAnswer && this.countering) {
+        this.halfNextAnswer = false;
+        for (var i = 0; i < this.targetees.length; i++) {
+          this.$socket.emit('punishPlayer', this.gamePin, this.targetees[i]);
+        }
+      }
+
+      this.$socket.emit('onAnswer', answer, this.doublePoints, this.halfNextAnswer, this.gamePin);
       this.doublePoints = false;
 
        /*
@@ -117,13 +128,12 @@ export default {
 
         case 'counter':
           this.quizRef.disableButtons(this.currentQuestion['@correct_answer']);
-          this.resetNeeded = true
           break;
       }
     },
 
     // Normal methods
-    nextQuestion(){
+    nextQuestion() {
       if(this.answered == false){
         this.scoreStreak = 0
       }
@@ -163,6 +173,12 @@ export default {
           });
         }
       },
+    add_message(notification){
+      this.target_message.push( {message : notification});
+    },
+    reset_message(){
+      this.target_message = []
+    },
     soundAndVibrations(){
       if(this.verdict == "Correct!"){
         if(this.options != null){
@@ -186,12 +202,23 @@ export default {
   },
   sockets: {
 
-    //TODO impliment these two methods server side
-    playerIncorrectlyHalved: function() {
-      this.halfNextAnswer = true;
+    incorrectlyTargetted: function () {
+      this.halfNextAnswer = false
+      for (var i = 0; i < this.targetees.length; i++) {
+        console.log(this.targetees[i]);
+        this.$socket.emit('punishPlayer' ,this.gamePin, this.targetees[i]);
+      }
     },
 
-    playerTargetted: function() {
+    //TODO impliment these two methods server side
+    playerIncorrectlyHalved: function() {
+      this.add_message("You incorrectly halfed, and now your next correct answer will be halfed");
+      this.halfNextAnswer = true;
+    },
+    //DONE
+    playerTargetted: function(targetee) {
+      this.targetees.push(targetee);
+      this.add_message("You were targetted by " + targetee + ", Your next correct answer will be halfed");
       this.targetted = true;
       this.halfNextAnswer = true;
     },
@@ -199,6 +226,10 @@ export default {
     onNextQuestion: function(question){
       this.answered = false;
       this.results = false;
+
+      if (!this.halfNextAnswer) {
+        this.reset_message()
+      }
 
       this.currentQuestion = question
 
@@ -211,8 +242,8 @@ export default {
       this.timer = 10;
       // this.$socket.emit('currPlayers', {});
     },
-    test: function() {
-      console.log("SUCCESS");
+    resetHalf: function() {
+      this.halfNextAnswer = false;
     },
     onResults: function(results){
       this.results = true
@@ -258,7 +289,11 @@ export default {
     // TODO: Populate quiz questions from DB
     //reset all the powers
     this.$children[1].resetButtons();
-    this.quizRef = this.$children[0];
+    for (var i = 0; i < this.$children.length; i++) {
+      if (this.$children[i].ID == 'QuizQuestion') {
+          this.quizRef = this.$children[i];
+      }
+    }
 
     this.$socket.emit('getCurrPlayers', {});
 
