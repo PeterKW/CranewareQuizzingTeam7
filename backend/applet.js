@@ -77,8 +77,62 @@ class CranehootServer
 				// Store reference to player on the socket
 				socket.player = player;
 
+<<<<<<< Updated upstream
 		        socket.emit('onLobbyCreated', newLobby);
 		     });
+=======
+				socket.emit('onLobbyCreated', newLobby);
+			});
+
+			socket.on('disconnect', (reason) => {
+				console.log("disconnect: ", reason);
+				if (reason === 'io server disconnect') {
+				  	// the disconnection was initiated by the server, you need to reconnect manually
+				  	socket.connect();
+				}
+				else {
+
+					delete this.lobbies[socket.player.lobby].players[socket.id];
+					
+					if (Object.keys(this.lobbies[socket.player.lobby].players).length < 1) {
+						this.lobbies[socket.player.lobby] = null;
+					}
+
+					console.log(this.lobbies[socket.player.lobby]);
+				}
+				// else the socket will automatically try to reconnect
+			});
+
+			socket.on('attackPlayer', (gamePin, target, aggrevator) =>
+			{
+				const lobby = this.lobbies[gamePin];
+				const lobbyPlayers = lobby.players;
+
+				for (const key in lobbyPlayers)
+				{
+					if (lobbyPlayers[key].username == target)
+					{
+						io.sockets.sockets[key].emit('playerTargetted', aggrevator);
+					}
+				}
+			});
+
+			socket.on('punishPlayer', (gamePin, target) =>
+			{
+				const lobby = this.lobbies[gamePin];
+				const lobbyPlayers = lobby.players;
+
+				for (const key in lobbyPlayers)
+				{
+					if (lobbyPlayers[key].username == target)
+					{
+						console.log(key);
+						console.log('Found player: ' + target);
+						io.sockets.sockets[key].emit('playerIncorrectlyHalved');
+					}
+				}
+			});
+>>>>>>> Stashed changes
 
 			socket.on('onJoinLobby', (username, gamePin) =>
 			{
@@ -188,6 +242,9 @@ class Lobby
 	}
 
 	loop() {
+		if (Object.keys(this.players).length < 1) {
+			return;
+		}
 	   	if(this.qCount > this.noOfQuestions){
 		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
 		 	return

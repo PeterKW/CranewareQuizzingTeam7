@@ -89,7 +89,7 @@ export default {
       selectedCategory: [],
       categories: [
         "animals",
-        "brain-treasers",
+        "brain-teasers",
         "celebrities",
         "entertainment",
         "for-kids",
