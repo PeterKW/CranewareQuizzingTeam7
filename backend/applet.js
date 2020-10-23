@@ -85,7 +85,7 @@ class CranehootServer
 				  	// the disconnection was initiated by the server, you need to reconnect manually
 				  	socket.connect();
 				}
-				else {
+				else if (socket.player) {
 
 					delete this.lobbies[socket.player.lobby].players[socket.id];
 					
