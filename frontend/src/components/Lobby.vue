@@ -14,7 +14,7 @@
         @click="onLobbyStart"
         variant="primary"
         class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3"
-        style="bottom:80px"
+        style="bottom:80px; background-color: #00688B !important"
       >
         Start Game
       </b-button>
@@ -29,6 +29,51 @@
         Exit Lobby
       </b-button>
     </b-row>
+    <b-row align-h="center">
+      <b-button  
+        id="show-btn" 
+        variant="warning" 
+        class="btn-block button-style col-9 col-sm-7 col-md-4 col-lg-3 col-xl-3" 
+        style="bottom:120px"
+        @click="$bvModal.show('bv-modal')"
+      >
+        Game Settings
+      </b-button>
+
+      <!--Settings Modal-->
+      <b-modal id="bv-modal" hide-footer>
+        <template v-slot:modal-title>
+          <code>Game Settings</code>
+        </template>
+        
+        <div>
+          <label for="category" class="mt-3">Selected Categories</label>
+          <b-dropdown id="category" text="Add or Remove" variant="outline-dark" block>
+            <b-dropdown-item v-for="item in categories" :key="item" @click.native="itemClicked(item)">
+              {{ item }}
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+
+        <div>
+          <b-badge v-for="badge in selectedCategory" :key="badge" class="mr-2 mt-2" pill variant="dark" size="lg" @click.native="removeItem(item)">
+            {{ badge }}
+          </b-badge>
+        </div>
+
+        <div>
+          <label for="time" class="mt-3">Time per Question</label>
+          <b-form-spinbutton id="time" v-model="questionTime" min="5" max="60"></b-form-spinbutton>
+        </div>
+
+        <div>
+          <label for="number" class="mt-3">Number of Questions</label>
+          <b-form-spinbutton id="number" v-model="questionNumber" min="1" max="100"></b-form-spinbutton>
+        </div>
+
+        <b-button class="mt-4" variant="danger" block @click="$bvModal.hide('bv-modal')">Close</b-button>
+      </b-modal>
+    </b-row>
   </b-container>
 </template>
 
@@ -36,12 +81,46 @@
 export default {
   name: "Lobby",
   props: ["players", "gamePin"],
+  data: function() 
+  {
+    return {
+      questionTime: 10,
+      questionNumber: 10,
+      selectedCategory: [],
+      categories: [
+        "animals",
+        "brain-teasers",
+        "celebrities",
+        "entertainment",
+        "for-kids",
+        "science-technology",
+        "sports",
+        "video-games"
+      ]
+    }
+  },
   methods: {
     onLobbyStart(){
-      this.$emit('onLobbyStart', this.gamePin);
+      // Number of questions starts at 0 instead if 1
+      this.questionNumber--
+      this.$emit('onLobbyStart', this.gamePin, this.selectedCategory, this.questionTime, this.questionNumber);
     },
     onLobbyExit(){
       this.$emit('onLobbyExit', this.gamePin);
+    },
+    itemClicked(item){
+      if (!this.selectedCategory.includes(item))
+        this.selectedCategory.push(item);
+      else
+        this.removeItem(item);
+      console.log("clicked", this.selectedCategory);
+    },
+    removeItem(item){
+      for( var i = 0; i < this.selectedCategory.length; i++){ 
+        if ( this.selectedCategory[i] === item) { 
+          this.selectedCategory.splice(i, 1); 
+        }
+      }
     }
   }
 };

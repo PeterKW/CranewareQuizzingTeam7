@@ -2,10 +2,9 @@
     <b-container fluid>
       <b-row class="h-100 align-items-center">
           <b-col xl="5" lg="6" md="8" sm="10" class="mx-auto text-center p4 cont">
-               <b-row class="text-center">
-                  <h1 class="text-responsive w-100">Cranehoot</h1>
+               <b-row class="justify-content-center">
+                  <h1 class="text-responsive">Cranehoot</h1>
               </b-row>
-              <div class="px-5">
                 <b-form class="justify-content-center">
                     <b-form-group>
                         <label class="sr-only">Username</label>
@@ -33,9 +32,6 @@
                     </div>
                     <p class="m-0">-or-</p>
                     <div class="btn-group d-flex" role="group">
-                      <b-button @click="onFindLobby" variant="primary" class="button_base b09_electric">
-                        Find Lobby
-                      </b-button>
                       <b-button @click="onCreateLobby" variant="primary" class="button_base b09_electric">
                         Create Lobby
                       </b-button>
@@ -75,7 +71,6 @@
                     </b-modal>
                   </div>
                 </b-form>
-            </div>
           </b-col>
       </b-row>
     </b-container>
@@ -101,6 +96,7 @@ export default {
         { text: 'Music', value: 'music' },
         { text: 'Vibrations', value: 'vibration', disabled: !"vibrate" in navigator},
         { text: 'Sound Effects', value: 'effect' },
+        { text: 'High Contrast', value: 'contrast' }
       ],
     }
   },
@@ -193,17 +189,29 @@ h1 {
   font-family: 'Source Sans Pro', sans-serif;
   color: #000;
   padding-bottom: 30px;
+  margin: 0 auto
 }
 
 .main-form {
-  width: 20vw;
+  width: 30vw;
   padding-top: 45vh;
 }
 
 .cont {
   background:#fff;
-  padding:100px;
+  padding:50px;
   padding-top:0;
   border-radius:20px;
+}
+
+.text-responsive{
+  text-align: center;
+  font-size: calc(100% + 4vw + 4vh);
+}
+
+@media (max-width: 768px) {
+  .cont{
+    padding:10px;
+  }
 }
 </style>

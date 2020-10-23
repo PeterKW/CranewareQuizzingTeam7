@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <GradientContainer :slider="sliderValue">
+    <GradientContainer class="h-100" :options="settings" :slider="sliderValue">
       <transition name="fade" mode="out-in">
         <Index class="h-100" v-on:onJoinLobby="onJoinLobby" v-on:onFindLobby="onFindLobby" v-on:onCreateLobby="onCreateLobby" v-on:updateBackground="updateBackground" v-on:updateSettings="updateSettings" v-on:updateVolume="updateVolume" v-if="currentView == 'index'"> </Index>
         <Lobby class="h-100" v-on:onLobbyStart="onLobbyStart" v-on:onLobbyExit="onLobbyExit" :players="players" :gamePin="gamePin" v-if="currentView == 'lobby'"></Lobby>
          <!-- Quiz won't always need access to players array but does for now while the player list is stored here -->
-        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :currentQuestion="currentQuestion" :options="settings" :volume="volume"></Quiz>
+        <Quiz class="h-100" v-on:done='onQuizFinish' v-if="currentView == 'quiz'" :players="players" :currentQuestion="currentQuestion" :currentPlayer="currentPlayer" :gamePin="gamePin" :options="settings" :volume="volume"></Quiz>
         <Leaderboard class="h-100" v-if="currentView == 'leaderboard'" v-on:onExitLeaderboard="onExitLeaderboard" :players="lb"></Leaderboard>
       </transition>
     </GradientContainer>
@@ -49,6 +49,9 @@ export default {
       // Vars for passing into Quiz
       currentQuestion: {},
 
+      //used for the half points power in Quiz.vue
+      currentPlayer: "",
+
       //
       lb: [],
 
@@ -83,15 +86,17 @@ export default {
       // TODO: Find lobby view shown here
     },
     onCreateLobby(name) {
+        this.currentPlayer = name
         this.$socket.emit('onCreateLobby', name)
     },
     // eslint-disable-next-line no-unused-vars
-    onLobbyStart()
+    onLobbyStart(gamePin, category, questionTime, questionNumber)
     {
       // TODO: Tell websocket to start and wait for response
       // For now: just start
       // TODO: Only show this button to the host.
-      this.$socket.emit('onLobbyStart', this.gamePin)
+      console.log(category);
+      this.$socket.emit('onLobbyStart', this.gamePin, category, questionTime, questionNumber);
     },
     // eslint-disable-next-line no-unused-vars
     onLobbyExit(code)
