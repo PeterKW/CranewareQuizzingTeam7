@@ -80,22 +80,6 @@ class CranehootServer
 				socket.emit('onLobbyCreated', newLobby);
 			});
 
-			socket.on('disconnect', (reason) => {
-				if (reason === 'io server disconnect') {
-				  	// the disconnection was initiated by the server, you need to reconnect manually
-				  	socket.connect();
-				}
-				else if (socket.player) {
-
-					delete this.lobbies[socket.player.lobby].players[socket.id];
-					
-					if (Object.keys(this.lobbies[socket.player.lobby].players).length < 1) {
-						this.lobbies[socket.player.lobby] = null;
-					}
-				}
-				// else the socket will automatically try to reconnect
-			});
-
 			socket.on('attackPlayer', (gamePin, target, aggrevator) =>
 			{
 				const lobby = this.lobbies[gamePin];
@@ -234,9 +218,6 @@ class Lobby
 	}
 
 	loop() {
-		if (Object.keys(this.players).length < 1) {
-			return;
-		}
 	   	if(this.qCount > this.noOfQuestions){
 		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
 		 	return
