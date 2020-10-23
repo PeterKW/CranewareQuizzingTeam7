@@ -195,11 +195,11 @@ export default {
   sockets: {
 
     incorrectlyTargetted: function () {
-      this.halfNextAnswer = false
+      //this.halfNextAnswer = false
       this.reset_message();
-      for (var i = 0; i < this.targetees.length; i++) {
-        this.$socket.emit('punishPlayer' ,this.gamePin, this.targetees[i]);
-      }
+      //for (var i = 0; i < this.targetees.length; i++) {
+      //  this.$socket.emit('punishPlayer' ,this.gamePin, this.targetees[i]);
+      //}
     },
 
     playerIncorrectlyHalved: function() {
