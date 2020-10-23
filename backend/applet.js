@@ -96,6 +96,7 @@ class CranehootServer
 				// else the socket will automatically try to reconnect
 			});
 
+
 			socket.on('attackPlayer', (gamePin, target, aggrevator) =>
 			{
 				const lobby = this.lobbies[gamePin];
@@ -247,9 +248,6 @@ class Lobby
 	}
 
 	loop() {
-		if (Object.keys(this.players).length < 1) {
-			return;
-		}
 	   	if(this.qCount > this.noOfQuestions){
 		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
 		 	return
