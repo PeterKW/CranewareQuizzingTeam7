@@ -50,7 +50,7 @@ class Database {
 				return callback(question.result[0]); // Pass back info
 			});
 	//	});
-		
+
 	}
 }
 const database = new Database();
@@ -79,6 +79,23 @@ class CranehootServer
 
 				socket.emit('onLobbyCreated', newLobby);
 			});
+
+			socket.on('disconnect', (reason) => {
+				if (reason === 'io server disconnect') {
+				  	// the disconnection was initiated by the server, you need to reconnect manually
+				  	socket.connect();
+				}
+				else {
+
+					//This might be needed still delete this.lobbies[socket.player.lobby].players[socket.id];
+
+					if (Object.keys(this.lobbies[socket.player.lobby].players).length < 1) {
+						this.lobbies[socket.player.lobby] = null;
+					}
+				}
+				// else the socket will automatically try to reconnect
+			});
+
 
 			socket.on('attackPlayer', (gamePin, target, aggrevator) =>
 			{
@@ -156,12 +173,25 @@ class CranehootServer
 			});
 
 
-			socket.on('onAnswer', (answer, doublePoints) =>
+			socket.on('onAnswer', (answer, doublePoints, halfPoints, gamePin) =>
 			{
 				var player = socket.player;
 				var lobby = this.lobbies[socket.player.lobby]
 
-				lobby.onPlayerAnswer(player, answer, doublePoints)
+				lobby.onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin)
+			});
+
+			socket.on('updateScore', (gamePin, playerName) => {
+
+				var player = socket.player;
+				var playerSocket = player.socket;
+				var tempScore = 0.5 * player.questionResults.score
+				player.score -= tempScore;
+	      player.questionResults = {
+		    	verdict : "Correct!",
+ 	        score : tempScore
+				}
+				io.sockets.sockets[playerSocket].emit('resetHalf');
 			});
 
 			socket.on('getCurrPlayers', () =>
@@ -175,7 +205,7 @@ class CranehootServer
 
 	newLobby()
 	{
-	    var pin = Math.random().toString(36).substring(7);
+	  var pin = Math.random().toString(36).substring(7);
 
 		this.lobbies[pin] = new Lobby(pin);
 		return this.lobbies[pin];
@@ -234,45 +264,53 @@ class Lobby
 
 		this.timerInstance = setInterval(() => {
 			this.notifyAll("onTimerTick", this.timer)
-
+			console.log(this.currentQuestion['@correct_answer']);
 	    	if(this.timer-- <= 0) {
 	    		clearInterval(this.timerInstance)
 
 	    		this.sendQuestionResults();
+					this.notifyAll("resetHalf")
 	      	}
 	    }, 1000)
 	}
 
-	onPlayerAnswer(player, answer, doublePoints) {
+	onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin) {
 		// Verify their answer
 		// TODO: fix a bug where the first answer might be wrong even when it's right
 		//console.log("HERE");
 		//console.log(answer);
 		//console.log(this.currentQuestion["@correct_answer"]);
+		var playerSocket = player.socket;
 		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
-			console.log(this.timer);
+			io.sockets.sockets[playerSocket].emit('resetHalf');
 			if(this.timer==0)
 			{
 				this.timer++;
 			}
-			if (doublePoints) {
+
+			if (halfPoints && doublePoints) {
+				var tempScore = this.timer * 100
+			} else if (halfPoints) {
+				var tempScore = this.timer * 50
+			} else if (doublePoints) {
 				var tempScore = this.timer * 100 * 2
 			} else {
 				var tempScore = this.timer * 100
 			}
 
-	        player.streak++
+	    player.streak++
 
-	        if(player.streak > 1){
-	          tempScore += (100 * player.streak)
-	        }
+	    if(player.streak > 1){
+	      tempScore += (100 * player.streak)
+	     }
 
-	        player.score += tempScore;
+	     player.score += tempScore;
 
-	        player.questionResults = {
-	        	verdict : "Correct!",
-	        	score : tempScore
+	     player.questionResults = {
+	     		verdict : "Correct!",
+	        score : tempScore
 	       }
+
 		}
 		else {
 			player.streak = 0
@@ -281,6 +319,18 @@ class Lobby
 	        	verdict : "Incorrect!",
 	        	score : 0
 	        }
+
+			if (halfPoints) {
+				io.sockets.sockets[playerSocket].emit('incorrectlyTargetted');
+			}
+			if (doublePoints) {
+				io.sockets.sockets[playerSocket].emit('incorrectlyDoubled');
+				player.score -= 500;
+				player.questionResults = {
+		        	verdict : "Incorrect!",
+		        	score : -500
+		        }
+			}
 		}
 	}
 
@@ -290,7 +340,6 @@ class Lobby
 
 		for(const playerID in this.players) {
 			var player = this.players[playerID]
-
 			try {
 				if(Object.keys(player.questionResults).length > 0){
 					io.sockets.sockets[playerID].emit(
@@ -313,7 +362,7 @@ class Lobby
 							"streak"  : player.streak,
 							"playerScores" : leaderboard,
 							"correctAnswer" : this.currentQuestion["@correct_answer"]
-							
+
 						}
 					);
 				}
@@ -349,10 +398,10 @@ class Lobby
 	nextQuestion(e) {
 		this.qCount++;
 		var that = this;
-		//checks if a category has been selcted 
+		//checks if a category has been selcted
 		if(this.category.length!=0)
 		{
-			//picks random category from list of categories chosen 
+			//picks random category from list of categories chosen
 			let cat = Math.floor(Math.random() * this.category.length);
 			database.getQuestionFromCat(function(question) {
 				that.currentQuestion = question;

@@ -32,9 +32,6 @@
                     </div>
                     <p class="m-0">-or-</p>
                     <div class="btn-group d-flex" role="group">
-                      <b-button @click="onFindLobby" variant="primary" class="button_base b09_electric">
-                        Find Lobby
-                      </b-button>
                       <b-button @click="onCreateLobby" variant="primary" class="button_base b09_electric">
                         Create Lobby
                       </b-button>
