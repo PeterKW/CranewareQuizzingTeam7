@@ -266,7 +266,7 @@ class Lobby
 
 		this.timerInstance = setInterval(() => {
 			this.notifyAll("onTimerTick", this.timer)
-
+			console.log(this.currentQuestion['@correct_answer']);
 	    	if(this.timer-- <= 0) {
 	    		clearInterval(this.timerInstance)
 
