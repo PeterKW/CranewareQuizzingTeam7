@@ -113,6 +113,7 @@ export default {
       used[3] = false;
       this.doubleUsed  = used[0];
       this.fiftyUsed = used[1];
+      this.halfUsed = used[2];
     }
   },
 }
