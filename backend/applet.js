@@ -269,6 +269,7 @@ class Lobby
 	    		clearInterval(this.timerInstance)
 
 	    		this.sendQuestionResults();
+					this.notifyAll("resetHalf")
 	      	}
 	    }, 1000)
 	}
@@ -281,7 +282,7 @@ class Lobby
 		//console.log(this.currentQuestion["@correct_answer"]);
 		var playerSocket = player.socket;
 		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
-			console.log(this.timer);
+			io.sockets.sockets[playerSocket].emit('resetHalf');
 			if(this.timer==0)
 			{
 				this.timer++;
@@ -309,9 +310,6 @@ class Lobby
 	     		verdict : "Correct!",
 	        score : tempScore
 	       }
-				 if (halfPoints) {
-				 		io.sockets.sockets[playerSocket].emit('resetHalf');
-				 }
 
 		}
 		else {

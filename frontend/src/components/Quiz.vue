@@ -202,24 +202,11 @@ export default {
       //}
     },
 
-    playerIncorrectlyHalved: function() {
+    playerTargetted: function() {
+      this.add_message("You were targetted, your score has been halfed!");
       if (this.answered) {
         this.$socket.emit('updateScore' ,this.gamePin, this.currentPlayer);
       } else {
-        this.halfNextAnswer = true;
-      }
-      this.add_message("You incorrectly halfed, and now your score has been halfed");
-    },
-
-    playerTargetted: function(targetee) {
-      this.targetees.push(targetee);
-      this.add_message("You were targetted, your score has been halfed!");
-      if (this.answered && this.answered == this.currentQuestion['@correct_answer']) {
-        this.$socket.emit('updateScore' ,this.gamePin, this.currentPlayer);
-      } else if (this.answered) {
-        this.$socket.emit('punishPlayer', this.gamePin, targetee);
-      } else {
-        this.targetted = true;
         this.halfNextAnswer = true;
       }
     },
@@ -231,10 +218,8 @@ export default {
     onNextQuestion: function(question){
       this.answered = false;
       this.results = false;
+      this.reset_message();
 
-      if (!this.halfNextAnswer) {
-        this.reset_message()
-      }
 
       this.currentQuestion = question
 
@@ -249,6 +234,7 @@ export default {
 
       this.round++
     },
+    
     resetHalf: function() {
       this.halfNextAnswer = false;
     },
