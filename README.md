@@ -8,30 +8,33 @@ Cranehoot is a cloud-hosted, mobile-friendly, multiplayer quiz powered by VueJS,
   - Create lobbies to play with your friends
   - Use powerups to help yourself or hinder your opponents
 ### Screenshots
+<details>
+  <summary>See screenshots</summary>
+  
+  ##### Homepage
+  ![7bab4c5dc7ecf2f6334482e445793a88](https://user-images.githubusercontent.com/44262632/97087055-24ac4900-161f-11eb-985c-cd7a996a2527.jpg)
 
-##### Homepage
-![7bab4c5dc7ecf2f6334482e445793a88](https://user-images.githubusercontent.com/44262632/97087055-24ac4900-161f-11eb-985c-cd7a996a2527.jpg)
+  ##### Lobby
+  ![32bfd4bdee378d883f3cddcf44b72428](https://user-images.githubusercontent.com/44262632/97087066-31c93800-161f-11eb-871f-753af38feb77.jpg)
 
-##### Lobby
-![32bfd4bdee378d883f3cddcf44b72428](https://user-images.githubusercontent.com/44262632/97087066-31c93800-161f-11eb-871f-753af38feb77.jpg)
+  ##### Quiz
+  ![ae99e7413f0080445a9287f0c7493cc4](https://user-images.githubusercontent.com/44262632/97087072-3857af80-161f-11eb-818d-2e03d0f151f4.png)
 
-##### Quiz
-![ae99e7413f0080445a9287f0c7493cc4](https://user-images.githubusercontent.com/44262632/97087072-3857af80-161f-11eb-818d-2e03d0f151f4.png)
+  ##### Leaderboard
+  ![5aa7b6797cbae6b211d7551921b9c7a7](https://user-images.githubusercontent.com/44262632/97087075-41e11780-161f-11eb-83c7-c5e4c18fd5bb.png)
 
-##### Leaderboard
-![5aa7b6797cbae6b211d7551921b9c7a7](https://user-images.githubusercontent.com/44262632/97087075-41e11780-161f-11eb-83c7-c5e4c18fd5bb.png)
+  ##### Settings
+  ----
 
-##### Settings
-----
-
-General Settings             |  Game Settings
-:-------------------------:|:-------------------------:
-![7526a1d441d396a9a52484186ffcc0e1](https://user-images.githubusercontent.com/44262632/97087079-4ad1e900-161f-11eb-9374-ea0d54abe073.png)| ![283be48ed5e5191392ad94cea43924c0](https://user-images.githubusercontent.com/44262632/97087082-532a2400-161f-11eb-8292-20f6db75299e.png)
+  General Settings             |  Game Settings
+  :-------------------------:|:-------------------------:
+  ![7526a1d441d396a9a52484186ffcc0e1](https://user-images.githubusercontent.com/44262632/97087079-4ad1e900-161f-11eb-9374-ea0d54abe073.png)| ![283be48ed5e5191392ad94cea43924c0](https://user-images.githubusercontent.com/44262632/97087082-532a2400-161f-11eb-8292-20f6db75299e.png)
 
 
-##### Mobile
----
-![Untitled-2](https://user-images.githubusercontent.com/44262632/97087103-7a80f100-161f-11eb-96d1-47deeb490691.png)
+  ##### Mobile
+  ---
+  ![Untitled-2](https://user-images.githubusercontent.com/44262632/97087103-7a80f100-161f-11eb-96d1-47deeb490691.png)
+</details>
 
 ### Tech
 
