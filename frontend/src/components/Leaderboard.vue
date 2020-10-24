@@ -1,3 +1,6 @@
+<!--Leaderboard.vue, gets rendered after the quiz has finished and cycles
+ through the players while displaying their score
+-->
 <template>
   <b-container fluid>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,6 +16,7 @@
             </tr>
           </thead>
           <tbody>
+            <!--Cycle through and display the players in the lobby and their score-->
             <tr v-for="player in players" :key="player.socket">
               <td>{{player.username}}</td>
               <td>{{player.score}}</td>
@@ -36,14 +40,14 @@
 <script>
 export default {
   name: "Leaderboard",
-
+  //prop passed from App.vue which was taken from the server
   props: ["players"],
   methods : {
     onExitLeaderboard() {
+      //return to Index
       this.$emit("onExitLeaderboard");
     }
   }
-
 };
 </script>
 

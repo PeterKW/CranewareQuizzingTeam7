@@ -7,6 +7,7 @@
       </b-row>
       <b-row style="margin-bottom:10px; margin-left: 10px;">
         <b-col><b-button @click="onPower('half')" class="fancy-btn btn--gamma" :disabled='this.halfUsed'><span>Half Score</span></b-button></b-col>
+        <!-- Counter method, some of the code is availible for this so I'll leave it in, but it works inconsistantly-->
         <!--b-col><b-button @click="onPower('counter')" class="fancy-btn btn--delta" :disabled='this.counterUsed'><span>Counter</span></b-button></b-col-->
         <b-dropdown :text="playerChoice.username" class="m-md-2">
           <b-dropdown-item v-for="player in players" :key="player.socket" :value="player"
@@ -21,6 +22,7 @@
 </template>
 <script>
 
+//hold references to values to get around Vue garbage collection
 var used = [false, false, false, false]
 var temp = ['']
 var double = ['Double Points', 0]
@@ -30,12 +32,13 @@ export default {
   props: ['round' , 'players'],
   data: function () {
     return {
+      //variables for if powerups should be active
       doubleUsed : used[0],
       fiftyUsed : used[1],
       halfUsed: used[2],
-      counterUsed : used[3],
+      //counterUsed : used[3],
       playerChoice : temp,
-      ID: "PowerBar",
+      ID: "PowerBar", //ID to identify this child
       double: double[0],
       fifty: fifty[0],
       doubleRound: double[1],
@@ -43,39 +46,43 @@ export default {
 
       fiftyStr: fifty[0],
       doubleStr: double[0]
-
     }
   },
 
   watch: {
-      'round': function() {
+    //Methods for powerups cooldowns
+    'round': function() {
+      //If arrays are not used for storing values,
+      //then Vue loses the values everytime the component is reloaded
+      //for reference:
+      //var double = ['Double Points', 0]
+      //var fifty = ['50/50', 0]
+      if(double[1] != 0)
+        double[1] = double[1] - 1
+        double[0] = 'Use in: ' + double[1] + ' rounds'
+      if(double[1] == 0){
+        used[0] = false
+        double[0] = 'Double Points'
+      }
 
-        if(double[1] != 0)
-          double[1] = double[1] - 1
-          double[0] = 'Use in: ' + double[1] + ' rounds'
-        if(double[1] == 0){
-          used[0] = false
-          double[0] = 'Double Points'
-
-        }
-
-
-        if(fifty[1] != 0)
-          fifty[1] = fifty[1] - 1
-          fifty[0] = 'Use in: ' + fifty[1] + ' rounds'
-        if(fifty[1] == 0){
-          used[1] = false
-          fifty[0] = '50/50'
-
-        }
-
+      if(fifty[1] != 0)
+        fifty[1] = fifty[1] - 1
+        fifty[0] = 'Use in: ' + fifty[1] + ' rounds'
+      if(fifty[1] == 0){
+        used[1] = false
+        fifty[0] = '50/50'
+      }
     }
   },
 
   methods: {
+    //Methods for button clicks
     target(player) {
       this.playerChoice = [player.username]
     },
+
+    //handles disabling the powers so they can't be used multiple times in a row
+    //references to arrays to avoid vue garbage collection
     onPower(power) {
 
       switch (power) {
@@ -92,12 +99,12 @@ export default {
           fifty[0] = 'Use in: ' + fifty[1] + ' rounds'
           break;
         case 'half':
-          if (this.playerChoice != '') {
+          if (this.playerChoice != '') { //if they didn't target anyone
             this.halfUsed = true
             used[2] = true
           }
           break;
-        case 'counter':
+        case 'counter': //currently unaccessible
           this.counterUsed = true
           used[3] = true
           break;
@@ -106,6 +113,7 @@ export default {
       this.$emit('power', power);
     },
 
+    //return all the buttons to being unused
     resetButtons() {
       used[0] = false;
       used[1] = false;
