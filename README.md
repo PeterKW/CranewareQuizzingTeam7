@@ -40,10 +40,10 @@ Cranehoot is a cloud-hosted, mobile-friendly, multiplayer quiz powered by VueJS,
 
 Creanehoot uses a number of open source projects to work properly:
 
-* [Vue.js](https://vuejs.org/) - HTML enhanced for web apps!
+* [Vue.js](https://vuejs.org/) - Model–view–viewmodel front end JavaScript framework for UIs & SPAs
 * [Vue-Bootstrap](https://bootstrap-vue.org/) - Responsive, mobile-first, and ARIA accessible projects on the web using Vue.js and the world's most popular front-end CSS library
 * [Node.js](https://nodejs.org/en/) - Handle data from the database
-* [SocketIO](https://socket.io/) - Socket management javaScript library for realtime web applications.
+* [SocketIO](https://socket.io/) - Socket management javaScript library for realtime web applications
 * [Amazon Web Services (AWS)](https://aws.amazon.com/) - Cloud storage for database and website hosting
 * [Buddy Docker](https://buddy.works/) - CICD from GitHub
 * [MySQL](https://www.mysql.com/) - Relational database management system
@@ -58,7 +58,7 @@ Install the frontend & backend dependencies.
 $ cd frontend
 $ npm install
 $ cd ../backend
-& npm install
+$ npm install
 ```
 
 To start simply run applet.js in /backend & the Vue CLI service in /frontend:
