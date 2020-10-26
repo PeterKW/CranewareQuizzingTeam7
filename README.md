@@ -102,7 +102,9 @@ Sound effects & music obtained from www.zapsplat.com
 
  ### Dataset
  Question & Answer dataset based on OpenTriviaQA from https://github.com/uberspot/OpenTriviaQA
+ 
  Protected by: Creative Commons CC-BY-SA-4.0 License
+ 
  Created by:
   @uberspot Paul S
   @pachacamac Marc
