@@ -1,3 +1,5 @@
+<!-- Index.vue file, The landing page fot the App. This page is responsible for creating lobbies, joining lobbies and the settings -->
+
 <template>
     <b-container fluid>
       <b-row class="h-100 align-items-center">
@@ -86,8 +88,10 @@ export default {
   name: 'Index',
   data: function() {
     return {
+      //variables to be passed over socket
       username: "",
       gamePin: "",
+      //Variables for the settings menu
       sliderValue: 50,
       musicVolume: 50,
       effectsVolume: 50,
@@ -104,6 +108,7 @@ export default {
     VueSlider
   },
   methods: {
+    //emit methods, talking to app.vue, primarily to change components
     onJoinLobby() {
       this.$emit('onJoinLobby', this.username, this.gamePin)
     },
@@ -111,11 +116,12 @@ export default {
       this.$emit('onFindLobby', this.username)
     },
     onCreateLobby() {
-      // TODO: Make a proper error message
+      // If they don't enter a username
       if(!this.username){ alert("Enter a username"); return;}
 
       this.$emit('onCreateLobby', this.username);
     },
+    //emit methods for upadting settings
     updateBackground() {
       this.$emit('updateBackground', this.sliderValue)
     },
@@ -134,7 +140,9 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add "scoped" attribute to limit CSS to this component only
+     Button style taken and modified from https://freefrontend.com/css-flat-buttons/
+-->
 <style scoped>
 
 .b09_electric {

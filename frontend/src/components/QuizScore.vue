@@ -1,15 +1,17 @@
+<!--QuizScore.vue is responsible for showing the screen after the question has
+    been answered and the timer has ticked to 0
+-->
 <template>
   <div class="cont justify-content-center">
-
     <b-row class="justify-content-center">
       <h1 class="question w-100">{{verdict}}</h1>
       <h2 class="w-100">The correct answer was {{correctAnswer}}.</h2>
       <h2 class="w-100">You scored {{score}} points.</h2>
+      <!--Display if someone tartgetted you-->
       <h5 class="w-100" style="padding-bottom: 0px" v-for="messages in target_message" v-bind:key="messages.message">{{messages.message}}</h5>
-      <h3 class="w-100" style="padding-bottom: 0px" v-if="countering && target_message.length >= 1">You countered!</h3>
-      <h3 class="w-100" style="padding-bottom: 0px" v-if="countering && target_message.length == 0">You countered no one! Your next points will be halved.</h3>
+      <!--<h3 class="w-100" style="padding-bottom: 0px" v-if="countering && target_message.length >= 1">You countered!</h3>
+      <h3 class="w-100" style="padding-bottom: 0px" v-if="countering && target_message.length == 0">You countered no one! Your next points will be halved.</h3>-->
       <h3 v-if="scoreStreak > 1" class="w-100">Score Streak: {{scoreStreak}} {{scoreBonus}}</h3>
-
      <table class="table table-hover justify-items-center">
         <thead>
           <tr>
@@ -41,10 +43,11 @@ export default {
   },
 
   methods: {
+    //add a message about who targetted you
     add_message(message) {
       this.notifications.push(message)
     },
-
+    //clear the messages about who targetted you
     clear_messages() {
       this.notifications = []
     }

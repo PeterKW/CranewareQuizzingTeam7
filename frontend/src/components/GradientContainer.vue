@@ -1,3 +1,7 @@
+<!-- GradientContainer.vue file, responsible for animating the moving background,
+     Wraps around all other components
+-->
+
 <template>
     <div id="gradient" :style="gradient">
       <slot></slot>
@@ -32,8 +36,9 @@ export default {
 
       this.step = 0
       this.istep = 0
-           //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
+      //Taken and modified from: https://codepen.io/quasimondo/pen/lDdrF
       this.intervalID = window.setInterval(() => {
+
         var c0_0 = this.colors[this.colorIndices[0]];
         var c0_1 = this.colors[this.colorIndices[1]];
         var c1_0 = this.colors[this.colorIndices[2]];
@@ -67,11 +72,14 @@ export default {
     }
   },
   watch: {
+    // used to check if the user modifies the speed of the background
     'slider': function(newVal) {
+      //restart the background
       window.clearInterval(this.intervalId);
       this.gradientSpeed = 0.00002   * newVal
     },
 
+    // turns on contrast mode
     'options': function(){
       if(this.options.includes("contrast"))
         this.contrastVue = true;
@@ -97,7 +105,7 @@ export default {
 </script>
 
 <style scoped>
-#gradient { 
+#gradient {
   height: 200vh;
   width: 100vw;
   min-height: 100%;

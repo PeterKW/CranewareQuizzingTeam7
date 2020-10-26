@@ -1,8 +1,8 @@
+<!--QuizQuestion.vue is responsible for holding the answers and the question-->
 <template>
   <div class="cont">
     <b-row class="justify-content-center">
       <h2 class="question w-100">{{question}}</h2>
-
     <b-row style="margin-bottom:10px">
       <b-col style="margin-right:10px;"><b-button v-if=!disableA @click="onAnswer('1')" class="fancy-btn btn--alpha"><span>{{a}}</span></b-button></b-col>
       <b-col><b-button v-if=!disableB @click="onAnswer('2')" class="fancy-btn btn--beta"><span>{{b}}</span></b-button></b-col>
