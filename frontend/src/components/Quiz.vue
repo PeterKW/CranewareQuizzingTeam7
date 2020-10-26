@@ -42,7 +42,7 @@ export default {
     QuizQuestion,
     PowerBar,
     QuizScore,
-  },0
+  },
   props: ["players", "options", "volume", "currentQuestion", "currentPlayer", "gamePin"],
   data() {
     return {
@@ -75,7 +75,7 @@ export default {
       verdict: "",
       questionScore: 0,
       scoreStreak: 0,
-      correctAnswer: ""
+      correctAnswer: "",
       currPlayers: 0,
       results: null,
     }
