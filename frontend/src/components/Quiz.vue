@@ -80,17 +80,14 @@ export default {
   methods: {
     // Event handlers //
 
-    // Handles click of an answer
+    // Sends the onAnswer event with the answer chosen, 2 booleans which indicate the use of a powerup, and the lobby's code
+    // bool this.doublePoints - determines if the question is worth double the points
+    // bool this.halfNextAnswer - determines if the question if worth half the points
     onAnswerQuestion(answer) {
       this.answered = true
-
       this.$socket.emit('onAnswer', answer, this.doublePoints, this.halfNextAnswer, this.gamePin);
+      // Makes sure the next question is not worth double points.
       this.doublePoints = false;
-
-       /*
-        // TODO: Send correct data at this point.
-        // this.$emit('calculatePoints', this.gamePin, this.questionScore);
-      */
     },
 
     // This function is responsible for Handling the power abilities
@@ -113,8 +110,6 @@ export default {
               var target = this.$children[i].playerChoice[0];
             }
           }
-          console.log(this.currentPlayer);
-          console.log(target);
           this.$socket.emit('attackPlayer', this.gamePin, target, this.currentPlayer);
           break;
 
@@ -195,17 +190,15 @@ export default {
   sockets: {
 
     incorrectlyTargetted: function () {
-      //this.halfNextAnswer = false
       this.reset_message();
-      //for (var i = 0; i < this.targetees.length; i++) {
-      //  this.$socket.emit('punishPlayer' ,this.gamePin, this.targetees[i]);
-      //}
     },
-
+    // This function halves the score of a targeted player
     playerTargetted: function() {
+      // Notify user their score has been halved.
       this.add_message("You were targetted, your score has been halfed!");
       if (this.answered) {
-        this.$socket.emit('updateScore' ,this.gamePin, this.currentPlayer);
+        // Send the updateScore event which will halve a player's score.
+        this.$socket.emit('updateScore');
       } else {
         this.halfNextAnswer = true;
       }
@@ -234,7 +227,7 @@ export default {
 
       this.round++
     },
-    
+
     resetHalf: function() {
       this.halfNextAnswer = false;
     },
@@ -249,7 +242,8 @@ export default {
       this.leaderboard = results.playerScores
       this.correctAnswer = results.correctAnswer
     },
-    onTimerTick(time) {
+    onTimerTick(time)
+    {
       this.timer = time
 
       if(this.timer == 0) {
