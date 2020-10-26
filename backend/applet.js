@@ -6,111 +6,142 @@ webapp.use(cors());
 const port = 5000;
 const listener = webapp.listen(port);
 
-var mysql = require('mysql');
-var db = require('./db'); // Database info JSON
+// Database connection additions
+const mysql = require('mysql');
+const db = require('./db');
 
+// Socket.io is imported and listens to the port chosen
 const io = require('socket.io').listen(listener, () =>
 {
 	// Informs that the server is running.
 	console.log('Server running on port ' + port);
 });
 
-class Database {
-	constructor() {
-		this.database = mysql.createConnection({
-		  host: db.host,
-		  user: db.user,
-		  password: db.password,
-		  database: db.database,
-		  multipleStatements: true
-		});
+// Represents the database and allows interaction with the database.
+class Database
+{
+	// Database connection is established here
+	constructor()
+	{
+		this.database = mysql.createConnection(
+			{
+				host: db.host,
+				user: db.user,
+				password: db.password,
+				database: db.database,
+				multipleStatements: true,
+			});
 	}
 
-	getRandomQuestion (callback) {
-		var id = Math.floor(Math.random() * 943) + 1;
+	// Retrieves a random question from the database and then runs the callback function.
+	// @callback - function to run once question is recieved from the database.
+	getRandomQuestion(callback)
+	{
+		const id = Math.floor(Math.random() * 943) + 1;
 		// gets question and answers and sends back in JSON form
-		this.database.query("CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [id], function(err, localResult) { // Send query
+		this.database.query('CALL query_QuestionById(?, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4', [id], function(err, localResult)
+		{ // Send query
 			if (err && err.length != 0) throw err;
-			console.log(id);
-			console.log(localResult[1]);
-			var result = localResult[1];
-			let question = {
-			  result
-			}
+			console.log('Retrieving question...');
+			const result = localResult[1];
+			const question = { result	};
 			return callback(question.result[0]); // Pass back info
 		});
 	}
-	getQuestionFromCat (callback,category) {
-			this.database.query("call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4", [category], function(err, localResult) { // Send query
-				if (err && err.length != 0) throw err;
-				var result = localResult[1];
-				let question = {
-				  result
-				}
-				return callback(question.result[0]); // Pass back info
-			});
-	//	});
 
+	// Gets a random question from a specific category
+	// @callback - function whichto run once the data is grabbed from the database
+	// @category - A string that represents a category
+	getQuestionFromCat(callback, category)
+	{
+		// Querying database for question in a category
+		this.database.query('call query_OneQuestionByCategory(?, @id, @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4); select @category,@question_content,@correct_answer,@answer1, @answer2, @answer3, @answer4', [category], function(err, localResult)
+		{ // Send query
+			if (err && err.length != 0) throw err;
+			const result = localResult[1];
+			const question = { result };
+			return callback(question.result[0]); // Pass back info
+		});
 	}
 }
+
+// An instance of the database is created
 const database = new Database();
 
+// Represents the server
 class CranehootServer
 {
+	// It stores a dictionary of lobbies for ease of access
 	constructor()
 	{
-
 		this.lobbies = {};
-
-		this.start()
 	}
 
-	start() {
+	// turns event listeners on and contains definitions for various events
+	start()
+	{
+		// When the connection is established
 		io.on('connect', socket =>
 		{
-			socket.on('onCreateLobby', (username) => {
-				var newLobby = this.newLobby();
-				var player = new Player(socket.id, username, newLobby.gamePin)
+			console.log('IO connected...');
+			// The event that is resolved when a lobby is created
+			socket.on('onCreateLobby', (username) =>
+			{
+				console.log('\nLobby created with host: ' + username);
+				const newLobby = this.newLobby();
+				// Player object to represent host
+				const player = new Player(socket.id, username, newLobby.gamePin);
 
-				newLobby.addPlayer(player)
+				newLobby.addPlayer(player);
 
 				// Store reference to player on the socket
 				socket.player = player;
-
+				// Send onLobbyCreated event with the lobby created as a payload
 				socket.emit('onLobbyCreated', newLobby);
 			});
 
-			socket.on('disconnect', (reason) => {
-				if (reason === 'io server disconnect') {
-				  	// the disconnection was initiated by the server, you need to reconnect manually
-				  	socket.connect();
+			// The event triggered by socket.io when a io client disconnects
+			socket.on('disconnect', (reason) =>
+			{
+				// Keep the server connected in case of disconnects
+				if (reason === 'io disconnect')
+				{
+					// the disconnection was initiated by the server, you need to reconnect manually
+					socket.connect();
 				}
-				else {
-
-					//This might be needed still delete this.lobbies[socket.player.lobby].players[socket.id];
-
-					if (Object.keys(this.lobbies[socket.player.lobby].players).length < 1) {
+				else if(socket.player != null)
+				{
+					// Player disconection
+					console.log('\nPlayer with following data disconnected:');
+					console.log(socket.player);
+					// If there are no players in a lobby
+					if(Object.keys(this.lobbies[socket.player.lobby].players).length < 1)
+					{
+						// Delete the lobby
 						this.lobbies[socket.player.lobby] = null;
 					}
 				}
-				// else the socket will automatically try to reconnect
 			});
 
-
+			// Event for the powerup which halves an opponent's score
 			socket.on('attackPlayer', (gamePin, target, aggrevator) =>
 			{
+				// Retrieving the relevant lobby and dictionary of players
 				const lobby = this.lobbies[gamePin];
 				const lobbyPlayers = lobby.players;
 
+				// Looping through players to find the targeted player to carry out powerup attack
 				for (const key in lobbyPlayers)
 				{
 					if (lobbyPlayers[key].username == target)
 					{
+						// Send the player targetted event to trigger further
 						io.sockets.sockets[key].emit('playerTargetted', aggrevator);
 					}
 				}
 			});
 
+			// TODO: Add the reciever event that handles playerIncorrectlyHalved event
 			socket.on('punishPlayer', (gamePin, target) =>
 			{
 				const lobby = this.lobbies[gamePin];
@@ -127,35 +158,36 @@ class CranehootServer
 				}
 			});
 
+			/* The event handler for when a user joins a lobby
+			** @username String - The user's username
+			** @gamePin String - The code to join a lobby
+			**/
 			socket.on('onJoinLobby', (username, gamePin) =>
 			{
 				// Validate game pin
 				if(gamePin in this.lobbies)
 				{
-					var lobby = this.lobbies[gamePin];
+					const lobby = this.lobbies[gamePin];
 
-					if (lobby.hasGameStarted) {
+					// Lock a lobby if a game has begun, send an onError event which alerts the user that the lobby cannot be entered.
+					if (lobby.hasGameStarted)
+					{
 						socket.emit('onError', 'Game has already started');
 						return;
 					}
 
-					// New player object
-					var newPlayer = new Player(socket.id, username, lobby.gamePin)
-					lobby.addPlayer(newPlayer)
+					// New player object is created and added to the dictionary of players in the lobby.
+					const newPlayer = new Player(socket.id, username, lobby.gamePin);
+					lobby.addPlayer(newPlayer);
 
 					// Store reference to player on the socket
 					socket.player = newPlayer;
 
-					lobby.notifyAll("onPlayerJoin", newPlayer)
+					// Informs all players that a user has joined the lobby
+					lobby.notifyAll('onPlayerJoin', newPlayer);
 
-					/*for(const playerID in lobby.players){
-						if(newPlayer == lobby.players[playerID]) continue;
-
-						io.sockets.sockets[playerID].emit('onPlayerJoin', newPlayer)
-					}*/
-
-					// Tell client they have successfully joined
-					socket.emit('onLobbyJoined', lobby)
+					// User successfully joins a lobby and is shown the lobby screen
+					socket.emit('onLobbyJoined', lobby);
 				}
 				else
 				{
@@ -163,7 +195,12 @@ class CranehootServer
 				}
 			});
 
-			// Starts the game for all users.
+			/* Sets the lobby settings and starts the game for all users.
+			** @code - The code to enter a lobby and find it in the lobby dictionary
+			** @category - Category of questions to retrieve questions from
+			** @questionTime - The time for each question
+			** @questionNumber - The number of questions in the quiz until the quiz ends
+			**/
 			socket.on('onLobbyStart', (code, category, questionTime, questionNumber) =>
 			{
 				this.lobbies[code].category = category;
@@ -172,41 +209,47 @@ class CranehootServer
 				this.lobbies[code].start();
 			});
 
-
+			/* Sends data to the lobby object to calculate a score
+			** @answer String - The answer
+			** @doublePoints bool - When true will double the points of the question
+			** @halfPoints bool - When true will half the points of the question
+			** @gamePin String - Code used to join and find the lobby in the lobby dictionary
+			**/
 			socket.on('onAnswer', (answer, doublePoints, halfPoints, gamePin) =>
 			{
-				var player = socket.player;
-				var lobby = this.lobbies[socket.player.lobby]
+				const player = socket.player;
+				const lobby = this.lobbies[socket.player.lobby];
 
-				lobby.onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin)
+				lobby.onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin);
 			});
 
-			socket.on('updateScore', (gamePin, playerName) => {
-
-				var player = socket.player;
-				var playerSocket = player.socket;
-				var tempScore = 0.5 * player.questionResults.score
+			// Awards half the score of a question
+			socket.on('updateScore', () =>
+			{
+				const player = socket.player;
+				const playerSocket = player.socket;
+				const tempScore = 0.5 * player.questionResults.score;
 				player.score -= tempScore;
-	      player.questionResults = {
-		    	verdict : "Correct!",
- 	        score : tempScore
-				}
+				player.questionResults = { verdict : 'Correct!', score : tempScore };
+				// Will send an event to make the next question worth full points
 				io.sockets.sockets[playerSocket].emit('resetHalf');
 			});
 
+			// Send the number of players in a lobby
 			socket.on('getCurrPlayers', () =>
 			{
-				var player = socket.player;
-				var lobby = this.lobbies[socket.player.lobby];
+				const player = socket.player;
+				const lobby = this.lobbies[socket.player.lobby];
 				socket.emit('onCurrentPlayers', Object.keys(lobby.players).length);
 			});
 		});
 	}
 
+	// Creates a new lobby and adds it to a dictionary of lobbies
 	newLobby()
 	{
-	  var pin = Math.random().toString(36).substring(7);
-
+		// A pin is generated to be the join code for the lobby
+		const pin = Math.random().toString(36).substring(7);
 		this.lobbies[pin] = new Lobby(pin);
 		return this.lobbies[pin];
 	}
@@ -215,256 +258,307 @@ class CranehootServer
 // Represents a lobby
 class Lobby
 {
+	// Creates a lobby with the specific join code
+	// @pin - The pin code to join a lobby.
 	constructor(pin)
 	{
-		this.gamePin = pin
-		this.players = {}
-
+		this.gamePin = pin;
+		// dictionary of players in lobby
+		this.players = {};
+		// array of player's scores
 		this.leaderboard = [];
 
-		this.currentQuestion = {}
+		this.currentQuestion = {};
+		// Number of questions before game for the lobby ends
 		this.qCount = 0;
 
-		this.timer = 10
-		this.timerInstance = null
+		this.timer = 10;
+		this.timerInstance = null;
 
 		// TODO: Customisable in the future?
-		this.category = ["all"];
+		this.category = ['all'];
 		this.timePerQuestion = 15;
 		this.noOfQuestions = 5;
 
-		// Im lazy
-		this.timer2 = 5
-		this.timerInstance2 = null
+		this.timer2 = 5;
+		this.timerInstance2 = null;
 
 		this.hasGameStarted = false;
 	}
 
-	start() {
+	// Starts the game
+	start()
+	{
 		this.hasGameStarted = true;
-		//this.nextQuestion("onLobbyStarted")
-		//this.notifyAll("onLobbyStarted")
-		this.loop()
+		this.loop();
 	}
 
-	loop() {
-	   	if(this.qCount > this.noOfQuestions){
-		 	this.notifyAll("onQuizEnd", this.getLeaderboard())
-		 	return
-		 }
-		if (this.qCount ==0)
+	// The main game loop
+	loop()
+	{
+		if(this.qCount > this.noOfQuestions)
 		{
-			this.nextQuestion("onLobbyStarted")
+			// Ends quiz if the questions answered has surpassed the number of questions set by user or the default number of questions.
+			this.notifyAll('onQuizEnd', this.getLeaderboard());
+			return;
+		}
+		if (this.qCount == 0)
+		{
+			// Shows the question page after the lobby when no questions have been finished
+			this.nextQuestion('onLobbyStarted');
 		}
 		else
 		{
-			this.nextQuestion("onNextQuestion");
+			// Grabs next question
+			this.nextQuestion('onNextQuestion');
 		}
-		this.timer = this.timePerQuestion
+		this.timer = this.timePerQuestion;
 
-		this.timerInstance = setInterval(() => {
-			this.notifyAll("onTimerTick", this.timer)
-			console.log(this.currentQuestion['@correct_answer']);
-	    	if(this.timer-- <= 0) {
-	    		clearInterval(this.timerInstance)
+		this.timerInstance = setInterval(() =>
+		{
+			// Updates all user's timers until the timer runs out.
+			this.notifyAll('onTimerTick', this.timer);
+			if(this.timer-- <= 0)
+			{
+				clearInterval(this.timerInstance);
 
-	    		this.sendQuestionResults();
-					this.notifyAll("resetHalf")
-	      	}
-	    }, 1000)
+				// Sends the results of the question and stops the next question from being half the points.
+				this.sendQuestionResults();
+				this.notifyAll('resetHalf');
+			}
+		}, 1000);
 	}
 
-	onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin) {
-		// Verify their answer
-		// TODO: fix a bug where the first answer might be wrong even when it's right
-		//console.log("HERE");
-		//console.log(answer);
-		//console.log(this.currentQuestion["@correct_answer"]);
-		var playerSocket = player.socket;
-		if(this.currentQuestion["@correct_answer"] == this.currentQuestion["@answer" + answer]) {
+	/* Calculates a player's score
+	** player - Player object
+	** answer String - A string of the answer selected by the player
+	** doublePoints bool - Determines if the question is worth double the points
+	** halfPoints bool - Determines if the question was worth half its points
+	** gamePin String - Code to find a lobby
+	**/
+	onPlayerAnswer(player, answer, doublePoints, halfPoints, gamePin)
+	{
+		// Verify a player's answer
+		const playerSocket = player.socket;
+		if(this.currentQuestion['@correct_answer'] == this.currentQuestion['@answer' + answer])
+		{
+			// Make sure next question is not worth half points.
 			io.sockets.sockets[playerSocket].emit('resetHalf');
-			if(this.timer==0)
+			if(this.timer == 0)
 			{
 				this.timer++;
 			}
 
-			if (halfPoints && doublePoints) {
-				var tempScore = this.timer * 100
-			} else if (halfPoints) {
-				var tempScore = this.timer * 50
-			} else if (doublePoints) {
-				var tempScore = this.timer * 100 * 2
-			} else {
-				var tempScore = this.timer * 100
+			let tempScore;
+			// Calculate points based on if the score has been altered due to a powerup.
+			if(halfPoints === doublePoints)
+			{
+				tempScore = this.timer * 100;
+			}
+			else if(halfPoints)
+			{
+				tempScore = this.timer * 50;
+			}
+			else if(doublePoints)
+			{
+				tempScore = this.timer * 100 * 2;
 			}
 
-	    player.streak++
-
-	    if(player.streak > 1){
-	      tempScore += (100 * player.streak)
-	     }
-
-	     player.score += tempScore;
-
-	     player.questionResults = {
-	     		verdict : "Correct!",
-	        score : tempScore
-	       }
-
-		}
-		else {
-			player.streak = 0
-
-			player.questionResults = {
-	        	verdict : "Incorrect!",
-	        	score : 0
-	        }
-
-			if (halfPoints) {
-				io.sockets.sockets[playerSocket].emit('incorrectlyTargetted');
+			// Increase the streak and Calculate the bonus points
+			player.streak++;
+			if(player.streak > 1)
+			{
+				tempScore += (100 * player.streak);
 			}
-			if (doublePoints) {
-				io.sockets.sockets[playerSocket].emit('incorrectlyDoubled');
-				player.score -= 500;
-				player.questionResults = {
-		        	verdict : "Incorrect!",
-		        	score : -500
-		        }
-			}
-		}
-	}
 
-	sendQuestionResults() {
-		var leaderboard = this.getLeaderboard()
+			player.score += tempScore;
 
+			player.questionResults = { verdict : 'Correct!', score : tempScore };
 
-		for(const playerID in this.players) {
-			var player = this.players[playerID]
-			try {
-				if(Object.keys(player.questionResults).length > 0){
-					io.sockets.sockets[playerID].emit(
-						"onResults",
-						{
-							"verdict" : player.questionResults.verdict,
-							"score"   : player.questionResults.score,
-							"streak"  : player.streak,
-							"playerScores" : leaderboard,
-              				"correctAnswer" : this.currentQuestion["@correct_answer"]
-						}
-					);
-				}
-				else {
-					io.sockets.sockets[playerID].emit(
-						"onResults",
-						{
-							"verdict" : "You did not select an answer.",
-							"score"   : "0",
-							"streak"  : player.streak,
-							"playerScores" : leaderboard,
-							"correctAnswer" : this.currentQuestion["@correct_answer"]
-
-						}
-					);
-				}
-
-				player.questionResults = {}
-			}
-			catch(e) {
-				// Disconnected
-				delete this.players[playerID];
-				this.notifyAll("onPlayerDisconnected", {});
-			}
-		}
-
-
-		this.timer2=5;
-		this.timerInstance2 = setInterval(() => {
-			this.notifyAll("onTimerTick2", this.timer2)
-
-	    	if(this.timer2-- <= 0) {
-	    		 clearInterval(this.timerInstance2)
-	    		 this.loop();
-	      	}
-	    }, 1000)
-	}
-
-	getLeaderboard(){
-		var leaderboard = Object.values(this.players)
-		leaderboard.sort((a, b) => b.score - a.score)
-
-		return leaderboard
-	}
-
-	nextQuestion(e) {
-		this.qCount++;
-		var that = this;
-		//checks if a category has been selcted
-		if(this.category.length!=0)
-		{
-			//picks random category from list of categories chosen
-			let cat = Math.floor(Math.random() * this.category.length);
-			database.getQuestionFromCat(function(question) {
-				that.currentQuestion = question;
-				that.notifyAll(e, question);
-			},this.category[cat]);
 		}
 		else
 		{
-			//gets random question if no category is selected
-			database.getRandomQuestion(function(question) {
+			// When the answer is incorrect, reset the streak
+			player.streak = 0;
+
+			player.questionResults = { verdict : 'Incorrect!', score : 0 };
+
+			if(halfPoints)
+			{
+				// Send event to remove a notification from UI
+				io.sockets.sockets[playerSocket].emit('incorrectlyTargetted');
+			}
+			if(doublePoints)
+			{
+				/* When the user chooses the incorrect answer after choosing to double their points
+					their score is reduced by 500
+				**/
+				io.sockets.sockets[playerSocket].emit('incorrectlyDoubled');
+				player.score -= 500;
+				player.questionResults = { verdict : 'Incorrect!', score : -500 };
+			}
+		}
+	}
+
+	// Sends the question results after a question to each player
+	sendQuestionResults()
+	{
+		const leaderboard = this.getLeaderboard();
+
+
+		for(const playerID in this.players)
+		{
+			const player = this.players[playerID];
+			try
+			{
+				// if the player chose an answer
+				if(Object.keys(player.questionResults).length > 0)
+				{
+					// Send the onResults event with the score data to the client
+					io.sockets.sockets[playerID].emit(
+						'onResults',
+						{
+							'verdict' : player.questionResults.verdict,
+							'score'   : player.questionResults.score,
+							'streak'  : player.streak,
+							'playerScores' : leaderboard,
+							'correctAnswer' : this.currentQuestion['@correct_answer'],
+						},
+					);
+				}
+				else
+				{
+					// Send the onResults event with information about not selecting an answer
+					io.sockets.sockets[playerID].emit(
+						'onResults',
+						{
+							'verdict' : 'You did not select an answer.',
+							'score'   : '0',
+							'streak'  : player.streak,
+							'playerScores' : leaderboard,
+							'correctAnswer' : this.currentQuestion['@correct_answer'],
+						},
+					);
+				}
+
+				player.questionResults = {};
+			}
+			catch(e)
+			{
+				// Disconnected user when player does not exist
+				delete this.players[playerID];
+				this.notifyAll('onPlayerDisconnected', {});
+			}
+		}
+
+		// Start a timer and inform all users how long until the next question begins.
+		this.timer2 = 5;
+		this.timerInstance2 = setInterval(() =>
+		{
+			this.notifyAll('onTimerTick2', this.timer2);
+
+			if(this.timer2-- <= 0)
+			{
+				clearInterval(this.timerInstance2);
+				this.loop();
+			}
+		}, 1000);
+	}
+
+	// Sorts and retrieves the leaderboard
+	getLeaderboard()
+	{
+		const leaderboard = Object.values(this.players);
+		leaderboard.sort((a, b) => b.score - a.score);
+
+		return leaderboard;
+	}
+
+	/* Grabs next question with the event as a String
+	** @e String - The event to be sent
+	*/
+	nextQuestion(e)
+	{
+		// The question count is increased
+		this.qCount++;
+		const that = this;
+		// checks if a category has been selcted
+		if(this.category.length != 0)
+		{
+			// picks random category from list of categories chosen
+			const cat = Math.floor(Math.random() * this.category.length);
+			database.getQuestionFromCat(function(question)
+			{
+				that.currentQuestion = question;
+				that.notifyAll(e, question);
+			}, this.category[cat]);
+		}
+		else
+		{
+			// gets random question if no category is selected
+			database.getRandomQuestion(function(question)
+			{
 				that.currentQuestion = question;
 				that.notifyAll(e, question);
 			});
 		}
 	}
 
-	// Will allow all users to be updated when an event occurs.
-	// event is a string one wants to send
-	// data is a json object or a single data type
+	/* Will allow all users to be updated when an event occurs.
+	** event is a string one wants to send
+	** data is a json object or a single data type
+	*/
 	notifyAll(event, data)
 	{
-		for(const playerID in this.players) {
-			try {
+		for(const playerID in this.players)
+		{
+			try
+			{
+				// Send the event to the specific player with any data
 				io.sockets.sockets[playerID].emit(event, data);
 			}
-			catch(e) {
+			catch(e)
+			{
 				// They've disconnected
 				delete this.players[playerID];
-				this.notifyAll("onPlayerDisconnected", {});
+				this.notifyAll('onPlayerDisconnected', {});
 			}
 		}
 	}
 
-	addPlayer(player) {
+	// Add the player to the lobby's dictionary of players
+	addPlayer(player)
+	{
 		this.players[player.socket] = player;
 	}
 
-	get host(){
-    	return this.players[0]
-  	}
+	// Retrieve the player who made the lobby.
+	get host()
+	{
+		return this.players[0];
+	}
 }
 
 // represents a player.
 class Player
 {
-	constructor(socket, username, lobby)
+	/* Creates a player instance
+	** @socket String - Socket id as a string
+	** @username String - Username string
+	** @gameCode String - String that helps find the lobby in a dictionary
+	**/
+	constructor(socket, username, gameCode)
 	{
 		this.username = username;
 		this.socket = socket;
-		this.lobby = lobby;
+		this.lobby = gameCode;
 
 		this.score = 0;
 		this.streak = 0;
 
-		this.questionResults = {}
+		this.questionResults = {};
 	}
 }
-
-// Logs new connections to the server.
-io.on('connection', () =>
-{
-	console.log('New player detected!');
-});
 
 // Helps to run tests.
 class Tester
@@ -498,70 +592,31 @@ class Tester
 		}
 	}
 
-	// Will test a bool function and add its result to the testResults.
-	// boolFunction is a function that returns a bool.
-	// testName is a string that represents the test.
+	/* Will test a bool function and add its result to the testResults.
+	** boolFunction is a function that returns a bool.
+	** testName is a string that represents the test.
+	**/
 	testBoolFunction(testName, boolFunction)
 	{
 		if(boolFunction)
 		{
-			console.log('Event sent to channel successfully');
+			console.log('Test successful: ' + testName);
 			this.testResults.push({ testName:true });
 		}
 		else
 		{
-			console.log('Event failed to send to channel');
+			console.log('Test failed: ' + testName);
 			this.testResults.push({ testName:false });
 		}
 	}
 }
-
-const testerInstance = new Tester();
-
 
 // Is the main method that runs the usual server operation.
 function main()
 {
 	// tests();
 	const craneHoot = new CranehootServer();
-}
-
-// The test cases
-function tests()
-{
-	const testChannel = 'private-channel';
-	const testEvnt = 'test';
-	const testMsg = 'This is a test';
-	const JSONTest = { 'message':'Let\'s go', 'test':'tested' };
-
-	// TODO: Fix broken test. The code is working but the test jumps the gun. Will require async and await keywords to solve.
-	// testerInstance.testBoolFunction('isSendMessageWorking', evntManager.sendMsg(testChannel, testEvnt, testMsg, true));
-	// testerInstance.testBoolFunction('isSendDataWorking', evntManager.sendData(testChannel, testEvnt, JSONTest, true));
-
-	// Currently using readline to halt test until tester ensures a client instance is running.
-	/* userInputReader.question('Press enter when ready to trigger event to run test', (ans) =>
-	{
-		console.log(ans);
-		userInputReader.close();
-	});*/
-
-	/* evntManager.listenToEvent(testChannel, 'pusher:subscription_succeeded', function()
-	{
-		console.log('Successfully connected to channel ' + testChannel);
-	});*/
-
-	/* evntManager.listenToEvent(testChannel, testEvnt, function(data)
-	{
-		console.log('event heard:');
-		console.log(data);
-	});*/
-
-	// Testing if data recieved from client is sent in expected format.
-	/* evntManager.listenToEvent(testChannel, testEvnt, function(data)
-	{
-		return(data.message == testMsg);
-	});*/
-
+	craneHoot.start();
 }
 
 main();
